@@ -16,9 +16,6 @@ const Navbar = () => {
         <li className="mx-4">
           <Link href={'/sign-up'} className="hover:text-sky-200 duration-500">Sign up</Link>
         </li>
-        <li className="mx-4">
-          <Link href={'/homepage'} className="hover:text-sky-200 duration-500">Homepage</Link>
-        </li>
       </ul>
     </nav>
   )
