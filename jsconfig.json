@@ -1,4 +1,9 @@
 {
+  // "compilerOptions": {
+  //   "noUnusedLocals": false,
+  //   "noUnusedParameters": false,
+  // }
+
   "compilerOptions": {
     "paths": {
       "@/*": ["./*"]

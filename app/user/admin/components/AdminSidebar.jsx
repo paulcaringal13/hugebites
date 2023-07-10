@@ -1,54 +1,31 @@
 import Link from "next/link"
 
 const AdminSidebar = () => {
-  return (
+  const Menus = [ 
+    { name : "Account", route: "admin/accounts" }, 
+    { name : "Menu", route: "admin/menu" },
+    { name : "Orders", route: "admin/orders" },
+    { name : "Transaction", route: "admin/transaction" },
+    { name : "Customization", route: "admin/customization" },
+    { name : "Schedule", route: "admin/schedule" },
+    { name : "Inventory", route: "admin/inventory " },
+    { name : "Reports", route: "admin/reports" },
+  ]
 
-    <>
-      <div className="container">
-        <ul>
-          <Link href={"admin/accounts"} className="btn flex py-9 px-3 bg-slate-400 border-solid border-2 border-neutral-950 drop-shadow-2xl">
-            <h1 className="mx-auto text-white font-semibold text-xl">
-              Account
-            </h1>
+  let x = Menus.map(function(menu){
+    return `${menu.route}`;
+})
+
+  return (
+    <ul className="pt-6">
+      {Menus.map((menu, index) => (
+        <li key={index} className="text-gray-300 text-lg flex rounded-md cursor-pointer hover:bg-slate-400 hover:text-black hover:font-extrabold hover:text-xl duration-700">
+          <Link href={menu.route} className="btn p-10 first-letter:w-full mx-auto">
+              {menu.name}
           </Link>
-          <Link href={"admin/menu"} className="btn flex py-9 px-3 bg-slate-400 border-solid border-2 border-neutral-950 drop-shadow-lg">
-          <h1 className="mx-auto text-white font-semibold text-xl">
-            Menu
-          </h1>
-          </Link>
-          <Link href={"admin/orders"} className="btn flex py-9 px-3 bg-slate-400 border-solid border-2 border-neutral-950">
-          <h1 className="mx-auto text-white font-semibold text-xl">
-            Orders
-          </h1>
-          </Link>
-          <Link href={"admin/transaction"} className="btn flex py-9 px-3 bg-slate-400 border-solid border-2 border-neutral-950">
-          <h1 className="mx-auto text-white font-semibold text-xl">
-            Transaction
-          </h1>
-          </Link>
-          <Link href={"admin/customization"} className="btn flex py-9 px-3 bg-slate-400 border-solid border-2 border-neutral-950">
-          <h1 className="mx-auto text-white font-semibold text-xl">
-            Customization
-          </h1>
-          </Link>
-          <Link href={"admin/schedule"} className="btn flex py-9 px-3 bg-slate-400 border-solid border-2 border-neutral-950">
-          <h1 className="mx-auto text-white font-semibold text-xl">
-            Schedule
-          </h1>
-          </Link>
-          <Link href={"admin/invetory"} className="btn flex py-9 px-3 bg-slate-400 border-solid border-2 border-neutral-950">
-          <h1 className="mx-auto text-white font-semibold text-xl">
-            Inventory
-          </h1>
-          </Link>
-          <Link href={"admin/reports"} className="btn flex py-9 px-3 bg-slate-400 border-solid border-2 border-neutral-950">
-          <h1 className="mx-auto text-white font-semibold text-xl">
-            Reports
-          </h1>
-          </Link>
-        </ul>
-      </div>
-    </>
+        </li>
+      ))}
+    </ul>
   )
 }
 
