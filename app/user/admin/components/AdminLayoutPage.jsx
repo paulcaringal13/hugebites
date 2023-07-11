@@ -1,3 +1,4 @@
+import AdminAccount from "../pages/accounts/page"
 import AdminSidebar from "./AdminSidebar"
 
 const AdminLayoutPage = () => {
@@ -7,7 +8,8 @@ const AdminLayoutPage = () => {
       <AdminSidebar />
     </div>
     <div className="p-7 text-2xl font-semibold flex-1 h-screen">
-      <h1>content</h1>
+      <AdminAccount />
+      {/* <h1>content</h1> */}
     </div>
   </div>
   )

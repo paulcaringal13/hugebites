@@ -1,20 +1,17 @@
+"use client"
 import Link from "next/link"
 
 const AdminSidebar = () => {
   const Menus = [ 
-    { name : "Account", route: "admin/accounts" }, 
-    { name : "Menu", route: "admin/menu" },
-    { name : "Orders", route: "admin/orders" },
-    { name : "Transaction", route: "admin/transaction" },
-    { name : "Customization", route: "admin/customization" },
-    { name : "Schedule", route: "admin/schedule" },
-    { name : "Inventory", route: "admin/inventory " },
-    { name : "Reports", route: "admin/reports" },
+    { name : "Account", route: "admin/pages/accounts" }, 
+    { name : "Menu", route: "admin/pages/menu" },
+    { name : "Orders", route: "admin/pages/orders" },
+    { name : "Transaction", route: "admin/pages/transaction" },
+    { name : "Customization", route: "admin/pages/customization" },
+    { name : "Schedule", route: "admin/pages/schedule" },
+    { name : "Inventory", route: "admin/pages/inventory " },
+    { name : "Reports", route: "admin/pages/reports" },
   ]
-
-  let x = Menus.map(function(menu){
-    return `${menu.route}`;
-})
 
   return (
     <ul className="pt-6">
