@@ -1,12 +1,7 @@
-import AdminLayoutPage from "../../components/AdminLayoutPage"
+import AdminSidebar from "../../components/AdminSidebar";
 
 const AdminAccount = () => {
-  return (
-    <>
-      <AdminLayoutPage />
-      <h1>Admin Account</h1>
-    </>
-  )
-}
+  return <h1>Admin Account</h1>;
+};
 
-export default AdminAccount
+export default AdminAccount;
