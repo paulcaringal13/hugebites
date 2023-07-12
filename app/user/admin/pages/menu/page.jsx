@@ -1,9 +1,12 @@
+import AdminLayoutPage from "../../components/AdminLayoutPage"
 
-
-const page = () => {
+const AdminMenu = () => {
   return (
-    <div>MENU PAGE</div>
+    <>
+      <AdminLayoutPage />
+      <h1>Admin Menu</h1>
+    </>
   )
 }
 
-export default page
+export default AdminMenu

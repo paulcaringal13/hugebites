@@ -13,9 +13,6 @@ export default async function handler(req, res) {
         const data = await connection.execute(query, values);
         connection.end();
         console.log(data);
-        console.log(res);
-
-        // res.status(200).json({ results: data });
         
         console.log("napasok sa try");
         } catch(error) {
