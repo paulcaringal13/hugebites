@@ -50,7 +50,7 @@ const AdminSidebar = () => {
     <ul className="pt-6">
       {routes.map((i) => (
         <li
-          key={i.name}
+          key={i.id}
           className="text-gray-300 text-lg flex rounded-md cursor-pointer hover:bg-slate-400 hover:text-black hover:font-extrabold hover:text-xl duration-700"
         >
           <Link

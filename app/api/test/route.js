@@ -1,10 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Next 12 old way
-// export default async function handler(req, res) {
-//   res.status(200).json({ results: "hello world" });
-// }
-
 export async function GET() {
   const users = [
     {
