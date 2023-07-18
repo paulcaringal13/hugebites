@@ -28,9 +28,29 @@ export async function POST(req, res) {
     const connection = await con();
 
     const reqBody = await req.json();
-    const { firstName, lastName } = reqBody;
+    const { firstName, lastName, email, password, age, contact, accountType } = reqBody;
 
-    const query = `INSERT INTO accounts (firstName, lastName) VALUES ('${firstName}', '${lastName}')`;
+    const query = `INSERT INTO accounts (firstName, lastName, email, password, age, contact, accountType ) VALUES ('${firstName}', '${lastName}', '${email}', '${password}', '${age}', '${contact}', '${accountType}')`;
+    const results = await connection.execute(query);
+    connection.end();
+    // results: results[0] 
+
+    console.log("reqBody:", reqBody);
+    return NextResponse.json({results
+    });
+  } catch(error) {
+    console.log(error);
+  }
+}
+
+export async function PUT(req, res) {
+  try {
+    const connection = await con();
+
+    const reqBody = await req.json();
+    const { id, firstName } = reqBody;
+
+    const query = `UPDATE accounts SET firstName=${firstName} WHERE '${id}'`;
     const results = await connection.execute(query);
     connection.end();
     // results: results[0] 
