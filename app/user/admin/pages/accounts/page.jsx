@@ -14,18 +14,27 @@ import {
   InputLabel,
   OutlinedInput,
   MenuItem,
+  DialogContentText,
 } from "@mui/material";
+
+import Slide from "@mui/material/Slide";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const Page = () => {
   // for creating obj
   const [users, setUsers] = useState([]);
+  const [userId, setUserId] = useState(0);
 
   const [select, setSelection] = useState([]);
 
   // button open dialog
-  const [open, setOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
   // const [editModalOpen, setEditModalOpen] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState();
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   // for input values
   const [firstName, setFirstName] = useState("");
@@ -68,15 +77,18 @@ const Page = () => {
 
   // handle onclick
   const openDialog = () => {
-    setOpen(true);
+    setCreateOpen(true);
   };
 
   const closeDialog = () => {
-    setOpen(false);
+    setCreateOpen(false);
   };
 
   const openEdit = (data) => {
-    setEditModalOpen(true);
+    const { firstName } = data;
+    const { id } = data;
+
+    setEditOpen(true);
 
     //   {
     //     "id": 1,
@@ -89,58 +101,73 @@ const Page = () => {
     //     "accountType": "Admin"
     // }
     // console.log(JSON.stringify(data, null, 4));
-    const { firstName } = data;
 
+    console.log(id);
+
+    setUserId(id);
     setFirstName(firstName);
     //... next fields
   };
 
-  const closeEditModal = () => {
-    setEditModalOpen(false);
+  const closeEdit = () => {
+    setEditOpen(false);
 
     // clear states
     setFirstName("");
     //... next fields
   };
 
-  const updateAccount = async () => {
-    const reqBody = {
-      firstName,
-      // lastName,
-      // email,
-      // password,
-      // age,
-      // contact,
-      // accountType,
+  const openDelete = (id) => {
+    setUserId(id);
+    console.log(`id: ${id}`);
+    setDeleteOpen(true);
+  };
+
+  const closeDelete = () => {
+    setDeleteOpen(false);
+  };
+
+  const updateAccount = async (id) => {
+    // console.log(`ako si id ${id} ang type ko ay ${typeof id}`);
+    // const reqBody = {
+    //   firstName,
+    //   // lastName,
+    //   // email,
+    //   // password,
+    //   // age,
+    //   // contact,
+    //   // accountType,
+    // };
+
+    // console.log("~~~~~~~~~~~ update req body", reqBody);
+
+    const postData = {
+      method: "PUT", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        age: age,
+        contact: contact,
+        accountType: accountType,
+      }),
     };
 
-    console.log("~~~~~~~~~~~ update req body", reqBody);
-
-    // const postData = {
-    //   method: "PUT", // or 'PUT'
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     firstName: firstName,
-    //     lastName: lastName,
-    //     email: email,
-    //     password: password,
-    //     age: age,
-    //     contact: contact,
-    //     accountType: accountType,
-    //   }),
-    // };
-    // try {
-    //   const res = await fetch(
-    //     `http://localhost:3000/api/admin/account`,
-    //     postData
-    //   );
-    //   const response = await res.json();
-    //   setOpen(false);
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      // console.log(postData.json());
+      const res = await fetch(
+        `http://localhost:3000/api/admin/account/${id}`,
+        postData
+      );
+      const response = await res.json();
+    } catch (error) {
+      console.log(error);
+    }
+    getAllAccounts();
+    closeEdit();
   };
 
   // create account after pressing the button
@@ -167,7 +194,7 @@ const Page = () => {
         postData
       );
       const response = await res.json();
-      setOpen(false);
+      openDialog(false);
     } catch (error) {
       console.log(error);
     }
@@ -175,62 +202,9 @@ const Page = () => {
 
   // prints all account records
   const getAllAccounts = async () => {
-    // const res = await fetch(`http://localhost:3000/api/admin/account`);
-    // const data = await res.json();
-    const data = {
-      results: [
-        {
-          id: 1,
-          firstName: "Paul",
-          lastName: "Caringal",
-          email: "caringalp@gmail.com",
-          password: "Paul051302",
-          age: 21,
-          contact: 9397240087,
-          accountType: "Admin",
-        },
-        {
-          id: 2,
-          firstName: "Daniel",
-          lastName: "Punsalang",
-          email: "dpunsalang@gmail.com",
-          password: "Daniel051302",
-          age: 25,
-          contact: 9397240088,
-          accountType: "Employee",
-        },
-        {
-          id: 3,
-          firstName: "paul",
-          lastName: "",
-          email: "",
-          password: "",
-          age: 0,
-          contact: 0,
-          accountType: "0",
-        },
-        {
-          id: 4,
-          firstName: "paul",
-          lastName: "",
-          email: "",
-          password: "",
-          age: 0,
-          contact: 0,
-          accountType: "0",
-        },
-        {
-          id: 5,
-          firstName: "paul",
-          lastName: "",
-          email: "",
-          password: "",
-          age: 0,
-          contact: 0,
-          accountType: "0",
-        },
-      ],
-    };
+    const res = await fetch(`http://localhost:3000/api/admin/account`);
+    const data = await res.json();
+
     // const { results } = data;
     const userArray = [...data.results];
     setUsers(userArray);
@@ -239,6 +213,49 @@ const Page = () => {
   useEffect(() => {
     getAllAccounts();
   }, []);
+
+  const accountTypes = [
+    {
+      value: "Employee",
+      label: "Employee",
+    },
+    {
+      value: "Admin",
+      label: "Admin",
+    },
+  ];
+
+  const deleteAccount = async (id) => {
+    console.log(`userId: ${userId}`);
+    const postData = {
+      method: "DELETE", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      // body: JSON.stringify({
+      //   firstName: firstName,
+      //   lastName: lastName,
+      //   email: email,
+      //   age: age,
+      //   contact: contact,
+      //   accountType: accountType,
+      // }),
+    };
+    try {
+      // console.log(postData.json());
+      const res = await fetch(
+        `http://localhost:3000/api/admin/account/${id}`,
+        postData
+      );
+      // const response = await res.json();
+    } catch (error) {
+      console.log(error);
+    }
+    getAllAccounts();
+    closeDelete();
+    console.log(`id: ${id}`);
+    console.log("delete");
+  };
 
   const columns = [
     { field: "id", headerName: "ID", width: 65 },
@@ -284,6 +301,7 @@ const Page = () => {
       sortable: false,
       renderCell: (cellValues) => {
         const { row } = cellValues;
+        // console.log(row);
         return (
           <div>
             {/* inedit */}
@@ -305,12 +323,14 @@ const Page = () => {
       width: 100,
       sortable: false,
       renderCell: (cellValues) => {
+        const { id } = cellValues.row;
+        // console.log(id);
         return (
           <div>
             <Button
               variant="contained"
               className="bg-red-500 py-3 px-6 rounded-xl text-white font-semibold hover:bg-red-800 duration-700"
-              onClick={openDialog}
+              onClick={() => openDelete(id)}
             >
               Delete
             </Button>
@@ -320,22 +340,10 @@ const Page = () => {
     },
   ];
 
-  const accountTypes = [
-    {
-      value: "Employee",
-      label: "Employee",
-    },
-    {
-      value: "Admin",
-      label: "Admin",
-    },
-  ];
-
   return (
     <div className="w-full h-4/6">
       <div className="flex flex-row justify-between">
         <div className="font-extrabold">User Accounts</div>
-        {/* akawnt */}
         <Button
           variant="contained"
           className="bg-blue-600 py-3 px-6 rounded-xl text-white font-semibold text-lg hover:bg-blue-800 duration-700"
@@ -343,7 +351,7 @@ const Page = () => {
         >
           Create Account
         </Button>
-        <Dialog open={open}>
+        <Dialog open={createOpen}>
           <div className="flex flex-row mb-3 justify-between text-center bg-slate-600 w-full text-white">
             <h1 className="p-6 font-extrabold text-3xl">Create Account</h1>
             <button
@@ -487,12 +495,12 @@ const Page = () => {
       />
 
       {/* EDIT MODAL */}
-      <Dialog open={editModalOpen}>
+      <Dialog open={editOpen}>
         <div className="flex flex-row mb-3 justify-between text-center bg-slate-600 w-full text-white">
           <h1 className="p-6 font-extrabold text-3xl">Edit Account</h1>
           <button
             className="my-auto p-7 font-extrabold text-sm rounded hover:text-lg duration-500"
-            onClick={closeEditModal}
+            onClick={closeEdit}
           >
             X
           </button>
@@ -591,11 +599,31 @@ const Page = () => {
           <Button
             variant="contained"
             className="bg-blue-600 w-full py-3 mt-2 rounded-md text-white font-semibold text-lg hover:bg-blue-800 duration-700"
-            onClick={updateAccount}
+            onClick={() => updateAccount(userId)}
           >
             Submit
           </Button>
         </DialogContent>
+      </Dialog>
+
+      {/* DELETE MODAL */}
+      <Dialog
+        open={deleteOpen}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={closeDelete}
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle>CAUTION!</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">
+            Are you sure you want to delete this account?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeDelete}>Cancel</Button>
+          <Button onClick={() => deleteAccount(userId)}>Delete</Button>
+        </DialogActions>
       </Dialog>
     </div>
   );
