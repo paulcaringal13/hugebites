@@ -56,12 +56,8 @@ const Page = () => {
     accountType: "",
   });
 
-  const showDetail = (id) => {
-    fetch(`http://localhost:3000/api/admin/account/$(id)`);
-    const data = res.json();
-  };
-
   // validation for confirming pass
+
   // const [confirm, setConfirm] = useState({
   //   password: '',
   //   password_confirm: ''
@@ -85,8 +81,13 @@ const Page = () => {
   };
 
   const openEdit = (data) => {
-    const { firstName } = data;
     const { id } = data;
+    const { firstName } = data;
+    const { lastName } = data;
+    const { email } = data;
+    const { age } = data;
+    const { contact } = data;
+    const { accountType } = data;
 
     setEditOpen(true);
 
@@ -106,6 +107,12 @@ const Page = () => {
 
     setUserId(id);
     setFirstName(firstName);
+    setLastName(lastName);
+    setEmail(email);
+    setAge(age);
+    setContact(contact);
+    setAccountType(accountType);
+
     //... next fields
   };
 
@@ -114,6 +121,11 @@ const Page = () => {
 
     // clear states
     setFirstName("");
+    setLastName("");
+    setEmail("");
+    setAge("");
+    setContact("");
+    setAccountType("");
     //... next fields
   };
 
@@ -232,14 +244,6 @@ const Page = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      // body: JSON.stringify({
-      //   firstName: firstName,
-      //   lastName: lastName,
-      //   email: email,
-      //   age: age,
-      //   contact: contact,
-      //   accountType: accountType,
-      // }),
     };
     try {
       // console.log(postData.json());
@@ -341,7 +345,7 @@ const Page = () => {
   ];
 
   return (
-    <div className="w-full h-4/6">
+    <div className="">
       <div className="flex flex-row justify-between">
         <div className="font-extrabold">User Accounts</div>
         <Button
@@ -479,8 +483,9 @@ const Page = () => {
         {/* {open && <Modal openModal={open} />} */}
       </div>
       <DataGrid
-        columnHeaderHeight={150}
-        rowHeight={100}
+        sx={{ overflowY: "hidden" }}
+        // columnHeaderHeight={150}
+        // rowHeight={100}
         rows={users}
         columns={columns}
         // getRowId={rows}
@@ -614,15 +619,34 @@ const Page = () => {
         onClose={closeDelete}
         aria-describedby="alert-dialog-slide-description"
       >
-        <DialogTitle>CAUTION!</DialogTitle>
+        <div className="bg-slate-600 text-white">
+          <DialogTitle className="font-extrabold text-2xl">
+            CAUTION!
+          </DialogTitle>
+        </div>
         <DialogContent>
-          <DialogContentText id="alert-dialog-slide-description">
+          <DialogContentText
+            id="alert-dialog-slide-description"
+            className="font-semibold text-lg text-black"
+          >
             Are you sure you want to delete this account?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeDelete}>Cancel</Button>
-          <Button onClick={() => deleteAccount(userId)}>Delete</Button>
+          <Button
+            variant="contained"
+            className="bg-blue-600 py-3 px-6 rounded-xl text-white font-semibold hover:bg-blue-800 duration-700"
+            onClick={() => closeDelete()}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            className="bg-red-500 py-3 px-6 rounded-xl text-white font-semibold hover:bg-red-800 duration-700"
+            onClick={() => deleteAccount(userId)}
+          >
+            Delete
+          </Button>
         </DialogActions>
       </Dialog>
     </div>

@@ -47,21 +47,31 @@ export const routes = [
 
 const AdminSidebar = () => {
   return (
-    <ul className="pt-6">
-      {routes.map((i) => (
-        <li
-          key={i.id}
-          className="text-gray-300 text-lg flex rounded-md cursor-pointer hover:bg-slate-400 hover:text-black hover:font-extrabold hover:text-xl duration-700"
-        >
-          <Link
-            href={`/user/${i.route}`}
-            className="btn p-10 first-letter:w-full mx-auto"
+    <div
+      className="w-72 bg-slate-600 z-50"
+      style={{
+        overflowY: "auto",
+        height: "calc(100vh - 72px)",
+        position: "fixed",
+        top: 72,
+      }}
+    >
+      <ul className="pt-6">
+        {routes.map((i) => (
+          <li
+            key={i.id}
+            className="text-gray-300 text-lg flex rounded-md cursor-pointer hover:bg-slate-400 hover:text-black hover:font-extrabold hover:text-xl duration-700"
           >
-            {i.name}
-          </Link>
-        </li>
-      ))}
-    </ul>
+            <Link
+              href={`/user/${i.route}`}
+              className="btn p-10 first-letter:w-full mx-auto"
+            >
+              {i.name}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 
