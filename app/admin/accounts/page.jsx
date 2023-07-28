@@ -262,9 +262,9 @@ const Page = () => {
   };
 
   const columns = [
-    { field: "id", headerName: "ID", width: 65 },
-    { field: "firstName", headerName: "First name", width: 150 },
-    { field: "lastName", headerName: "Last name", width: 150 },
+    { field: "accountId", headerName: "ID", width: 50 },
+    { field: "firstName", headerName: "First name", width: 100 },
+    { field: "lastName", headerName: "Last name", width: 100 },
     {
       field: "age",
       headerName: "Age",
@@ -275,13 +275,13 @@ const Page = () => {
       field: "email",
       headerName: "Email Add",
       type: "email",
-      width: 200,
+      width: 190,
     },
     {
       field: "contact",
       headerName: "Contact Number",
       type: "contact",
-      width: 180,
+      width: 130,
     },
     {
       field: "fullName",
@@ -296,7 +296,7 @@ const Page = () => {
       field: "accountType",
       headerName: "Account Type",
       sortable: false,
-      width: 150,
+      width: 130,
     },
     {
       field: "edit",
@@ -344,10 +344,12 @@ const Page = () => {
     },
   ];
 
+  console.log(users);
+
   return (
-    <div className="">
+    <div className="m-9">
       <div className="flex flex-row justify-between">
-        <div className="font-extrabold">User Accounts</div>
+        <div className="font-extrabold text-3xl">User Accounts</div>
         <Button
           variant="contained"
           className="bg-blue-600 py-3 px-6 rounded-xl text-white font-semibold text-lg hover:bg-blue-800 duration-700"
@@ -458,8 +460,6 @@ const Page = () => {
               name="accountType"
               margin="dense"
               select
-              defaultValue="Employee"
-              helperText="Choose Account Type"
               fullWidth
               value={accountType}
               onChange={(e) => setAccountType(e.target.value)}
@@ -489,10 +489,10 @@ const Page = () => {
         rows={users}
         columns={columns}
         // getRowId={rows}
-
+        getRowId={(row) => row.accountId}
         initialState={{
           pagination: {
-            paginationModel: { page: 0, pageSize: 5 },
+            paginationModel: { page: 0, pageSize: 8 },
           },
         }}
         pageSizeOptions={[5, 10]}

@@ -1,32 +1,85 @@
 import Link from "next/link";
+import { AppBar, Box, Button, Toolbar, Typography } from "@mui/material";
+
+// primary=#FDF9F9
+// secondary=#EE7376 hover=#ea5054
+// tertiary=#7C5F35
+
+//sidebard w-271.2
 
 const Navbar = () => {
   return (
-    <nav className="flex justify-between items-center bg-slate-600 px-8 py-3 fixed w-screen z-50">
-      <div>
-        <Link href={"/"} className="text-5xl">
-          Huge<span className="text-sky-200">Bites</span>
-        </Link>
-      </div>
-      <ul className="flex item-center">
-        <li className="mx-4">
-          <Link href={"#menu"} className="hover:text-sky-200 duration-500">
-            Menu
-          </Link>
-        </li>
-        <li className="mx-4">
-          <Link href={"/sign-in"} className="hover:text-sky-200 duration-500">
-            Sign In
-          </Link>
-        </li>
-        <li className="mx-4">
-          <Link href={"/sign-up"} className="hover:text-sky-200 duration-500">
-            Sign up
-          </Link>
-        </li>
-      </ul>
-    </nav>
+    <AppBar sx={{ bgcolor: "#EE7376", padding: "12px", zIndex: "50" }}>
+      <Toolbar>
+        <Box sx={{ display: "flex", flexDirection: "row" }}>
+          <Typography sx={{ fontSize: "35px", fontWeight: "bold" }}>
+            Huge
+          </Typography>
+          <Typography
+            sx={{ color: "#7C5F35", fontSize: "35px", fontWeight: "bold" }}
+          >
+            Bites
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            marginLeft: "auto",
+          }}
+        >
+          <Button
+            // config={{ duration: 5000 }}
+            sx={{
+              color: "white",
+              "&:hover": {
+                backgroundColor: "#ea5054",
+                transitionDuration: "0.8s",
+              },
+            }}
+          >
+            <Link href={"/sign-in"}>Sign In</Link>
+          </Button>
+          <Button
+            sx={{
+              color: "white",
+              "&:hover": {
+                backgroundColor: "#ea5054",
+                transitionDuration: "0.8s",
+              },
+            }}
+          >
+            <Link href={"/sign-up"}>Sign Up</Link>
+          </Button>
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
 };
 
 export default Navbar;
+
+// last code
+
+// <nav className="flex justify-between items-center bg-slate-600 px-8  fixed w-screen z-50">
+//   <div>
+//     <Link href={"/"} className="text-5xl">
+//       Huge<span className="text-sky-200">Bites</span>
+//     </Link>
+//   </div>
+//   <ul className="flex item-center">
+//     <li className="mx-4">
+//       <Link href={"#menu"} className="hover:text-sky-200 duration-500">
+//         Menu
+//       </Link>
+//     </li>
+//     <li className="mx-4">
+//       <Link href={"/sign-in"} className="hover:text-sky-200 duration-500">
+//         Sign In
+//       </Link>
+//     </li>
+//     <li className="mx-4">
+//       <Link href={"/sign-up"} className="hover:text-sky-200 duration-500">
+//         Sign up
+//       </Link>
+//     </li>
+//   </ul>
+// </nav>

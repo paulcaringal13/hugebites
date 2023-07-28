@@ -2,23 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
-body{
-    background: #e2e8f0;
+body {
+  background: #fdf9f9;
 }
-nav {
-    color: #fff;
-    font-weight: bold;
-};
-
-button {
-    color: #fff;
-    font-weight: bold;
-};
-
-label {
-    font-weight: bold;
-    font-size: 100px;
-};
-
-

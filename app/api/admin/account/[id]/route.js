@@ -27,7 +27,7 @@ export async function PUT(req, path) {
     const { firstName, lastName, email, age, contact, accountType } = reqBody;
     console.log(`ako si ${id}`);
 
-    const query = `UPDATE accounts SET firstName ='${firstName}', lastName ='${lastName}', email ='${email}', age ='${age}', contact ='${contact}', accountType ='${accountType}' WHERE id = ${id}`;
+    const query = `UPDATE accounts SET firstName ='${firstName}', lastName ='${lastName}', email ='${email}', age ='${age}', contact ='${contact}', accountType ='${accountType}' WHERE accountId = ${id}`;
     const results = await connection.execute(query);
     connection.end();
     // results: results[0]
@@ -54,7 +54,7 @@ export async function DELETE(req, path) {
     console.log(`ako si ${id}`);
     console.log(`deleted successfully!`);
 
-    const query = `DELETE FROM accounts WHERE id = ${id}`;
+    const query = `DELETE FROM accounts WHERE accountId = ${id}`;
     const results = await connection.execute(query);
     connection.end();
     // results: results[0]
