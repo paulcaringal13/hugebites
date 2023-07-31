@@ -14,11 +14,37 @@ async function con() {
 export async function GET(request, path) {
   const connection = await con();
 
-  const query = `SELECT * FROM products`;
+  const query = `SELECT * FROM products INNER JOIN product_categories ON products.categoryId = product_categories.categoryId`;
   const results = await connection.execute(query);
   connection.end();
 
+  console.log(results);
+
   return NextResponse.json({ results: results });
+}
+
+export async function POST(req, res) {
+  try {
+    const connection = await con();
+
+    const reqBody = await req.json();
+    const { order, totalPrice } = reqBody;
+
+    const productsOrdered = JSON.stringify(order);
+    console.log("products ordered =>", productsOrdered);
+
+    const query = `INSERT INTO test_table (totalPrice, productsOrdered) VALUES ('${totalPrice}', '${productsOrdered}')`;
+    const results = await connection.execute(query);
+    connection.end();
+    // results: results[0]
+
+    console.log("result =>", results[0]);
+
+    console.log("reqBody:", reqBody);
+    return NextResponse.json({ reqBody });
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 // const products = [

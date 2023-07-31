@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AppBar, Box, Button, Toolbar, Typography } from "@mui/material";
+import Image from "next/image";
 
 // primary=#FDF9F9
 // secondary=#EE7376 hover=#ea5054
@@ -12,6 +13,7 @@ const Navbar = () => {
     <AppBar sx={{ bgcolor: "#EE7376", padding: "12px", zIndex: "50" }}>
       <Toolbar>
         <Box sx={{ display: "flex", flexDirection: "row" }}>
+          <Image src="/Logo.png" width={63} height={5} alt="logo"></Image>
           <Typography sx={{ fontSize: "35px", fontWeight: "bold" }}>
             Huge
           </Typography>

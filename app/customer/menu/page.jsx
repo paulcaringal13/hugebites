@@ -17,6 +17,14 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+const styles = {
+  paperContainer: {
+    objectFit: "contain",
+    height: 1356,
+    backgroundImage: `url(${"/Bordered.JPG"})`,
+  },
+};
+
 const category = [
   {
     id: "0",
@@ -51,6 +59,7 @@ const CustomerMenu = () => {
     setProducts(prod);
   };
 
+  console.log(products);
   const handleProductId = (id) => {
     const productId = id;
 
@@ -72,7 +81,7 @@ const CustomerMenu = () => {
   };
 
   const handleInput = (id) => {
-    router.push(`/user/customer/pages/menu/${id}`);
+    router.push(`/customer/menu/${id}`);
   };
 
   useEffect(() => {
@@ -155,46 +164,52 @@ const CustomerMenu = () => {
                 borderRadius: "25px",
               }}
             >
-              <CardActionArea
-                sx={{
-                  "&:hover": {
-                    opacity: "0",
-                  },
-                }}
-              >
-                {/* <CardMedia /> */}
-                <div className="h-36 text-center">IMG</div>
-                <CardContent
-                  sx={{ textAlign: "center" }}
-                  // className="text-center"
-                >
+              <CardActionArea>
+                <CardMedia
+                  component="img"
+                  height="194"
+                  image={product.image}
+                  alt="Paella dish"
+                />
+                <CardContent sx={{ textAlign: "start" }}>
                   <Typography
-                    gutterBottom
                     variant="h5"
                     component="div"
                     sx={{
                       fontWeight: "bold",
-                      // fontFamily: "Aileron Regular",
-                      fontSize: "30px",
+                      fontSize: "8px",
+                    }}
+                  >
+                    {product.categoryName}
+                  </Typography>
+                  <Typography
+                    variant="h5"
+                    component="div"
+                    sx={{
+                      fontWeight: "bold",
+                      fontSize: "25px",
                     }}
                   >
                     {product.productName}
                   </Typography>
                   <Typography
                     variant="body2"
-                    color="text.secondary"
                     sx={{
                       fontWeight: "bold",
-                      // fontFamily: "Aileron Regular",
                       fontSize: "20px",
-                      color: "",
                     }}
                   >
-                    {/* primary=#FDF9F9
- secondary=#EE7376 hover=#ea5054
- tertiary=#7C5F35 */}
                     {product.price}
                   </Typography>
+                  <Rating
+                    sx={{ alignContent: "center" }}
+                    name="customized-color"
+                    defaultValue={product.rating || 0}
+                    readOnly
+                    precision={0.5}
+                    icon={<FavoriteIcon fontSize="inherit" color="error" />}
+                    emptyIcon={<FavoriteBorderIcon fontSize="inherit" />}
+                  />
                 </CardContent>
               </CardActionArea>
               <CardActions sx={{ backgroundColor: "#7C5F35" }}>
@@ -228,82 +243,3 @@ const CustomerMenu = () => {
 };
 
 export default CustomerMenu;
-
-// <Grid item lg={4} md={6} xs={12}>
-// <Card sx={{ minWidth: 280, maxWidth: 320 }}>
-//   <CardActionArea>
-//     <CardMedia
-//       component="img"
-//       height="140"
-//       image="/static/images/cards/contemplative-reptile.jpg"
-//       alt="green iguana"
-//     />
-//     <CardContent>
-//       <Typography gutterBottom variant="h5" component="div">
-//         Lizard
-//       </Typography>
-//       <Typography variant="body2" color="text.secondary">
-//         Lizards are a widespread group of squamate reptiles, with over
-//         6,000 species, ranging across all continents except Antarctica
-//       </Typography>
-//     </CardContent>
-//   </CardActionArea>
-//   <CardActions>
-//     <Button size="small" color="primary">
-//       Share
-//     </Button>
-//   </CardActions>
-// </Card>
-// </Grid>
-// <Grid item lg={4} md={6} xs={12}>
-// <Card sx={{ minWidth: 280, maxWidth: 320 }}>
-//   <CardActionArea>
-//     <CardMedia
-//       component="img"
-//       height="140"
-//       image="/static/images/cards/contemplative-reptile.jpg"
-//       alt="green iguana"
-//     />
-//     <CardContent>
-//       <Typography gutterBottom variant="h5" component="div">
-//         Lizard
-//       </Typography>
-//       <Typography variant="body2" color="text.secondary">
-//         Lizards are a widespread group of squamate reptiles, with over
-//         6,000 species, ranging across all continents except Antarctica
-//       </Typography>
-//     </CardContent>
-//   </CardActionArea>
-//   <CardActions>
-//     <Button size="small" color="primary">
-//       Share
-//     </Button>
-//   </CardActions>
-// </Card>
-// </Grid>
-// <Grid item lg={4} md={6} xs={12}>
-// <Card sx={{ minWidth: 280, maxWidth: 320 }}>
-//   <CardActionArea>
-//     <CardMedia
-//       component="img"
-//       height="140"
-//       image="/static/images/cards/contemplative-reptile.jpg"
-//       alt="green iguana"
-//     />
-//     <CardContent>
-//       <Typography gutterBottom variant="h5" component="div">
-//         Lizard
-//       </Typography>
-//       <Typography variant="body2" color="text.secondary">
-//         Lizards are a widespread group of squamate reptiles, with over
-//         6,000 species, ranging across all continents except Antarctica
-//       </Typography>
-//     </CardContent>
-//   </CardActionArea>
-//   <CardActions>
-//     <Button size="small" color="primary">
-//       Share
-//     </Button>
-//   </CardActions>
-// </Card>
-// </Grid>

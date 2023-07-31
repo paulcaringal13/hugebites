@@ -41,24 +41,3 @@ export async function POST(req, res) {
     console.log(error);
   }
 }
-
-// NOT NEEDED NA???
-// export async function PUT(req, res) {
-//   try {
-//     const connection = await con();
-
-//     const reqBody = await req.json();
-//     const { id, firstName } = reqBody;
-
-//     const query = `UPDATE accounts SET firstName=${firstName} WHERE '${id}'`;
-//     const results = await connection.execute(query);
-//     connection.end();
-//     // results: results[0]
-
-//     console.log("reqBody:", reqBody);
-//     return NextResponse.json({results
-//     });
-//   } catch(error) {
-//     console.log(error);
-//   }
-// }

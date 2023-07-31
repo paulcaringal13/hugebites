@@ -140,19 +140,6 @@ const Page = () => {
   };
 
   const updateAccount = async (id) => {
-    // console.log(`ako si id ${id} ang type ko ay ${typeof id}`);
-    // const reqBody = {
-    //   firstName,
-    //   // lastName,
-    //   // email,
-    //   // password,
-    //   // age,
-    //   // contact,
-    //   // accountType,
-    // };
-
-    // console.log("~~~~~~~~~~~ update req body", reqBody);
-
     const postData = {
       method: "PUT", // or 'PUT'
       headers: {

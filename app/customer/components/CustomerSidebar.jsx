@@ -13,22 +13,22 @@ export const routes = [
   {
     id: 1,
     name: "Account",
-    route: "customer/pages/accounts",
+    route: "customer/accounts",
   },
   {
     id: 2,
     name: "Menu",
-    route: "customer/pages/menu",
+    route: "customer/menu",
   },
   {
     id: 3,
     name: "Orders",
-    route: "customer/pages/orders",
+    route: "customer/orders",
   },
   {
     id: 4,
     name: "Transaction",
-    route: "customer/pages/transaction",
+    route: "customer/transaction",
   },
 ];
 
@@ -49,25 +49,32 @@ const CustomerSidebar = () => {
         {routes.map((items) => (
           <ListItem
             key={items.id}
-            // sx={{
-            //   border: "1px solid red",
-            //   "&:hover": {
-            //     border: "1px solid blue",
-            //   },
-            // }}
+            sx={{
+              "&:hover": {
+                backgroundColor: "#ea5054",
+                transitionDuration: "0.8s",
+                boxShadow: "3",
+              },
+            }}
           >
-            <ListItemButton>
+            <ListItemButton
+              sx={{
+                "&:hover": {
+                  background: "transparent",
+                },
+              }}
+            >
               <Link
                 sx={{ color: "white", textDecoration: "none" }}
-                href={`/user/${items.route}`}
+                href={`/${items.route}`}
               >
                 <ListItemText
                   primary={items.name}
-                  // sx={{
-                  //   "& span": {
-                  //     fontSize: "200px",
-                  //   },
-                  // }}
+                  sx={{
+                    "& span": {
+                      fontSize: "20px",
+                    },
+                  }}
                 />
               </Link>
             </ListItemButton>

@@ -20,7 +20,8 @@ export async function GET(request, path) {
   const { params } = path;
   const id = params.id;
 
-  const query = `SELECT * FROM products WHERE productId = ${id}`;
+  // `SELECT * FROM products WHERE productId = ${id}`
+  const query = `SELECT * FROM products INNER JOIN product_categories ON products.categoryId = product_categories.categoryId WHERE products.productId = ${id}`;
   const results = await connection.execute(query);
   connection.end();
   const res1 = results[0];
