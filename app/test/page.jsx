@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 
 const Page = () => {
-  const net = require('node:net');
+  // const net = require('node:net');
   const [users, setUsers] = useState([]);
 
   const getAllExample = async () => {

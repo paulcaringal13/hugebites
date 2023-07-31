@@ -172,8 +172,8 @@ const cart = [
 
 const CustomerProduct = (path) => {
   console.log(path);
-  const { params } = path;
-  const { id } = params;
+  // const { params } = path;
+  // const { id } = params;
 
   const [products, setProducts] = useState([]);
   const [packagingList, setPackagingList] = useState([]); // database array

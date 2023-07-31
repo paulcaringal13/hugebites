@@ -60,6 +60,7 @@ const CustomerMenu = () => {
   };
 
   console.log(products);
+
   const handleProductId = (id) => {
     const productId = id;
 
@@ -70,6 +71,7 @@ const CustomerMenu = () => {
   };
 
   const getProductId = async (id) => {
+    console.log(id);
     const res = await fetch(
       `http://localhost:3000/api/customer/menu/product/${id}`
     );

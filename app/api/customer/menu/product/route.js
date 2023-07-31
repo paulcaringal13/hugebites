@@ -28,12 +28,18 @@ export async function POST(req, res) {
     const connection = await con();
 
     const reqBody = await req.json();
-    const { order, totalPrice } = reqBody;
+    const {
+      totalPrice,
+      flavor,
+      packaging,
+      dragees,
+      shape,
+      darkColoredBase,
+      freshFlowers,
+      quantity,
+    } = reqBody;
 
-    const productsOrdered = JSON.stringify(order);
-    console.log("products ordered =>", productsOrdered);
-
-    const query = `INSERT INTO test_table (totalPrice, productsOrdered) VALUES ('${totalPrice}', '${productsOrdered}')`;
+    const query = `INSERT INTO test_table (totalPrice, flavor, packaging, dragees, shape, darkColoredBase, freshFlowers, quantity) VALUES ('${totalPrice}', '${flavor}' '${packaging}', '${dragees}' '${shape}', '${darkColoredBase}' '${freshFlowers}', '${quantity}')`;
     const results = await connection.execute(query);
     connection.end();
     // results: results[0]
