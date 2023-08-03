@@ -30,6 +30,11 @@ export const routes = [
     name: "Transaction",
     route: "customer/transaction",
   },
+  {
+    id: 5,
+    name: "Schedule",
+    route: "customer/schedule",
+  },
 ];
 
 const CustomerSidebar = () => {

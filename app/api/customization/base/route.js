@@ -18,7 +18,5 @@ export async function GET() {
   const results = await connection.execute(query);
   connection.end();
 
-  console.log(results[0]);
-
   return NextResponse.json({ results: results[0] });
 }
