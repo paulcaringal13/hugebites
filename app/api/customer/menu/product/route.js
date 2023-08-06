@@ -18,6 +18,8 @@ export async function GET(request, path) {
   const results = await connection.execute(query);
   connection.end();
 
+  console.log(results);
+
   return NextResponse.json({ results: results });
 }
 
@@ -40,7 +42,11 @@ export async function POST(req, res) {
     const query = `INSERT INTO test_table (totalPrice, flavor, packaging, dragees, shape, darkColoredBase, freshFlowers, quantity) VALUES ('${totalPrice}', '${flavor}' '${packaging}', '${dragees}' '${shape}', '${darkColoredBase}' '${freshFlowers}', '${quantity}')`;
     const results = await connection.execute(query);
     connection.end();
+    // results: results[0]
 
+    console.log("result =>", results[0]);
+
+    console.log("reqBody:", reqBody);
     return NextResponse.json({ reqBody });
   } catch (error) {
     console.log(error);

@@ -1,5 +1,4 @@
 "use client";
-
 import Typography from "@mui/material/Typography";
 import {
   Box,
@@ -19,22 +18,28 @@ const CustomerProduct = (path) => {
   const { params } = path;
   const { id } = params;
 
+  // LOGGED IN USER LOCAL STORAGE
+  const loggedInUserId =
+    typeof window !== "undefined" && window.localStorage
+      ? localStorage.getItem("accountId")
+      : "";
+
+  // FOR DROPDOWN BOX VALUES
   const [products, setProducts] = useState([]);
   const [flavorList, setFlavorList] = useState([]);
-  const [packagingList, setPackagingList] = useState([]); // database array
+  const [packagingList, setPackagingList] = useState([]);
   const [drageesList, setDrageesList] = useState([]);
   const [shapeList, setShapeList] = useState([]);
   const [baseList, setBaseList] = useState([]);
   const [flowerList, setFlowerList] = useState([]);
-  const [flavor, setFlavor] = useState(0);
-  const [packaging, setPackaging] = useState("");
-  const [dragees, setDragees] = useState("");
-  const [shape, setShape] = useState("");
-  const [darkColoredBase, setDarkColoredBase] = useState("");
-  const [freshFlowers, setFreshFlowers] = useState("");
+  // LIST OF PRODUCTS ON USER'S CART / FOR FRONT END DISPLAY
+  const [cartList, setCartList] = useState([]);
 
-  const [totalPrice, setTotalPrice] = useState(0);
+  // CART PRODUCTS VALUES
+  const [subTotal, setSubtotal] = useState(0);
   const [quantity, setQuantity] = useState(1);
+
+  // FOR COMPUTING THE SUBTOTAL VALUES
   const [prices, setPrices] = useState({
     packaging: 0,
     dragees: 0,
@@ -42,31 +47,22 @@ const CustomerProduct = (path) => {
     darkColoredBase: 0,
     freshFlowers: 0,
   });
-  // STORAGE LANG NG ORDERED PRODUCTS
-  // NOTE: ILALAGAY MO RIN NAMAN SA DATABASE YUNG LINE :220 KAYA ITO AY FOR FRONT END PURPOSES LANG
-  const [cart, setCart] = useState([]);
 
-  //ORDERED_PRODUCT DAPAT TO
-  // NOTE: CHANGE TOTAL PRICE INTO SUBTOTAL KASI ITO AY TOTAL PA LAMANG NG FIRST ORDER MO SA CART MO, HINDI PA NI ORDER
-  //ordered_product
-  const [order, setOrder] = useState({
-    orderedProductId: 1,
-    product: products,
-    flavor: flavor,
-    packaging: packaging,
-    dragees: dragees,
-    shape: shape,
-    darkColoredBase: darkColoredBase,
-    freshFlowers: freshFlowers,
-    totalPrice: totalPrice, // subtotal
-    quantity: quantity,
+  // TEMPORARY STORAGE OF THE DATA BEFORE PASSING ONTO DATABASE
+  const [cart, setCart] = useState({
+    accountId: 0,
+    productId: 0,
+    packagingId: 0,
+    flavorId: 0,
+    drageesId: 0,
+    shapeId: 0,
+    quantity: 1,
+    darkColoredBaseId: 0,
+    freshFlowerId: 0,
+    subTotal: 0,
   });
-  // EXTRA NOTE: BAKA NEED KO PARIN NG OTHER JSON STATE OR ARRAY STATE PARA IPASA SA CART COMPONENT KO SINCE NEED KO IPASA YUNG MGA ID NG PAGE NA TO
-  // EXTRA NOTE: DI KO PA SURE PERO BAKA YUNG ITSURA LANG PALA ANG IPASA KO AND DITO PARIN AKO MAG GET NG MGA DATAS TAPOS YUNG FUNCTIONS NALANG ANG IPAPASA KO KAY COMPONENT / TANONG KAY KUYA PAT BUKAS IF DI MATAPOS AGAD AGAD
 
-  // LAST NOTE: PARANG NEED TALAGA NA MAKAGAWA NG ORDER PARA BASEHAN NI ORDERED PRODUCT SA DATABASE NA GAGAMITAN NG WHERE CLAUSE PAG KUKUNIN PARA MAGAMIT SA SAME TRANSAC PERO IBANG PRODUCT NAMAN OORDERIN
-
-  // GET VALUES FROM DATABASE
+  // GETTER OF VALUES FROM DATABASE
   const getProduct = async () => {
     const res = await fetch(
       `http://localhost:3000/api/customer/menu/product/${id}`
@@ -120,33 +116,73 @@ const CustomerProduct = (path) => {
     setFlowerList(results);
   };
 
-  const handleOrder = (name, value) => {
-    setOrder((prevState) => ({
+  // DATABASE DATA GETTER
+  const getCart = async () => {
+    const res = await fetch(
+      `http://localhost:3000/api/customer/cart?` +
+        new URLSearchParams({
+          accountId: loggedInUserId,
+        })
+    );
+    const results = await res.json();
+
+    console.log(loggedInUserId);
+
+    setCartList(results);
+  };
+
+  // ADD PRODUCT ON USER'S CART | CART = PRODUCT
+  const addCart = async () => {
+    let addProduct = {
+      accountId: loggedInUserId,
+      productId: cart.productId,
+      packagingId: cart.packagingId,
+      flavorId: cart.flavorId,
+      drageesId: cart.drageesId,
+      shapeId: cart.shapeId,
+      quantity: cart.quantity,
+      darkColoredBaseId: cart.darkColoredBaseId,
+      freshFlowerId: cart.freshFlowerId,
+      subTotal: cart.subTotal,
+    };
+
+    const postData = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(addProduct),
+    };
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/customer/cart`,
+        postData
+      );
+
+      const response = await res.json();
+
+      const { insertId } = response[0];
+
+      getCart();
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  // CART STATE SETTER
+  const handleCart = (name, value) => {
+    setCart((prevState) => ({
       ...prevState,
       [name]: value,
     }));
-    // console.log("name", name);
-    // console.log("value", value);
   };
 
+  // ON CLICK OF ADD TO CART BUTTON / ADD PRODUCTS TO CART
   const handleSubmit = async () => {
-    setCart((cart) => [
-      ...cart,
-      {
-        orderedProductId: order.orderedProductId++,
-        product: order.product,
-        flavor: order.flavor,
-        packaging: order.packaging,
-        dragees: order.dragees,
-        shape: order.shape,
-        darkColoredBase: order.darkColoredBase,
-        freshFlowers: order.freshFlowers,
-        totalPrice: order.totalPrice,
-        quantity: order.quantity,
-      },
-    ]);
+    addCart();
   };
 
+  // SET PRICE PROPERTIES / FOR GETTING THE SUM OF THE CHOSEN PRODUCT WITH ADD ONS AND QTY PRICES
   const handleUpdatePrice = (name, value) => {
     setPrices((prevState) => ({
       ...prevState,
@@ -154,60 +190,7 @@ const CustomerProduct = (path) => {
     }));
   };
 
-  const handleProduct = (product) => {
-    handleOrder("product", product);
-  };
-
-  const checkOutOrder = async () => {
-    const postData = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        totalPrice: totalPrice,
-        flavor: flavor,
-        packaging: packaging,
-        dragees: dragees,
-        shape: shape,
-        darkColoredBase: darkColoredBase,
-        freshFlowers: freshFlowers,
-        // quantity: quantity,
-      }),
-    };
-
-    // try {
-    //   const res = await fetch(
-    //     `http://localhost:3000/api/customer/menu/product`,
-    //     postData
-    //   );
-    //   const response = await res.json();
-    // } catch (e) {
-    //   console.log(error);
-    // }
-
-    // console.log("clicked");
-  };
-
-  const createCart = () => {
-    const { product } = cart[0];
-
-    const { image } = product;
-
-    console.log(image);
-
-    return image;
-  };
-
-  useEffect(() => {
-    const product = products;
-    handleProduct(product);
-  }, [products]);
-
-  useEffect(() => {
-    handleOrder("totalPrice", totalPrice);
-  }, [totalPrice]);
-
+  // ON LOAD RENDER / GET AND SET THE STATES TO READY PAGE
   useEffect(() => {
     getProduct();
     getFlavor();
@@ -216,20 +199,29 @@ const CustomerProduct = (path) => {
     getBase();
     getFlower();
     getShape();
+    getCart();
   }, []);
 
-  //     totalPrice
-  // prices
+  // RENDER WHEN PRODUCTS STATE IS CHANGED
+  // PASS PRODUCT ID TO THE CART
+  useEffect(() => {
+    const product = products;
+    handleCart("productId", product.productId);
+  }, [products]);
+
+  // SET SUBTOTAL VALUE OF CART STATE AFTER COMPUTING IT
+  useEffect(() => {
+    handleCart("subTotal", subTotal);
+  }, [subTotal]);
+
+  // COMPUTES THE SUBTOTAL
   useEffect(() => {
     let sum = 0;
     for (let key in prices) {
       sum += prices[key] * quantity;
     }
 
-    // Object.entries(prices).map(([k, v]) => {
-    //   sum += v;
-    // });
-    setTotalPrice(sum);
+    setSubtotal(sum);
   }, [prices, quantity]);
 
   return (
@@ -252,7 +244,6 @@ const CustomerProduct = (path) => {
           flexDirection: "column",
           height: "100%",
           width: "75%",
-          // border: "solid blue 2px",
         }}
       >
         <Box
@@ -270,14 +261,12 @@ const CustomerProduct = (path) => {
             }}
             component="img"
             src={products.image}
-            alt="Paella dish"
+            alt="IMG"
           />
           <Container
             sx={{
               flex: "column",
-              // marginTop: "25px",
               color: "#262626",
-              // border: "solid blue 2px",
             }}
           >
             {/* CATEGORY AREA */}
@@ -309,7 +298,7 @@ const CustomerProduct = (path) => {
               {products.productName}
             </Typography>
             {/* PRICE AREA */}
-            {!!totalPrice && (
+            {!!subTotal && (
               <Typography
                 gutterBottom
                 className="font-serif"
@@ -317,7 +306,7 @@ const CustomerProduct = (path) => {
                 component="div"
                 sx={{ fontWeight: "bold" }}
               >
-                ₱ {totalPrice}
+                ₱ {subTotal}
               </Typography>
             )}
             {/* CUSTOMIZATION LABEL AREA*/}
@@ -346,12 +335,12 @@ const CustomerProduct = (path) => {
               </InputLabel>
               {/* FLAVOR AREA */}
               <TextField
-                name="flavor"
+                name="flavorId"
                 onChange={(e) => {
                   const name = e.target.name;
 
                   const value = e.target.value;
-                  handleOrder(name, value);
+                  handleCart(name, value);
                 }}
                 className="drop-shadow-md"
                 sx={{
@@ -394,23 +383,15 @@ const CustomerProduct = (path) => {
               </InputLabel>
               {/* PACKAGING AREA */}
               <TextField
-                name="packaging"
+                name="packagingId"
                 onChange={(e) => {
                   const name = e.target.name;
-                  // console.log(e.target.name);
-
-                  // console.log("name", name);
-                  // update price state
                   const id = e.target.value;
-
+                  // FIND THE CHOSEN ITEM TO PASS THE PRICE ON THE HANDLEUPDATEPRICE FUNCTION
                   const item = packagingList.find((i) => i.packagingId === id);
                   handleUpdatePrice(name, item.packagingPrice);
-
-                  // console.log("item.packagingPrice===>", item.packagingPrice);
-
-                  // update ng order
-                  handleOrder(name, id);
-                  // handlePackaging(name, id);
+                  // UPDATE CART PROPERTY
+                  handleCart(name, id);
                 }}
                 className="drop-shadow-md"
                 sx={{
@@ -447,21 +428,13 @@ const CustomerProduct = (path) => {
               </TextField>
               {/* DRAGEES AREA */}
               <TextField
-                name="dragees"
+                name="drageesId"
                 onChange={(e) => {
                   const name = e.target.name;
-
-                  // update price state
                   const id = e.target.value;
                   const item = drageesList.find((i) => i.drageesId === id);
                   handleUpdatePrice(name, item.drageesPrice);
-
-                  // console.log("item.drageesPrice===>", item.drageesPrice);
-
-                  // update ng order
-                  handleOrder(name, id);
-                  handleOrder(name, id);
-                  // handleDragees(name, id);
+                  handleCart(name, id);
                 }}
                 className="drop-shadow-md"
                 sx={{
@@ -473,7 +446,6 @@ const CustomerProduct = (path) => {
                   paddingBottom: "10px",
                   color: "gray",
                   width: "48%",
-                  // marginRight: "3px",
                   "& div": {
                     fontSize: "13px",
                     color: "gray",
@@ -504,18 +476,13 @@ const CustomerProduct = (path) => {
               </InputLabel>
               {/* SHAPE AREA */}
               <TextField
-                name="shape"
+                name="shapeId"
                 onChange={(e) => {
                   const name = e.target.name;
-
-                  // update price state
                   const id = e.target.value;
                   const item = shapeList.find((i) => i.shapeId === id);
                   handleUpdatePrice(name, item.shapePrice);
-
-                  // update ng order
-                  handleOrder(name, id);
-                  // handleShape(name, id);
+                  handleCart(name, id);
                 }}
                 className="drop-shadow-md"
                 sx={{
@@ -550,20 +517,15 @@ const CustomerProduct = (path) => {
                   </MenuItem>
                 ))}
               </TextField>
-              {/* dark-colored base AREA */}
+              {/* DARK COLORED BASE AREA */}
               <TextField
-                name="darkColoredBase"
+                name="darkColoredBaseId"
                 onChange={(e) => {
                   const name = e.target.name;
-
-                  // update price state
                   const id = e.target.value;
                   const item = baseList.find((i) => i.darkColoredBaseId === id);
                   handleUpdatePrice(name, item.darkColoredBasePrice);
-
-                  // update ng order
-                  handleOrder(name, id);
-                  // handleDarkColoredBase(name, id);
+                  handleCart(name, id);
                 }}
                 className="drop-shadow-md"
                 sx={{
@@ -605,18 +567,13 @@ const CustomerProduct = (path) => {
               </InputLabel>
               {/* FRESH FLOWERS */}
               <TextField
-                name="freshFlowers"
+                name="freshFlowerId"
                 onChange={(e) => {
                   const name = e.target.name;
-
-                  // update price state
                   const id = e.target.value;
                   const item = flowerList.find((i) => i.freshFlowerId === id);
                   handleUpdatePrice(name, item.freshFlowerPrice);
-
-                  // update ng order
-                  handleOrder(name, id);
-                  // handleFreshFlowers(name, id);
+                  handleCart(name, id);
                 }}
                 className="drop-shadow-md"
                 sx={{
@@ -655,12 +612,12 @@ const CustomerProduct = (path) => {
               <TextField
                 name="quantity"
                 onChange={(e) => {
+                  // LIMITS QUANTITY VALUE TO 1 ONLY
                   const val = Number(e.target.value);
                   {
                     val >= 1 ? setQuantity(val) : (e.target.value = 1);
                   }
-
-                  handleOrder("quantity", val);
+                  handleCart("quantity", val);
                 }}
                 className="drop-shadow-md"
                 sx={{
@@ -693,7 +650,7 @@ const CustomerProduct = (path) => {
       {/* BOX FOR CART */}
       <Box sx={{ height: "100%", width: "25%" }}>
         <Container sx={{ display: "flex", flexDirection: "row" }}>
-          {/* BUTTON */}
+          {/* BUTTON FOR ADD TO CART */}
           <Box
             className="btn text-center pt-3 mx-auto mb-3 hover:cursor-pointer duration-700"
             sx={{
@@ -736,8 +693,8 @@ const CustomerProduct = (path) => {
           >
             Cart
           </Container>
-          {cart.map((cartItem) => (
-            <Box key={cartItem.orderedProductId}>
+          {cartList.map((cartItem) => (
+            <Box key={cartItem.cartId}>
               <Box
                 sx={{
                   display: "flex",
@@ -752,8 +709,8 @@ const CustomerProduct = (path) => {
                     borderRadius: "20px",
                   }}
                   component="img"
-                  src={createCart()}
-                  alt="bordered.jpg"
+                  src={cartItem.image}
+                  alt="img"
                 />
                 <Box
                   sx={{
@@ -764,10 +721,10 @@ const CustomerProduct = (path) => {
                   }}
                 >
                   <Typography className="text-md font-bold font-serif">
-                    {cartItem.product.productName}
+                    {cartItem.productName}
                   </Typography>
                   <Typography className="text-sm font-semibold font-serif">
-                    ₱ {cartItem.totalPrice}
+                    ₱ {cartItem.subTotal}
                   </Typography>
                   <Typography className="text-sm font-semibold font-serif">
                     Qty: {cartItem.quantity}
@@ -777,7 +734,7 @@ const CustomerProduct = (path) => {
               <Divider variant="middle" />
             </Box>
           ))}
-          {cart.length === 0 ? (
+          {cartList.length === 0 ? (
             <Typography className="p-4 text-gray-400 font-sans italic text-sm text-center">
               Cart is empty
             </Typography>
@@ -810,44 +767,3 @@ const CustomerProduct = (path) => {
 };
 
 export default CustomerProduct;
-
-//might use
-
-// const handleFlavor = (value) => {
-//   setFlavor(value);
-// };
-
-// const handlePackaging = (name, value) => {
-//   setPackaging((prevState) => ({
-//     ...prevState,
-//     [name]: value,
-//   }));
-// };
-
-// const handleShape = (name, value) => {
-//   setShape((prevState) => ({
-//     ...prevState,
-//     [name]: value,
-//   }));
-// };
-
-// const handleDragees = (name, value) => {
-//   setDragees((prevState) => ({
-//     ...prevState,
-//     [name]: value,
-//   }));
-// };
-
-// const handleDarkColoredBase = (name, value) => {
-//   setDarkColoredBase((prevState) => ({
-//     ...prevState,
-//     [name]: value,
-//   }));
-// };
-
-// const handleFreshFlowers = (name, value) => {
-//   setFreshFlowers((prevState) => ({
-//     ...prevState,
-//     [name]: value,
-//   }));
-// };

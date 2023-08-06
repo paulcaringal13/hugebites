@@ -20,7 +20,7 @@ export async function GET(request, path) {
   const { params } = path;
   const id = params.id;
 
-  // `SELECT * FROM products WHERE productId = ${id}`
+  // GET yung category name para maiprint sa card products sa menu
   const query = `SELECT * FROM products INNER JOIN product_categories ON products.categoryId = product_categories.categoryId WHERE products.productId = ${id}`;
   const results = await connection.execute(query);
   connection.end();
