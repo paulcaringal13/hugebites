@@ -34,6 +34,8 @@ const CustomerProduct = (path) => {
   const [flowerList, setFlowerList] = useState([]);
   // LIST OF PRODUCTS ON USER'S CART / FOR FRONT END DISPLAY
   const [cartList, setCartList] = useState([]);
+  // LIST OF PRODUCTS ON USER'S CART / TO BE PASSED TO ORDERED_PRODUCTS TABLE
+  const [orderedProductList, setOrderedProductList] = useState([]);
 
   // CART PRODUCTS VALUES
   const [subTotal, setSubtotal] = useState(0);
@@ -125,10 +127,19 @@ const CustomerProduct = (path) => {
         })
     );
     const results = await res.json();
-
-    console.log(loggedInUserId);
-
     setCartList(results);
+  };
+
+  // GET CART ID THAT WILL BE ADDED TO ORDERED_PRODUCTS TABLE
+  const getOrderedProductDatas = async () => {
+    const res = await fetch(
+      `http://localhost:3000/api/customer/ordered_products?` +
+        new URLSearchParams({
+          accountId: loggedInUserId,
+        })
+    );
+    const results = await res.json();
+    setOrderedProductList(results);
   };
 
   // ADD PRODUCT ON USER'S CART | CART = PRODUCT
@@ -177,9 +188,98 @@ const CustomerProduct = (path) => {
     }));
   };
 
-  // ON CLICK OF ADD TO CART BUTTON / ADD PRODUCTS TO CART
-  const handleSubmit = async () => {
+  // ON CLICK OF ADD TO CART BUTTON / ADD PRODUCTS TO CART / UPDATES ORDERED PRODUCT LIST
+  const handleAddToCart = async () => {
     addCart();
+    getOrderedProductDatas();
+  };
+
+  const deleteCart = async () => {
+    const deletedCart = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        accountId: loggedInUserId,
+      }),
+    };
+
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/customer/cart`,
+        deletedCart
+      );
+
+      const response = await res.json();
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  // CHECK OUT, CREATE ORDER THEN USE THE NEWLY ADDED ORDER ID TO USE AS REFERENCE FOR NEW ORDERED PRODUCT DATA FROM CART ID, THEN DELETE THE PASSED CART TO RESET THE USER CART.
+  const handleCheckOut = async () => {
+    let orderTotalPrice = 0;
+
+    cartList.map((cartItem) => (orderTotalPrice += cartItem.subTotal));
+
+    const orderPost = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        totalPrice: orderTotalPrice,
+        accountId: loggedInUserId,
+      }),
+    };
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/customer/orders`,
+        orderPost
+      );
+
+      const response = await res.json();
+      const { insertId } = response[0];
+      const orderId = insertId;
+
+      orderedProductList.forEach(async (object) => {
+        const orderedProductPost = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            accountId: object.accountId,
+            orderId: orderId,
+            productId: object.productId,
+            packagingId: object.packagingId,
+            flavorId: object.flavorId,
+            drageesId: object.drageesId,
+            shapeId: object.shapeId,
+            quantity: object.quantity,
+            darkColoredBaseId: object.darkColoredBaseId,
+            freshFlowerId: object.freshFlowerId,
+            subTotal: object.subTotal,
+          }),
+        };
+
+        try {
+          const res = await fetch(
+            `http://localhost:3000/api/customer/ordered_products`,
+            orderedProductPost
+          );
+
+          const response = await res.json();
+        } catch (e) {
+          console.log(e);
+        }
+      });
+    } catch (e) {
+      console.log(e);
+    }
+    // deleteCart(loggedInUserId);
+    setCartList([]);
   };
 
   // SET PRICE PROPERTIES / FOR GETTING THE SUM OF THE CHOSEN PRODUCT WITH ADD ONS AND QTY PRICES
@@ -200,6 +300,7 @@ const CustomerProduct = (path) => {
     getFlower();
     getShape();
     getCart();
+    getOrderedProductDatas();
   }, []);
 
   // RENDER WHEN PRODUCTS STATE IS CHANGED
@@ -665,7 +766,7 @@ const CustomerProduct = (path) => {
                 backgroundColor: "#a57f47",
               },
             }}
-            onClick={() => handleSubmit()}
+            onClick={() => handleAddToCart()}
           >
             <ShoppingCartOutlinedIcon
               className="my-auto"
@@ -756,6 +857,7 @@ const CustomerProduct = (path) => {
                 },
               }}
               component="button"
+              onClick={() => handleCheckOut()}
             >
               Checkout
             </Box>

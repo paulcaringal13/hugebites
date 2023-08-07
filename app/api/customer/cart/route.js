@@ -23,7 +23,7 @@ export async function GET(request) {
 
   const results = res[0];
 
-  console.log(results);
+  // console.log(results);
 
   return NextResponse.json(results);
 }
@@ -33,7 +33,6 @@ export async function POST(req, res) {
     const connection = await con();
 
     const reqBody = await req.json();
-    console.log("~~~~~~~~~~", reqBody);
 
     const {
       accountId,
@@ -48,6 +47,29 @@ export async function POST(req, res) {
       subTotal,
     } = reqBody;
     const query = `INSERT INTO cart (accountId, productId, packagingId, flavorId, drageesId, shapeId, quantity, darkColoredBaseId, freshFlowerId, subTotal) VALUES ('${accountId}', '${productId}','${packagingId}','${flavorId}','${drageesId}','${shapeId}','${quantity}','${darkColoredBaseId}','${freshFlowerId}','${subTotal}')`;
+    const results = await connection.execute(query);
+    connection.end();
+
+    return NextResponse.json(results);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function DELETE(req) {
+  try {
+    const connection = await con();
+
+    // const { searchParams } = new URL(request.url);
+    // const accountId = searchParams.get("accountId");
+
+    const reqBody = await req.json();
+
+    const { accountId } = reqBody;
+
+    // console.log(accountId);
+
+    const query = `DELETE FROM cart WHERE accountId = ${accountId}`;
     const results = await connection.execute(query);
     connection.end();
 

@@ -11,34 +11,52 @@ async function con() {
   return connection;
 }
 
-export async function GET() {
-  const connection = await con();
+export async function GET(request) {
+  try {
+    const connection = await con();
 
-  const query = `SELECT * FROM ordered_products`;
-  const res = await connection.execute(query);
-  connection.end();
+    const { searchParams } = new URL(request.url);
+    const accountId = searchParams.get("accountId");
 
-  const results = res[0];
+    const query = `SELECT * FROM cart WHERE accountId = ${accountId}`; // change accountID
+    const res = await connection.execute(query);
+    connection.end();
 
-  console.log(results);
+    const results = res[0];
 
-  return NextResponse.json({ results });
+    console.log(results);
+
+    return NextResponse.json(results);
+  } catch (e) {
+    console.log(e);
+  }
 }
 
-// export async function POST(req, res) {
-//   try {
-//     const connection = await con();
+export async function POST(req, res) {
+  try {
+    const connection = await con();
 
-//     const reqBody = await req.json();
+    const reqBody = await req.json();
 
-//     const { accountId } = reqBody;
-//     const query = `INSERT INTO cart (accountId) VALUES ('${accountId}')`;
-//     const results = await connection.execute(query);
-//     connection.end();
+    const {
+      accountId,
+      orderId,
+      productId,
+      packagingId,
+      flavorId,
+      drageesId,
+      shapeId,
+      quantity,
+      darkColoredBaseId,
+      freshFlowerId,
+      subTotal,
+    } = reqBody;
+    const query = `INSERT INTO ordered_products (accountId, orderId, productId, packagingId, flavorId, drageesId, shapeId, quantity, darkColoredBaseId, freshFlowerId, subTotal) VALUES ('${accountId}', '${orderId}', '${productId}','${packagingId}','${flavorId}','${drageesId}','${shapeId}','${quantity}','${darkColoredBaseId}','${freshFlowerId}','${subTotal}')`;
+    const results = await connection.execute(query);
+    connection.end();
 
-//     console.log("results====>", results);
-//     return NextResponse.json(results);
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
+    return NextResponse.json(results);
+  } catch (error) {
+    console.log(error);
+  }
+}
