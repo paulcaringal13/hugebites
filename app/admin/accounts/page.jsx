@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import Modal from "../../components/Modal";
+import Modal from "../components/Modal";
 import { Button } from "@mui/base";
 import { DataGrid } from "@mui/x-data-grid";
 import {

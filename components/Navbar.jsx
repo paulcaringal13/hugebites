@@ -9,6 +9,28 @@ import Image from "next/image";
 //sidebard w-271.2
 
 const Navbar = () => {
+  const loggedInUserId =
+    typeof window !== "undefined" && window.localStorage
+      ? localStorage.getItem("accountId")
+      : "";
+
+  const handleLogout = () => {
+    if (typeof localStorage === "undefined" || localStorage === null) {
+      var LocalStorage = require("node-localstorage").LocalStorage;
+      localStorage = new LocalStorage("./scratch");
+    }
+
+    localStorage.removeItem("accountId");
+
+    // if (typeof window !== "undefined") {
+    //   console.log("qweqweqwe");
+    // } else {
+
+    // }
+    // typeof window !== "undefined" && window.localStorage
+    //   ? console.log("asdasdasd")
+    //   : console.log("qweqweqwe");
+  };
   return (
     <AppBar sx={{ bgcolor: "#EE7376", padding: "12px", zIndex: "50" }}>
       <Toolbar>
@@ -28,29 +50,47 @@ const Navbar = () => {
             marginLeft: "auto",
           }}
         >
-          <Button
-            // config={{ duration: 5000 }}
-            sx={{
-              color: "white",
-              "&:hover": {
-                backgroundColor: "#ea5054",
-                transitionDuration: "0.8s",
-              },
-            }}
-          >
-            <Link href={"/sign-in"}>Sign In</Link>
-          </Button>
-          <Button
-            sx={{
-              color: "white",
-              "&:hover": {
-                backgroundColor: "#ea5054",
-                transitionDuration: "0.8s",
-              },
-            }}
-          >
-            <Link href={"/sign-up"}>Sign Up</Link>
-          </Button>
+          {!loggedInUserId ? (
+            <Button
+              // config={{ duration: 5000 }}
+              sx={{
+                color: "white",
+                "&:hover": {
+                  backgroundColor: "#ea5054",
+                  transitionDuration: "0.8s",
+                },
+              }}
+              onClick={handleLogout()}
+            >
+              <Link href={"/"}>Logout</Link>
+            </Button>
+          ) : (
+            <Box>
+              <Button
+                // config={{ duration: 5000 }}
+                sx={{
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "#ea5054",
+                    transitionDuration: "0.8s",
+                  },
+                }}
+              >
+                <Link href={"/sign-in"}>Sign In</Link>
+              </Button>
+              <Button
+                sx={{
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "#ea5054",
+                    transitionDuration: "0.8s",
+                  },
+                }}
+              >
+                <Link href={"/sign-up"}>Sign Up</Link>
+              </Button>
+            </Box>
+          )}
         </Box>
       </Toolbar>
     </AppBar>

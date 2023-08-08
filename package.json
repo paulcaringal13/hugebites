@@ -15,6 +15,7 @@
     "@mui/material": "^5.14.2",
     "@mui/x-data-grid": "^6.9.2",
     "@mui/x-date-pickers": "^6.10.2",
+    "@mui/x-date-pickers-pro": "^6.11.0",
     "autoprefixer": "10.4.14",
     "dayjs": "^1.11.9",
     "eslint": "8.44.0",

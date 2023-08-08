@@ -46,6 +46,7 @@ const CustomerSchedule = () => {
   // dayjs.extend(localizedFormat);
   const currentDate = new Date(dayjs("2023-08-09"));
   const dummyDate = new Date(dayjs("2023-08-17"));
+  const dummyDate2 = new Date(dayjs("2023-08-21"));
 
   const dummyOrder = [
     {
@@ -78,7 +79,7 @@ const CustomerSchedule = () => {
     {
       orderId: 1,
       // dateOrdered: `Date Ordered ${currentDate}`,
-      dateOrdered: `${dummyDate}`,
+      dateOrdered: `${dummyDate2}`,
       slots: [
         {
           slotId: 1,
@@ -161,7 +162,10 @@ const CustomerSchedule = () => {
   console.log();
 
   const [isExisting, setIsExisting] = useState(false);
-  const [selectedOrderId, setSelectedOrderId] = useState(0);
+  const [selectedOrder, setSelectedOrder] = useState({
+    orderId: 0,
+    isExisting: false,
+  });
   const [date, setDate] = useState("");
 
   // const [occupiedDate, setOccupiedDate] = useState({
@@ -207,53 +211,62 @@ const CustomerSchedule = () => {
   useEffect(() => {
     handleSlots();
   }, [date]);
-  // console.log(isExisting);
 
-  const getOrder = (id) => {
-    setIsExisting(true);
-    setSelectedOrderId(id);
+  const getOrder = (isOccupied, id) => {
+    {
+      !id
+        ? setSelectedOrder({
+            orderId: 0,
+            isExisting: false,
+          })
+        : setSelectedOrder({
+            orderId: id,
+            isExisting: isOccupied,
+          });
+    }
   };
-  console.log(selectedOrderId);
+  console.log(selectedOrder);
 
   const handleSlots = () => {
     {
-      dummyOrder.map((i) => (
-        <>
-          {date == i.dateOrdered ? getOrder(i.orderId) : setIsExisting(false)}
-        </>
-      ));
+      dummyOrder.map((i) =>
+        date == i.dateOrdered
+          ? getOrder(true, i.orderId)
+          : getOrder(false, null)
+      );
     }
   };
 
   const handleOccupiedDate = () => {
     return (
       <Box>
-        {dummyOrder.map((i) => (
-          <Container>
-            {selectedOrderId == i.orderId && (
-              <Card
-                key={i.orderId}
-                variant="outlined"
-                sx={{
-                  // minWidth: 280,
-                  // maxWidth: ,
+        {dummyOrder.map(
+          (i) =>
+            selectedOrder.orderId == i.orderId && (
+              <Container key={i.orderId}>
+                {i.slots.forEach((occupiedDate) => {
+                  <Card
+                    variant="outlined"
+                    sx={{
+                      // minWidth: 280,
+                      // maxWidth: ,
 
-                  height: "fit-content",
-                  width: "90%",
-                  margin: "auto",
-                  marginTop: "8px",
-                  borderRadius: "10px",
-                }}
-              >
-                {i.slots.map((slot) => (
-                  <CardContent key={slot.slotId} className="text-xs">
-                    {slot.slotAvailability}
-                  </CardContent>
-                ))}
-              </Card>
-            )}
-          </Container>
-        ))}
+                      height: "fit-content",
+                      width: "90%",
+                      margin: "auto",
+                      marginTop: "8px",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    <CardContent key={occupiedDate.slotId} className="text-xs">
+                      {occupiedDate.slotAvailability}
+                    </CardContent>
+                    ;
+                  </Card>;
+                })}
+              </Container>
+            )
+        )}
       </Box>
     );
   };

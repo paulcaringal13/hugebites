@@ -23,8 +23,6 @@ export async function GET(request) {
 
   const results = res[0];
 
-  // console.log(results);
-
   return NextResponse.json(results);
 }
 
@@ -60,14 +58,9 @@ export async function DELETE(req) {
   try {
     const connection = await con();
 
-    // const { searchParams } = new URL(request.url);
-    // const accountId = searchParams.get("accountId");
-
     const reqBody = await req.json();
 
     const { accountId } = reqBody;
-
-    // console.log(accountId);
 
     const query = `DELETE FROM cart WHERE accountId = ${accountId}`;
     const results = await connection.execute(query);

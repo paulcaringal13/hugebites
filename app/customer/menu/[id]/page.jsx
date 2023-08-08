@@ -2,21 +2,38 @@
 import Typography from "@mui/material/Typography";
 import {
   Box,
+  Button,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Divider,
+  Card,
   InputLabel,
   ListItemIcon,
   MenuItem,
   TextField,
+  Alert,
+  Collapse,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import CakeOutlinedIcon from "@mui/icons-material/CakeOutlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import dayjs from "dayjs";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+// import { RelativeTime } from "dayjs/plugin/relativeTime";
+import { DateCalendar, StaticDatePicker } from "@mui/x-date-pickers";
 
 const CustomerProduct = (path) => {
   const { params } = path;
   const { id } = params;
+
+  var relativeTime = require("dayjs/plugin/relativeTime");
+  dayjs.extend(relativeTime);
 
   // LOGGED IN USER LOCAL STORAGE
   const loggedInUserId =
@@ -220,6 +237,7 @@ const CustomerProduct = (path) => {
   // CHECK OUT, CREATE ORDER THEN USE THE NEWLY ADDED ORDER ID TO USE AS REFERENCE FOR NEW ORDERED PRODUCT DATA FROM CART ID, THEN DELETE THE PASSED CART TO RESET THE USER CART.
   const handleCheckOut = async () => {
     let orderTotalPrice = 0;
+    ``;
 
     cartList.map((cartItem) => (orderTotalPrice += cartItem.subTotal));
 
@@ -278,7 +296,7 @@ const CustomerProduct = (path) => {
     } catch (e) {
       console.log(e);
     }
-    // deleteCart(loggedInUserId);
+    deleteCart(loggedInUserId);
     setCartList([]);
   };
 
@@ -289,6 +307,124 @@ const CustomerProduct = (path) => {
       [name]: value,
     }));
   };
+
+  // STORAGE FOR CURRENT DATE
+  let currentDate = dayjs();
+  // // SET THE INITIAL DATE SELECTED TO A VALID DATE AFTER OPENING THE DIALOG.
+  let preSelectedDate = dayjs(
+    `${currentDate.month() + 1}-${
+      currentDate.date() + 10
+    }-${currentDate.year()}`
+  );
+
+  // FOR VALIDATION IF THE ALLOWED DATE WILL EXCEED THE MONTH. IF YES PROCEED TO OTHER MONTH
+  let isAllowed;
+
+  // OPEN DIALOG
+  const [open, setOpen] = useState(false);
+  // OPEN ERROR ALERT
+  const [openError, setOpenError] = useState(false);
+
+  // SET THE CHOSEN DATE
+  const [chosenDate, setChosenDate] = useState(preSelectedDate);
+  // STILL CHOSEN DATE BUT FOR FORMATTING PURPOSE ONLY
+  const [selectedDate, setSelectedDate] = useState({
+    year: "",
+    month: "",
+    day: "",
+  });
+
+  // DAY STORAGE FOR THE PRESSED DATE
+  let pressedDay = chosenDate.date();
+  // GETTER OF TOTAL DAYS ON THE SELECTED MONTH
+  let monthDays = chosenDate.daysInMonth();
+
+  // NILAGAY PARA HINDI MAKAORDER AGAD CUSTOMER NG AGARAN NA PRODUCT / MEANING HINDI PEDE UMORDER NG CAKE NA PRIOR 10 DAYS FROM NOW ANG PICK UP
+  let computedAllowableDate = currentDate.date() + 10;
+
+  const [allowedDate, setAllowedDate] = useState({
+    day: currentDate.date() + 10,
+    month: currentDate.month() + 1,
+    year: currentDate.year(),
+  });
+
+  // PARA MACHECK KUNG MAG EEXCEED SA ARAW NG BUWAN YUNG ALLOWABLE DATE. PAG OO EDI PROCEED SIYA SA NEXT MONTH AT I-ITERATE YUNG NATITIRANG MGA ARAW NA DI CINOMPUTE KASI BAWAL
+  const calculateMonth = () => {
+    {
+      monthDays > computedAllowableDate
+        ? calculateChosenDay()
+        : calculateExceededDate();
+    }
+  };
+
+  // tiga bago ng allowed date pag lagpasan na siya
+  const calculateExceededDate = () => {
+    const x = computedAllowableDate - monthDays;
+
+    console.log("exceeded day func");
+    setAllowedDate({
+      day: x,
+      month: currentDate.month() + 2,
+      year: currentDate.year(),
+    });
+
+    isAllowed = false;
+  };
+  // console.log(isAllowed);
+  // console.log(allowedDate);
+
+  // calculate user on pressed kung after 10 days from now ba ang pinipindot. pag hindi bawal niya iselect yung date na yun
+  const calculateChosenDay = () => {
+    console.log("chosen day func");
+    {
+      chosenDate.date() < allowedDate.day &&
+      chosenDate.month() < allowedDate.month
+        ? setOpenError(true)
+        : setOpenError(false);
+    }
+    {
+      chosenDate.date() < allowedDate.day &&
+      chosenDate.month() < allowedDate.month
+        ? setSelectedDate({
+            year: "",
+            month: "",
+            day: "",
+          })
+        : setSelectedDate({
+            year: chosenDate.year(),
+            month: chosenDate.month() + 1,
+            day: chosenDate.date(),
+          });
+    }
+  };
+
+  // PARA MAISET NIYA SELECTED DATE
+  useEffect(() => {
+    calculateChosenDay();
+  }, [isAllowed]);
+
+  // setChosenDate((prevState) => ({
+  //   ...prevState,
+  //   [$D]: pressedDay,
+  // }))
+
+  const handleClose = () => {
+    setOpen(false);
+    setChosenDate(preSelectedDate);
+  };
+
+  const handlePlaceOrder = () => {
+    handleClose();
+  };
+
+  const openCalendar = () => {
+    setOpen(true);
+  };
+
+  // ICALCULATE YUNG MONTH KUNG MAG EXCEED BA SA BUWAN YUNG ARAW NA PININDOT
+  useEffect(() => {
+    calculateMonth();
+  }, [chosenDate]);
 
   // ON LOAD RENDER / GET AND SET THE STATES TO READY PAGE
   useEffect(() => {
@@ -852,17 +988,69 @@ const CustomerProduct = (path) => {
                 margin: "10px",
                 marginLeft: "155px",
                 borderRadius: "30px",
+                border: "hidden",
                 "&:hover": {
                   backgroundColor: "#a57f47",
                 },
               }}
               component="button"
-              onClick={() => handleCheckOut()}
+              // handleCheckOut()
+              onClick={() => openCalendar()}
             >
               Checkout
             </Box>
           )}
         </Box>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          sx={{
+            "& .MuiPickersLayout-actionBar": {
+              display: "none",
+              visibility: "hidden",
+            },
+          }}
+        >
+          <DialogTitle>Select a Schedule</DialogTitle>
+          <Collapse in={openError}>
+            <Alert
+              variant="outlined"
+              severity="error"
+              sx={{ width: "70%", marginLeft: "auto", marginRight: "auto" }}
+            >
+              This is an error alert — please select a day 10 days later from
+              today!
+            </Alert>
+          </Collapse>
+          <Card>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <Box>
+                <StaticDatePicker
+                  format="DD-MM-YYYY"
+                  disablePast
+                  showDaysOutsideCurrentMonth
+                  value={chosenDate}
+                  onChange={(newValue) => {
+                    // console.log(newValue);
+                    // const passedDate = e.$d;
+                    setChosenDate(newValue);
+                  }}
+                  views={["year", "month", "day"]}
+                />
+              </Box>
+            </LocalizationProvider>
+          </Card>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            {openError ? (
+              <Button disabled onClick={handlePlaceOrder}>
+                Place Order
+              </Button>
+            ) : (
+              <Button onClick={handlePlaceOrder}>Place Order</Button>
+            )}
+          </DialogActions>
+        </Dialog>
       </Box>
     </Box>
   );

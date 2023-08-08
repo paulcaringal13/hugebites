@@ -14,7 +14,7 @@ export const routes = [
   {
     id: 1,
     name: "Account",
-    route: "customer/accounts",
+    route: "customer/edit-profile",
   },
   {
     id: 2,
