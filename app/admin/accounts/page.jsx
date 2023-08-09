@@ -1,6 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import Modal from "../components/Modal";
+import React, { useEffect, useState } from "react";
 import { Button } from "@mui/base";
 import { DataGrid } from "@mui/x-data-grid";
 import {
@@ -9,12 +8,10 @@ import {
   TextField,
   DialogActions,
   DialogContent,
-  InputAdornment,
-  IconButton,
   InputLabel,
-  OutlinedInput,
   MenuItem,
   DialogContentText,
+  Box,
 } from "@mui/material";
 
 import Slide from "@mui/material/Slide";
@@ -23,16 +20,15 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const Page = () => {
+const AdminAccounts = () => {
   // for creating obj
   const [users, setUsers] = useState([]);
   const [userId, setUserId] = useState(0);
 
-  const [select, setSelection] = useState([]);
+  // const [select, setSelection] = useState([]);
 
   // button open dialog
   const [createOpen, setCreateOpen] = useState(false);
-  // const [editModalOpen, setEditModalOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
@@ -46,42 +42,13 @@ const Page = () => {
   const [contact, setContact] = useState("");
   const [accountType, setAccountType] = useState("");
 
-  const [rowData, setRowData] = useState({
-    id: "",
-    firstName: "",
-    lastName: "",
-    email: "",
-    age: "",
-    contact: "",
-    accountType: "",
-  });
-
-  // validation for confirming pass
-
-  // const [confirm, setConfirm] = useState({
-  //   password: '',
-  //   password_confirm: ''
-  // });
-
-  // const handleConfirmation = (e) => {
-  //   const name = e.target.name;
-  //   const password = e.target.value;
-  //   setConfirm ((prev) => {
-  //     return {...prev, [name]: password}
-  //   })
-  // }
-
   // handle onclick
   const openDialog = () => {
     setCreateOpen(true);
   };
 
-  const closeDialog = () => {
-    setCreateOpen(false);
-  };
-
   const openEdit = (data) => {
-    const { id } = data;
+    const { accountId } = data;
     const { firstName } = data;
     const { lastName } = data;
     const { email } = data;
@@ -91,29 +58,30 @@ const Page = () => {
 
     setEditOpen(true);
 
-    //   {
-    //     "id": 1,
-    //     "firstName": "Paul",
-    //     "lastName": "Caringal",
-    //     "email": "caringalp@gmail.com",
-    //     "password": "Paul051302",
-    //     "age": 21,
-    //     "contact": 9397240087,
-    //     "accountType": "Admin"
-    // }
-    // console.log(JSON.stringify(data, null, 4));
-
-    console.log(id);
-
-    setUserId(id);
+    setUserId(accountId);
     setFirstName(firstName);
     setLastName(lastName);
     setEmail(email);
     setAge(age);
     setContact(contact);
     setAccountType(accountType);
+  };
 
-    //... next fields
+  const openDelete = (id) => {
+    setUserId(id);
+    setDeleteOpen(true);
+  };
+
+  const closeDialog = () => {
+    setCreateOpen(false);
+
+    setFirstName("");
+    setLastName("");
+    setEmail("");
+    setPassword("");
+    setAge("");
+    setContact("");
+    setAccountType("");
   };
 
   const closeEdit = () => {
@@ -123,53 +91,28 @@ const Page = () => {
     setFirstName("");
     setLastName("");
     setEmail("");
+    setPassword("");
+
     setAge("");
     setContact("");
     setAccountType("");
-    //... next fields
-  };
-
-  const openDelete = (id) => {
-    setUserId(id);
-    console.log(`id: ${id}`);
-    setDeleteOpen(true);
   };
 
   const closeDelete = () => {
     setDeleteOpen(false);
   };
 
-  const updateAccount = async (id) => {
-    const postData = {
-      method: "PUT", // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        age: age,
-        contact: contact,
-        accountType: accountType,
-      }),
-    };
+  // get all records function
+  const getAllAccounts = async () => {
+    const res = await fetch(`http://localhost:3000/api/admin/account`);
+    const data = await res.json();
 
-    try {
-      // console.log(postData.json());
-      const res = await fetch(
-        `http://localhost:3000/api/admin/account/${id}`,
-        postData
-      );
-      const response = await res.json();
-    } catch (error) {
-      console.log(error);
-    }
-    getAllAccounts();
-    closeEdit();
+    // const { results } = data;
+    const userArray = [...data.results];
+    setUsers(userArray);
   };
 
-  // create account after pressing the button
+  // create function
   const createAccount = async () => {
     const postData = {
       method: "POST", // or 'PUT'
@@ -193,26 +136,68 @@ const Page = () => {
         postData
       );
       const response = await res.json();
-      openDialog(false);
+      closeDialog();
     } catch (error) {
       console.log(error);
     }
   };
 
-  // prints all account records
-  const getAllAccounts = async () => {
-    const res = await fetch(`http://localhost:3000/api/admin/account`);
-    const data = await res.json();
+  // edit function
+  const updateAccount = async (id) => {
+    const postData = {
+      method: "PUT", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        age: age,
+        contact: contact,
+        accountType: accountType,
+      }),
+    };
 
-    // const { results } = data;
-    const userArray = [...data.results];
-    setUsers(userArray);
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/admin/account/${id}`,
+        postData
+      );
+      const response = await res.json();
+    } catch (error) {
+      console.log(error);
+    }
+    getAllAccounts();
+    closeEdit();
+  };
+
+  // delete function
+  const deleteAccount = async (id) => {
+    const postData = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/admin/account/${id}`,
+        postData
+      );
+      const response = await res.json();
+    } catch (error) {
+      console.log(error);
+    }
+    getAllAccounts();
+    closeDelete();
   };
 
   useEffect(() => {
     getAllAccounts();
   }, []);
 
+  // accoun type array
   const accountTypes = [
     {
       value: "Employee",
@@ -224,30 +209,7 @@ const Page = () => {
     },
   ];
 
-  const deleteAccount = async (id) => {
-    console.log(`userId: ${userId}`);
-    const postData = {
-      method: "DELETE", // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-    try {
-      // console.log(postData.json());
-      const res = await fetch(
-        `http://localhost:3000/api/admin/account/${id}`,
-        postData
-      );
-      // const response = await res.json();
-    } catch (error) {
-      console.log(error);
-    }
-    getAllAccounts();
-    closeDelete();
-    console.log(`id: ${id}`);
-    console.log("delete");
-  };
-
+  // grid columns
   const columns = [
     { field: "accountId", headerName: "ID", width: 50 },
     { field: "firstName", headerName: "First name", width: 100 },
@@ -292,10 +254,10 @@ const Page = () => {
       sortable: false,
       renderCell: (cellValues) => {
         const { row } = cellValues;
-        // console.log(row);
+
+        console.log("row", row);
         return (
-          <div>
-            {/* inedit */}
+          <Box>
             <Button
               variant="contained"
               className="bg-green-600 py-3 px-6 rounded-xl text-white font-semibold hover:bg-green-900 duration-700"
@@ -303,7 +265,7 @@ const Page = () => {
             >
               Edit
             </Button>
-          </div>
+          </Box>
         );
       },
     },
@@ -314,50 +276,48 @@ const Page = () => {
       width: 100,
       sortable: false,
       renderCell: (cellValues) => {
-        const { id } = cellValues.row;
-        // console.log(id);
+        const { accountId } = cellValues.row;
         return (
-          <div>
+          <Box>
             <Button
               variant="contained"
               className="bg-red-500 py-3 px-6 rounded-xl text-white font-semibold hover:bg-red-800 duration-700"
-              onClick={() => openDelete(id)}
+              onClick={() => openDelete(accountId)}
             >
               Delete
             </Button>
-          </div>
+          </Box>
         );
       },
     },
   ];
 
-  console.log(users);
-
   return (
-    <div className="m-9">
-      <div className="flex flex-row justify-between">
-        <div className="font-extrabold text-3xl">User Accounts</div>
+    <Box className="m-9">
+      <Box className="flex flex-row justify-between">
+        <Box className="font-extrabold text-4xl font-serif mt-2">
+          User Accounts
+        </Box>
         <Button
           variant="contained"
-          className="bg-blue-600 py-3 px-6 rounded-xl text-white font-semibold text-lg hover:bg-blue-800 duration-700"
+          className="bg-blue-600 py-3 px-6 rounded-xl text-white font-semibold text-lg hover:bg-blue-800 duration-700 mb-2"
           onClick={openDialog}
         >
           Create Account
         </Button>
         <Dialog open={createOpen}>
-          <div className="flex flex-row mb-3 justify-between text-center bg-slate-600 w-full text-white">
+          <Box className="flex flex-row mb-3 justify-between text-center bg-slate-600 w-full text-white">
             <h1 className="p-6 font-extrabold text-3xl">Create Account</h1>
             <button
               className="my-auto p-7 font-extrabold text-sm rounded hover:text-lg duration-500"
               onClick={closeDialog}
             >
-              {" "}
-              X{" "}
+              X
             </button>
-          </div>
+          </Box>
           <DialogContent>
-            <div className="flex flex-row justify-between">
-              <div className="flex-1 me-1">
+            <Box className="flex flex-row justify-between">
+              <Box className="flex-1 me-1">
                 <InputLabel className="font-semibold">First Name</InputLabel>
                 <TextField
                   required
@@ -369,11 +329,9 @@ const Page = () => {
                   variant="outlined"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-
-                  // inputRef={firstNameRef}
                 />
-              </div>
-              <div className="flex-1">
+              </Box>
+              <Box className="flex-1">
                 <InputLabel className="font-semibold">Last Name</InputLabel>
                 <TextField
                   required
@@ -385,10 +343,9 @@ const Page = () => {
                   variant="outlined"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  // inputRef={lastNameRef}
                 />
-              </div>
-            </div>
+              </Box>
+            </Box>
             <InputLabel className="font-semibold">Email</InputLabel>
             <TextField
               required
@@ -400,7 +357,6 @@ const Page = () => {
               variant="outlined"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              // inputRef={emailRef}
             />
             <InputLabel className="font-semibold">Password</InputLabel>
             <TextField
@@ -413,8 +369,6 @@ const Page = () => {
               variant="outlined"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              // inputRef={passwordRef}
-              // onChange={handleConfirmation}
             />
             <InputLabel className="font-semibold">Age</InputLabel>
             <TextField
@@ -427,7 +381,6 @@ const Page = () => {
               variant="outlined"
               value={age}
               onChange={(e) => setAge(e.target.value)}
-              // inputRef={ageRef}
             />
             <InputLabel className="font-semibold">Contact Number</InputLabel>
             <TextField
@@ -440,7 +393,6 @@ const Page = () => {
               variant="outlined"
               value={contact}
               onChange={(e) => setContact(e.target.value)}
-              // inputRef={contactRef}
             />
             <InputLabel className="font-semibold">Account Type</InputLabel>
             <TextField
@@ -450,7 +402,6 @@ const Page = () => {
               fullWidth
               value={accountType}
               onChange={(e) => setAccountType(e.target.value)}
-              // inputRef={accountTypeRef}
             >
               {accountTypes.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
@@ -468,7 +419,7 @@ const Page = () => {
           </DialogContent>
         </Dialog>
         {/* {open && <Modal openModal={open} />} */}
-      </div>
+      </Box>
       <DataGrid
         sx={{ overflowY: "hidden" }}
         // columnHeaderHeight={150}
@@ -483,12 +434,12 @@ const Page = () => {
           },
         }}
         pageSizeOptions={[5, 10]}
-        // checkboxSelection
+        checkboxSelection
       />
 
       {/* EDIT MODAL */}
       <Dialog open={editOpen}>
-        <div className="flex flex-row mb-3 justify-between text-center bg-slate-600 w-full text-white">
+        <Box className="flex flex-row mb-3 justify-between text-center bg-slate-600 w-full text-white">
           <h1 className="p-6 font-extrabold text-3xl">Edit Account</h1>
           <button
             className="my-auto p-7 font-extrabold text-sm rounded hover:text-lg duration-500"
@@ -496,10 +447,10 @@ const Page = () => {
           >
             X
           </button>
-        </div>
+        </Box>
         <DialogContent>
-          <div className="flex flex-row justify-between">
-            <div className="flex-1 me-1">
+          <Box className="flex flex-row justify-between">
+            <Box className="flex-1 me-1">
               <InputLabel className="font-semibold">First Name</InputLabel>
               <TextField
                 required
@@ -511,11 +462,9 @@ const Page = () => {
                 variant="outlined"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-
-                // inputRef={firstNameRef}
               />
-            </div>
-            <div className="flex-1">
+            </Box>
+            <Box className="flex-1">
               <InputLabel className="font-semibold">Last Name</InputLabel>
               <TextField
                 required
@@ -527,10 +476,9 @@ const Page = () => {
                 variant="outlined"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-                // inputRef={lastNameRef}
               />
-            </div>
-          </div>
+            </Box>
+          </Box>
           <InputLabel className="font-semibold">Email</InputLabel>
           <TextField
             required
@@ -542,7 +490,6 @@ const Page = () => {
             variant="outlined"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            // inputRef={emailRef}
           />
           <InputLabel className="font-semibold">Age</InputLabel>
           <TextField
@@ -555,7 +502,6 @@ const Page = () => {
             variant="outlined"
             value={age}
             onChange={(e) => setAge(e.target.value)}
-            // inputRef={ageRef}
           />
           <InputLabel className="font-semibold">Contact Number</InputLabel>
           <TextField
@@ -568,7 +514,6 @@ const Page = () => {
             variant="outlined"
             value={contact}
             onChange={(e) => setContact(e.target.value)}
-            // inputRef={contactRef}
           />
           <InputLabel className="font-semibold">Account Type</InputLabel>
           <TextField
@@ -580,7 +525,6 @@ const Page = () => {
             fullWidth
             value={accountType}
             onChange={(e) => setAccountType(e.target.value)}
-            // inputRef={accountTypeRef}
           >
             {accountTypes.map((option) => (
               <MenuItem key={option.value} value={option.value}>
@@ -606,11 +550,11 @@ const Page = () => {
         onClose={closeDelete}
         aria-describedby="alert-dialog-slide-description"
       >
-        <div className="bg-slate-600 text-white">
+        <Box className="bg-slate-600 text-white">
           <DialogTitle className="font-extrabold text-2xl">
             CAUTION!
           </DialogTitle>
-        </div>
+        </Box>
         <DialogContent>
           <DialogContentText
             id="alert-dialog-slide-description"
@@ -636,8 +580,8 @@ const Page = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </Box>
   );
 };
 
-export default Page;
+export default AdminAccounts;

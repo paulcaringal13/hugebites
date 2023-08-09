@@ -1,5 +1,4 @@
 import mysql from "mysql2/promise";
-// import { query } from "../../../lib/db"
 import { NextRequest, NextResponse } from "next/server";
 
 async function con() {
@@ -33,9 +32,7 @@ export async function POST(req, res) {
     const query = `INSERT INTO accounts (firstName, lastName, email, password, age, contact, accountType ) VALUES ('${firstName}', '${lastName}', '${email}', '${password}', '${age}', '${contact}', '${accountType}')`;
     const results = await connection.execute(query);
     connection.end();
-    // results: results[0]
 
-    console.log("reqBody:", reqBody);
     return NextResponse.json({ results });
   } catch (error) {
     console.log(error);

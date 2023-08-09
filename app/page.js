@@ -1,9 +1,6 @@
-// import Menu from "@/components/Menu";
 import * as React from "react";
 import "./styles/globals.css";
 import Link from "next/link";
-import { ThemeProvider, createTheme } from "@mui/system";
-import { Box } from "@mui/material";
 
 // const theme = createTheme({
 //   palette: {

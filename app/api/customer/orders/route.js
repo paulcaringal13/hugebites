@@ -20,8 +20,6 @@ export async function GET() {
 
   const results = res[0];
 
-  // console.log(results);
-
   return NextResponse.json(results);
 }
 

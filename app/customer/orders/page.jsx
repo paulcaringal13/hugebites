@@ -1,28 +1,16 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@mui/base";
 import { DataGrid } from "@mui/x-data-grid";
-import {
-  Dialog,
-  DialogTitle,
-  TextField,
-  DialogActions,
-  DialogContent,
-  InputAdornment,
-  InputLabel,
-  OutlinedInput,
-  MenuItem,
-  DialogContentText,
-} from "@mui/material";
+import { Box } from "@mui/material";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
-import VisibilityTwoToneIcon from "@mui/icons-material/VisibilityTwoTone";
 import Slide from "@mui/material/Slide";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const Page = () => {
+const CustomerOrders = () => {
   const [orderList, setOrderList] = useState([]);
 
   // prints all account records
@@ -30,31 +18,12 @@ const Page = () => {
     const res = await fetch(`http://localhost:3000/api/customer/orders`);
     const results = await res.json();
 
-    // const ordersArray = [...data.results];
-
-    // const { results } = data;
     setOrderList(results);
   };
 
   useEffect(() => {
     getOrders();
   }, []);
-  console.log(orderList);
-
-  const rows = [
-    {
-      id: "dum",
-      value: "asd",
-    },
-    {
-      id: "qtq",
-      value: "qwe",
-    },
-    {
-      id: "ttt",
-      value: "tqtq",
-    },
-  ];
 
   const columns = [
     { field: "orderId", headerName: "Order ID", width: 75 },
@@ -100,7 +69,6 @@ const Page = () => {
       sortable: false,
       renderCell: (cellValues) => {
         const { row } = cellValues;
-        // console.log(row);
         return (
           <div className="w-full h-full">
             <Button className="w-full h-full mx-auto my-auto">
@@ -123,14 +91,12 @@ const Page = () => {
     },
   ];
   return (
-    <div className="m-9">
-      <div className="flex flex-row justify-between">
-        <div className="font-extrabold text-3xl">Orders</div>
-      </div>
+    <Box className="m-9">
+      <Box className="flex flex-row justify-between">
+        <Box className="font-extrabold text-5xl mb-6 font-serif">Orders</Box>
+      </Box>
       <DataGrid
         sx={{ overflowY: "hidden" }}
-        // columnHeaderHeight={150}
-        // rowHeight={100}
         rows={orderList}
         columns={columns}
         // getRowId={rows}
@@ -141,10 +107,10 @@ const Page = () => {
           },
         }}
         pageSizeOptions={[5, 10]}
-        // checkboxSelection
+        checkboxSelection
       />
-    </div>
+    </Box>
   );
 };
 
-export default Page;
+export default CustomerOrders;

@@ -6,8 +6,6 @@ import {
   Container,
   Dialog,
   DialogActions,
-  DialogContent,
-  DialogContentText,
   DialogTitle,
   Divider,
   Card,
@@ -25,8 +23,7 @@ import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-// import { RelativeTime } from "dayjs/plugin/relativeTime";
-import { DateCalendar, StaticDatePicker } from "@mui/x-date-pickers";
+import { StaticDatePicker } from "@mui/x-date-pickers";
 
 const CustomerProduct = (path) => {
   const { params } = path;

@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import mysql from "mysql2/promise";
 
-// example usage: GET item by id, with query param
-
 async function con() {
   const connection = await mysql.createConnection({
     host: "localhost",
@@ -16,7 +14,6 @@ async function con() {
 export async function GET(request, path) {
   const connection = await con();
 
-  // path params api/test/:id
   const { params } = path;
   const id = params.id;
 

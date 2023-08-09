@@ -48,7 +48,6 @@ const CustomerMenu = () => {
   const router = useRouter();
 
   const [products, setProducts] = useState([]);
-  // const [productId, setProductId] = useState([]);
 
   const getAllExample = async () => {
     const res = await fetch(`http://localhost:3000/api/customer/menu/product`);
@@ -59,14 +58,9 @@ const CustomerMenu = () => {
     setProducts(prod);
   };
 
-  console.log(products);
-
   const handleProductId = (id) => {
     const productId = id;
 
-    console.log(productId);
-
-    // setProductId(productId);
     getProductId(productId);
   };
 
@@ -77,7 +71,6 @@ const CustomerMenu = () => {
     const data = await res.json();
     const { results } = data;
 
-    // console.log(results.id);
     handleInput(results.productId);
   };
 

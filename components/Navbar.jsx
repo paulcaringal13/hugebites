@@ -1,6 +1,16 @@
+"use client";
 import Link from "next/link";
-import { AppBar, Box, Button, Toolbar, Typography } from "@mui/material";
+import {
+  AppBar,
+  Box,
+  Button,
+  Collapse,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 // primary=#FDF9F9
 // secondary=#EE7376 hover=#ea5054
@@ -9,28 +19,37 @@ import Image from "next/image";
 //sidebard w-271.2
 
 const Navbar = () => {
-  const loggedInUserId =
-    typeof window !== "undefined" && window.localStorage
-      ? localStorage.getItem("accountId")
-      : "";
+  const router = useRouter();
+
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [name, setName] = useState("");
+  const [user, setUser] = useState(0);
+
+  let loggedInUserId;
+  let userName;
+
+  useEffect(() => {
+    loggedInUserId =
+      typeof window !== "undefined" && window.localStorage
+        ? localStorage.getItem("accountId")
+        : "";
+    userName =
+      typeof window !== "undefined" && window.localStorage
+        ? localStorage.getItem("userName")
+        : "";
+  }, []);
+
+  useEffect(() => {
+    setIsLoggedIn(true);
+    setName(userName);
+  }, [loggedInUserId]);
 
   const handleLogout = () => {
-    if (typeof localStorage === "undefined" || localStorage === null) {
-      var LocalStorage = require("node-localstorage").LocalStorage;
-      localStorage = new LocalStorage("./scratch");
-    }
-
-    localStorage.removeItem("accountId");
-
-    // if (typeof window !== "undefined") {
-    //   console.log("qweqweqwe");
-    // } else {
-
-    // }
-    // typeof window !== "undefined" && window.localStorage
-    //   ? console.log("asdasdasd")
-    //   : console.log("qweqweqwe");
+    localStorage.clear();
+    setIsLoggedIn(false);
+    router.push("/");
   };
+
   return (
     <AppBar sx={{ bgcolor: "#EE7376", padding: "12px", zIndex: "50" }}>
       <Toolbar>
@@ -50,21 +69,36 @@ const Navbar = () => {
             marginLeft: "auto",
           }}
         >
-          {!loggedInUserId ? (
-            <Button
-              // config={{ duration: 5000 }}
-              sx={{
-                color: "white",
-                "&:hover": {
-                  backgroundColor: "#ea5054",
-                  transitionDuration: "0.8s",
-                },
-              }}
-              onClick={handleLogout()}
-            >
-              <Link href={"/"}>Logout</Link>
-            </Button>
-          ) : (
+          <Collapse
+            in={isLoggedIn}
+            sx={{
+              textAlign: "right",
+            }}
+          >
+            <Box>
+              <span>
+                Welcome, {name} <br />
+              </span>
+              <Box
+                // config={{ duration: 5000 }}
+                className="duration-1000"
+                component="button"
+                sx={{
+                  color: "white",
+                  textAlign: "start",
+                  "&:hover": {
+                    //   // backgroundColor: "#ea5054",
+                    textDecorationLine: "underline",
+                  },
+                }}
+                onClick={(e) => handleLogout()}
+              >
+                Logout
+              </Box>
+            </Box>
+          </Collapse>
+
+          <Collapse in={!isLoggedIn} sx={{ marginLeft: "100px" }}>
             <Box>
               <Button
                 // config={{ duration: 5000 }}
@@ -76,7 +110,7 @@ const Navbar = () => {
                   },
                 }}
               >
-                <Link href={"/sign-in"}>Sign In</Link>
+                <Link href={"/sign-in"}>Sign in</Link>
               </Button>
               <Button
                 sx={{
@@ -90,7 +124,7 @@ const Navbar = () => {
                 <Link href={"/sign-up"}>Sign Up</Link>
               </Button>
             </Box>
-          )}
+          </Collapse>
         </Box>
       </Toolbar>
     </AppBar>

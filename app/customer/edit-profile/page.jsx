@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { Box, Button, Divider, InputLabel, TextField } from "@mui/material";
+import { Box, InputLabel, TextField } from "@mui/material";
 import { useState, useEffect } from "react";
 
 const CustomerProfile = () => {
@@ -43,7 +43,7 @@ const CustomerProfile = () => {
 
   const editAccount = async () => {
     const postData = {
-      method: "PUT", // or 'PUT'
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
@@ -89,7 +89,6 @@ const CustomerProfile = () => {
         flexDirection: "row",
         flexWrap: "wrap",
         margin: "20px",
-        // border: "1px solid blue",
         height: "fit-content",
       }}
     >
@@ -107,7 +106,6 @@ const CustomerProfile = () => {
           flexDirection: "row",
           width: "100%",
           height: "fit-content",
-          //   border: "solid red 1px",
         }}
       >
         <InputLabel
@@ -130,8 +128,6 @@ const CustomerProfile = () => {
           flexDirection: "row",
           width: "100%",
           height: "fit-content",
-          //   border: "solid green 1px",
-          // marginBottom: "100%",
         }}
       >
         <TextField
@@ -242,16 +238,3 @@ const CustomerProfile = () => {
 };
 
 export default CustomerProfile;
-
-{
-  /* <Box
-sx={{
-  display: "flex",
-  flexDirection: "row",
-  margin: "20px",
-  border: "1px solid red",
-  height: "calc(100% - 45px)",
-  borderRadius: "3",
-}}
-></Box> */
-}

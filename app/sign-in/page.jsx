@@ -1,14 +1,6 @@
 "use client";
-import {
-  Box,
-  Button,
-  InputLabel,
-  Link,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, InputLabel, TextField, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
-import { redirect } from "next/navigation";
 import "../styles/globals.css";
 import { useRouter } from "next/navigation";
 
@@ -16,72 +8,30 @@ const SignInPage = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isSuccess, setIsSuccess] = useState(false);
-  // const [account, setAccount] = useState({
-  //   email: "",
-  //   password: "",
-  // });
-  const [accounts, setAccounts] = useState([]);
-
-  const getAllAccounts = async () => {
-    const res = await fetch(`http://localhost:3000/api/accounts`);
-    const { results } = await res.json();
-
-    // setFlavorList(results);
-
-    setAccounts(results);
-  };
-
-  useEffect(() => {
-    getAllAccounts();
-  }, []);
-
-  // function onSubmit(e) {
-  //   e.preventDefault()
-  //   console.log({
-  //     email : emailRef.current.value,
-  //     password : passwordRef.current.value,
-  //   })
-  // }
 
   const onSubmit = async () => {
-    const postData = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: email,
-        password: password,
-      }),
-    };
+    const res = await fetch(
+      `http://localhost:3000/api/customer/sign-in?` +
+        new URLSearchParams({
+          email: email,
+          password: password,
+        })
+    );
+    const results = await res.json();
 
-    try {
-      const res = await fetch(`http://localhost:3000/api/accounts`, postData);
-      const response = await res.json();
-
-      const user = response[0];
-      console.log(user);
-
-      {
-        !response
-          ? setIsSuccess(false)
-          : localStorage.setItem("accountId", user.accountId);
-        router.push("/customer");
-      }
-
-      // console.log(accountId);
-
-      // console.log(accountId && <Link href="/customer"></Link>);
-      // {
-
-      // }
-
-      //
-    } catch (e) {
-      console.log(e);
-      console.log(isSuccess);
+    {
+      res && localStorage.setItem("accountId", results[0].accountId);
     }
+
+    {
+      res && localStorage.setItem("userName", results[0].firstName);
+    }
+
+    redirect();
+  };
+
+  const redirect = () => {
+    router.push("/customer");
   };
 
   return (
