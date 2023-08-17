@@ -31,12 +31,25 @@ const CustomerProduct = (path) => {
 
   var relativeTime = require("dayjs/plugin/relativeTime");
   dayjs.extend(relativeTime);
+  let preSelectedDate = dayjs().add(10, "day");
 
   // LOGGED IN USER LOCAL STORAGE
   const loggedInUserId =
     typeof window !== "undefined" && window.localStorage
       ? localStorage.getItem("accountId")
       : "";
+
+  const paymentMethodList = [
+    {
+      paymentMethodId: 1,
+      value: "Cash Money",
+    },
+
+    {
+      paymentMethodId: 2,
+      value: "G-Cash/E-payment",
+    },
+  ];
 
   // FOR DROPDOWN BOX VALUES
   const [products, setProducts] = useState([]);
@@ -50,10 +63,14 @@ const CustomerProduct = (path) => {
   const [cartList, setCartList] = useState([]);
   // LIST OF PRODUCTS ON USER'S CART / TO BE PASSED TO ORDERED_PRODUCTS TABLE
   const [orderedProductList, setOrderedProductList] = useState([]);
-
+  // SET THE CHOSEN DATE
+  const [chosenDate, setChosenDate] = useState(preSelectedDate);
+  // OPEN DIALOG
+  const [open, setOpen] = useState(false);
   // CART PRODUCTS VALUES
   const [subTotal, setSubtotal] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [paymentMethod, setPaymentMethod] = useState("");
 
   // FOR COMPUTING THE SUBTOTAL VALUES
   const [prices, setPrices] = useState({
@@ -77,6 +94,12 @@ const CustomerProduct = (path) => {
     freshFlowerId: 0,
     subTotal: 0,
   });
+
+  // const [transaction, setTransaction] = useState({
+  //   orderId: 0,
+  //   status: "Not Paid",
+  //   paymentMethod: "Cash Money",
+  // });
 
   // GETTER OF VALUES FROM DATABASE
   const getProduct = async () => {
@@ -231,10 +254,16 @@ const CustomerProduct = (path) => {
     }
   };
 
+  const handleTransaction = async (name, value) => {
+    setTransaction((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
   // CHECK OUT, CREATE ORDER THEN USE THE NEWLY ADDED ORDER ID TO USE AS REFERENCE FOR NEW ORDERED PRODUCT DATA FROM CART ID, THEN DELETE THE PASSED CART TO RESET THE USER CART.
-  const handleCheckOut = async () => {
+  const placeOrder = async () => {
     let orderTotalPrice = 0;
-    ``;
 
     cartList.map((cartItem) => (orderTotalPrice += cartItem.subTotal));
 
@@ -246,8 +275,15 @@ const CustomerProduct = (path) => {
       body: JSON.stringify({
         totalPrice: orderTotalPrice,
         accountId: loggedInUserId,
+        dateOrdered: dayjs(),
+        datePickUp: dayjs(chosenDate),
+        paymentDeadline: dayjs(chosenDate).subtract(5, "day"),
+        cancellationDeadline: dayjs(chosenDate).subtract(3, "day"),
+        status: "Not Paid",
+        paymentMethod: paymentMethod,
       }),
     };
+
     try {
       const res = await fetch(
         `http://localhost:3000/api/customer/orders`,
@@ -290,12 +326,68 @@ const CustomerProduct = (path) => {
           console.log(e);
         }
       });
+
+      // updateOrderTransactionId(orderId);
     } catch (e) {
       console.log(e);
     }
+
     deleteCart(loggedInUserId);
     setCartList([]);
+    closeCalendar();
   };
+
+  // const updateOrderTransactionId = async (orderId) => {
+  //   const id = orderId;
+
+  //   console.log(loggedInUserId);
+
+  //   const transactionPost = {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({
+  //       orderId: id,
+  //       accountId: loggedInUserId,
+  //       status: transaction.status,
+  //       paymentMethod: transaction.paymentMethod,
+  //     }),
+  //   };
+  //   try {
+  //     const res = await fetch(
+  //       `http://localhost:3000/api/customer/transaction`,
+  //       transactionPost
+  //     );
+
+  //     const data = await res.json();
+  //     const { insertId } = data[0];
+  //     const transactionId = insertId;
+
+  //     const updateOrderPost = {
+  //       method: "PUT",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         transactionId: transactionId,
+  //       }),
+  //     };
+  //     try {
+  //       const response = await fetch(
+  //         `http://localhost:3000/api/customer/orders?` +
+  //           new URLSearchParams({
+  //             orderId: id,
+  //           }),
+  //         updateOrderPost
+  //       );
+  //     } catch (e) {
+  //       console.log(e);
+  //     }
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // };
 
   // SET PRICE PROPERTIES / FOR GETTING THE SUM OF THE CHOSEN PRODUCT WITH ADD ONS AND QTY PRICES
   const handleUpdatePrice = (name, value) => {
@@ -305,123 +397,13 @@ const CustomerProduct = (path) => {
     }));
   };
 
-  // STORAGE FOR CURRENT DATE
-  let currentDate = dayjs();
-  // // SET THE INITIAL DATE SELECTED TO A VALID DATE AFTER OPENING THE DIALOG.
-  let preSelectedDate = dayjs(
-    `${currentDate.month() + 1}-${
-      currentDate.date() + 10
-    }-${currentDate.year()}`
-  );
-
-  // FOR VALIDATION IF THE ALLOWED DATE WILL EXCEED THE MONTH. IF YES PROCEED TO OTHER MONTH
-  let isAllowed;
-
-  // OPEN DIALOG
-  const [open, setOpen] = useState(false);
-  // OPEN ERROR ALERT
-  const [openError, setOpenError] = useState(false);
-
-  // SET THE CHOSEN DATE
-  const [chosenDate, setChosenDate] = useState(preSelectedDate);
-  // STILL CHOSEN DATE BUT FOR FORMATTING PURPOSE ONLY
-  const [selectedDate, setSelectedDate] = useState({
-    year: "",
-    month: "",
-    day: "",
-  });
-
-  // DAY STORAGE FOR THE PRESSED DATE
-  let pressedDay = chosenDate.date();
-  // GETTER OF TOTAL DAYS ON THE SELECTED MONTH
-  let monthDays = chosenDate.daysInMonth();
-
-  // NILAGAY PARA HINDI MAKAORDER AGAD CUSTOMER NG AGARAN NA PRODUCT / MEANING HINDI PEDE UMORDER NG CAKE NA PRIOR 10 DAYS FROM NOW ANG PICK UP
-  let computedAllowableDate = currentDate.date() + 10;
-
-  const [allowedDate, setAllowedDate] = useState({
-    day: currentDate.date() + 10,
-    month: currentDate.month() + 1,
-    year: currentDate.year(),
-  });
-
-  // PARA MACHECK KUNG MAG EEXCEED SA ARAW NG BUWAN YUNG ALLOWABLE DATE. PAG OO EDI PROCEED SIYA SA NEXT MONTH AT I-ITERATE YUNG NATITIRANG MGA ARAW NA DI CINOMPUTE KASI BAWAL
-  const calculateMonth = () => {
-    {
-      monthDays > computedAllowableDate
-        ? calculateChosenDay()
-        : calculateExceededDate();
-    }
-  };
-
-  // tiga bago ng allowed date pag lagpasan na siya
-  const calculateExceededDate = () => {
-    const x = computedAllowableDate - monthDays;
-
-    console.log("exceeded day func");
-    setAllowedDate({
-      day: x,
-      month: currentDate.month() + 2,
-      year: currentDate.year(),
-    });
-
-    isAllowed = false;
-  };
-  // console.log(isAllowed);
-  // console.log(allowedDate);
-
-  // calculate user on pressed kung after 10 days from now ba ang pinipindot. pag hindi bawal niya iselect yung date na yun
-  const calculateChosenDay = () => {
-    console.log("chosen day func");
-    {
-      chosenDate.date() < allowedDate.day &&
-      chosenDate.month() < allowedDate.month
-        ? setOpenError(true)
-        : setOpenError(false);
-    }
-    {
-      chosenDate.date() < allowedDate.day &&
-      chosenDate.month() < allowedDate.month
-        ? setSelectedDate({
-            year: "",
-            month: "",
-            day: "",
-          })
-        : setSelectedDate({
-            year: chosenDate.year(),
-            month: chosenDate.month() + 1,
-            day: chosenDate.date(),
-          });
-    }
-  };
-
-  // PARA MAISET NIYA SELECTED DATE
-  useEffect(() => {
-    calculateChosenDay();
-  }, [isAllowed]);
-
-  // setChosenDate((prevState) => ({
-  //   ...prevState,
-  //   [$D]: pressedDay,
-  // }))
-
-  const handleClose = () => {
+  const closeCalendar = () => {
     setOpen(false);
-    setChosenDate(preSelectedDate);
-  };
-
-  const handlePlaceOrder = () => {
-    handleClose();
   };
 
   const openCalendar = () => {
     setOpen(true);
   };
-
-  // ICALCULATE YUNG MONTH KUNG MAG EXCEED BA SA BUWAN YUNG ARAW NA PININDOT
-  useEffect(() => {
-    calculateMonth();
-  }, [chosenDate]);
 
   // ON LOAD RENDER / GET AND SET THE STATES TO READY PAGE
   useEffect(() => {
@@ -1000,7 +982,7 @@ const CustomerProduct = (path) => {
         </Box>
         <Dialog
           open={open}
-          onClose={handleClose}
+          onClose={closeCalendar}
           sx={{
             "& .MuiPickersLayout-actionBar": {
               display: "none",
@@ -1009,27 +991,25 @@ const CustomerProduct = (path) => {
           }}
         >
           <DialogTitle>Select a Schedule</DialogTitle>
-          <Collapse in={openError}>
-            <Alert
-              variant="outlined"
-              severity="error"
-              sx={{ width: "70%", marginLeft: "auto", marginRight: "auto" }}
-            >
-              This is an error alert — please select a day 10 days later from
-              today!
-            </Alert>
-          </Collapse>
-          <Card>
+          <Alert
+            variant="outlined"
+            severity="info"
+            sx={{ width: "70%", marginLeft: "auto", marginRight: "auto" }}
+          >
+            Please select a date for pick up. —{" "}
+            <strong>Calendar is set 10 days from today!</strong>
+          </Alert>
+          <Card sx={{ paddingBottom: "15px" }}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <Box>
                 <StaticDatePicker
                   format="DD-MM-YYYY"
-                  disablePast
+                  shouldDisableDate={(day) => {
+                    return dayjs(day).isBefore(preSelectedDate, "day");
+                  }}
                   showDaysOutsideCurrentMonth
                   value={chosenDate}
                   onChange={(newValue) => {
-                    // console.log(newValue);
-                    // const passedDate = e.$d;
                     setChosenDate(newValue);
                   }}
                   views={["year", "month", "day"]}
@@ -1037,15 +1017,50 @@ const CustomerProduct = (path) => {
               </Box>
             </LocalizationProvider>
           </Card>
+          <Box>
+            <InputLabel className="font-semibold text-slate-950 my-1 ml-4 text-lg font-sans">
+              Please select method of payment:
+            </InputLabel>
+            <TextField
+              name="paymentMethod"
+              onChange={(e) => {
+                const value = e.target.value;
+                console.log(value);
+
+                setPaymentMethod(value);
+              }}
+              className="shadow-lg"
+              sx={{
+                borderRadius: 3,
+                backgroundColor: "#f7f7f7",
+                paddingLeft: "20px",
+                paddingTop: "10px",
+                paddingRight: "10px",
+                paddingBottom: "10px",
+                marginLeft: "45px",
+                width: "200px",
+              }}
+              InputProps={{ disableUnderline: true }}
+              type="text"
+              defaultValue={""}
+              select
+              variant="standard"
+            >
+              {paymentMethodList.map((paymentMethod) => (
+                <MenuItem
+                  key={paymentMethod.paymentMethodId}
+                  value={paymentMethod.value}
+                  className="text-xs text-gray-400"
+                >
+                  {paymentMethod.value}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Box>
+
           <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            {openError ? (
-              <Button disabled onClick={handlePlaceOrder}>
-                Place Order
-              </Button>
-            ) : (
-              <Button onClick={handlePlaceOrder}>Place Order</Button>
-            )}
+            <Button onClick={closeCalendar}>Cancel</Button>
+            <Button onClick={placeOrder}>Place Order</Button>
           </DialogActions>
         </Dialog>
       </Box>

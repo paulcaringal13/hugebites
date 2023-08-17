@@ -8,16 +8,11 @@ import {
   Card,
   CardContent,
   Dialog,
-  DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
-  Divider,
   List,
   ListItem,
   ListItemAvatar,
-  ListItemIcon,
-  ListItemText,
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
@@ -38,7 +33,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const CustomerOrders = () => {
+const AdminOrders = () => {
   const loggedInUserId =
     typeof window !== "undefined" && window.localStorage
       ? localStorage.getItem("accountId")
@@ -47,8 +42,9 @@ const CustomerOrders = () => {
   const [orderList, setOrderList] = useState([]);
   const [order, setOrder] = useState({});
   const [productsOrderedList, setProductsOrderedList] = useState([]);
+  const [viewOpen, setViewOpen] = useState(false);
 
-  // prints all account records
+  // prints all records
   const getOrders = async () => {
     const res = await fetch(
       `http://localhost:3000/api/customer/orders?` +
@@ -57,6 +53,8 @@ const CustomerOrders = () => {
         })
     );
     const results = await res.json();
+
+    results.forEach((element) => {});
 
     const x = results.map((element) => {
       const newDateOrdered = new Date(element.dateOrdered);
@@ -83,7 +81,7 @@ const CustomerOrders = () => {
   const getSpecificOrder = async (orderId) => {
     const id = orderId;
 
-    // parent order
+    // parent specific order
     const orderRes = await fetch(
       `http://localhost:3000/api/customer/order?` +
         new URLSearchParams({
@@ -133,16 +131,13 @@ const CustomerOrders = () => {
       );
       const productsResult = await productRes.json();
 
-      console.log("1");
-      console.log(productsResult);
       setProductsOrderedList(productsResult);
     } catch (e) {
       console.log(e);
     }
   };
 
-  const [viewOpen, setViewOpen] = useState(false);
-
+  // open and close order view
   const openView = (orderId) => {
     setViewOpen(true);
     getSpecificOrder(orderId);
@@ -152,6 +147,7 @@ const CustomerOrders = () => {
     setViewOpen(false);
   };
 
+  // get all orders
   useEffect(() => {
     getOrders();
   }, []);
@@ -161,6 +157,11 @@ const CustomerOrders = () => {
     {
       field: "employeeId",
       headerName: "Employee ID",
+      width: 110,
+    },
+    {
+      field: "accountId",
+      headerName: "Customer ID",
       width: 110,
     },
     {
@@ -318,7 +319,7 @@ const CustomerOrders = () => {
                 }}
               >
                 <Typography className="mt-1 ms-2 text-lg font-mono">
-                  Transaction
+                  Transaction no. {order.transactionId}
                 </Typography>
                 <CardContent>
                   <PaidIcon sx={{ marginBottom: "2px" }} /> {order.status}
@@ -513,4 +514,4 @@ const CustomerOrders = () => {
   );
 };
 
-export default CustomerOrders;
+export default AdminOrders;

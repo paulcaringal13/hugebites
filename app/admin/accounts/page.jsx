@@ -255,7 +255,6 @@ const AdminAccounts = () => {
       renderCell: (cellValues) => {
         const { row } = cellValues;
 
-        console.log("row", row);
         return (
           <Box>
             <Button

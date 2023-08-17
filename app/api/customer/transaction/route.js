@@ -17,11 +17,13 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const accountId = searchParams.get("accountId");
 
-  const query = `SELECT * FROM orders WHERE accountId = ${accountId}`;
+  const query = `SELECT * FROM transactions WHERE accountId= ${accountId}`; // change accountID
   const res = await connection.execute(query);
   connection.end();
 
   const results = res[0];
+
+  console.log(results);
 
   return NextResponse.json(results);
 }
@@ -32,18 +34,8 @@ export async function POST(req, res) {
 
     const reqBody = await req.json();
 
-    const {
-      totalPrice,
-      accountId,
-      dateOrdered,
-      datePickUp,
-      paymentDeadline,
-      cancellationDeadline,
-      status,
-      paymentMethod,
-    } = reqBody;
-
-    const query = `INSERT INTO orders (totalPrice, accountId, dateOrdered, datePickUp, paymentDeadline, cancellationDeadline, status, paymentMethod) VALUES ('${totalPrice}', '${accountId}', '${dateOrdered}', '${datePickUp}', '${paymentDeadline}', '${cancellationDeadline}', '${status}', '${paymentMethod}')`;
+    const { orderId, accountId, status, paymentMethod } = reqBody;
+    const query = `INSERT INTO transactions (orderId, accountId, status, paymentMethod) VALUES ('${orderId}', '${accountId}', '${status}','${paymentMethod}')`;
     const results = await connection.execute(query);
     connection.end();
 
