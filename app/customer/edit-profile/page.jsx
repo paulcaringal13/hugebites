@@ -4,14 +4,16 @@ import { Box, InputLabel, TextField } from "@mui/material";
 import { useState, useEffect } from "react";
 
 const CustomerProfile = () => {
-  // LOGGED IN USER LOCAL STORAGE
+  // GET CURRENT USER LOGGED IN
   const loggedInUserId =
     typeof window !== "undefined" && window.localStorage
       ? localStorage.getItem("accountId")
       : "";
 
+  // STATE FOR LOGGED IN USER'S CURRENT INFORMATIONS
   const [accountInfo, setAccountInfo] = useState({});
 
+  // STATE FOR THE UPDATED USER'S INFORMATION
   const [newFirstName, setNewFirstName] = useState("");
   const [newLastName, setNewLastName] = useState("");
   const [newEmail, setNewEmail] = useState("");
@@ -19,6 +21,7 @@ const CustomerProfile = () => {
   const [newAge, setNewAge] = useState(0);
   const [newContact, setNewContact] = useState(0);
 
+  // GET CURRENT LOGGED IN USER'S INFORMATION
   const getAccountInfo = async () => {
     const res = await fetch(
       `http://localhost:3000/api/customer/account?` +
@@ -32,6 +35,7 @@ const CustomerProfile = () => {
     setAccountInfo(accountInfo);
   };
 
+  // SET STATE TO USER'S INPUT VALUES
   const setNewAccountInfo = async () => {
     setNewFirstName(accountInfo.firstName);
     setNewLastName(accountInfo.lastName);
@@ -41,6 +45,7 @@ const CustomerProfile = () => {
     setNewContact(accountInfo.contact);
   };
 
+  // EDIT ACCOUNT
   const editAccount = async () => {
     const postData = {
       method: "PUT",
@@ -75,13 +80,11 @@ const CustomerProfile = () => {
     getAccountInfo();
   }, []);
 
+  // SET THE STATES EVERY TIME ACCOUNT INFO CHANGE (FOR UPDATING THE FIELDS AFTER EDITING ACCOUNT INFORMATIONS)
   useEffect(() => {
     setNewAccountInfo();
   }, [accountInfo]);
 
-  console.log(newFirstName);
-
-  console.log(accountInfo);
   return (
     <Box
       sx={{

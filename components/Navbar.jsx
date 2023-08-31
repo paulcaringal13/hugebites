@@ -11,6 +11,7 @@ import {
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import dayjs from "dayjs";
 
 // primary=#FDF9F9
 // secondary=#EE7376 hover=#ea5054
@@ -19,6 +20,8 @@ import { useRouter } from "next/navigation";
 //sidebard w-271.2
 
 const Navbar = () => {
+  var relativeTime = require("dayjs/plugin/relativeTime");
+  dayjs.extend(relativeTime);
   const router = useRouter();
 
   const [isLoggedIn, setIsLoggedIn] = useState(true);
@@ -44,7 +47,35 @@ const Navbar = () => {
     setName(userName);
   }, [loggedInUserId]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    let auditId =
+      typeof window !== "undefined" && window.localStorage
+        ? localStorage.getItem("auditId")
+        : "";
+
+    const postData = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        timeOut: dayjs().format("MMM DD, YYYY hh:mma"),
+      }),
+    };
+
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/sign-in?` +
+          new URLSearchParams({
+            auditId: auditId,
+          }),
+        postData
+      );
+      const response = await res.json();
+    } catch (error) {
+      console.log(error);
+    }
+
     localStorage.clear();
     setIsLoggedIn(false);
     router.push("/");

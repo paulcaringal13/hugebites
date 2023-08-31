@@ -11,47 +11,27 @@ import {
 export const routes = [
   {
     id: 1,
-    name: "Account",
-    route: "admin/accounts",
+    name: "Menu",
+    route: "employee/menu",
   },
   {
     id: 2,
-    name: "Menu",
-    route: "admin/menu",
+    name: "Orders",
+    route: "employee/orders",
   },
   {
     id: 3,
-    name: "Orders",
-    route: "admin/orders",
+    name: "Customization",
+    route: "employee/customization",
   },
   {
     id: 4,
-    name: "Customization",
-    route: "admin/customization",
-  },
-  {
-    id: 5,
-    name: "Audit",
-    route: "admin/audit",
-  },
-  {
-    id: 6,
     name: "Inventory",
-    route: "admin/inventory ",
-  },
-  {
-    id: 7,
-    name: "Reports",
-    route: "admin/reports",
-  },
-  {
-    id: 8,
-    name: "Request",
-    route: "admin/request",
+    route: "employee/inventory ",
   },
 ];
 
-const AdminSidebar = () => {
+const EmployeeSidebar = () => {
   return (
     <Box
       sx={{
@@ -104,4 +84,4 @@ const AdminSidebar = () => {
   );
 };
 
-export default AdminSidebar;
+export default EmployeeSidebar;

@@ -17,14 +17,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-const styles = {
-  paperContainer: {
-    objectFit: "contain",
-    height: 1356,
-    backgroundImage: `url(${"/Bordered.JPG"})`,
-  },
-};
-
+// ARRAY FOR CATEGORIES / FOR FILTER FEATURE
 const category = [
   {
     id: "0",
@@ -45,25 +38,31 @@ const category = [
 ];
 
 const CustomerMenu = () => {
+  // ROUTER
   const router = useRouter();
 
+  // STATE FOR PRODUCTS
   const [products, setProducts] = useState([]);
 
-  const getAllExample = async () => {
+  // GET ALL PRODUCTS
+  const getAllProducts = async () => {
     const res = await fetch(`http://localhost:3000/api/customer/menu/product`);
     const data = await res.json();
     const { results } = data;
 
-    const prod = results[0];
+    const prod = results[0].filter((product) => product.isRemoved === 0);
+
     setProducts(prod);
   };
 
+  // PASS PARAMETER ID INTO GET PRODUCT ID FUNCTION
   const handleProductId = (id) => {
     const productId = id;
 
     getProductId(productId);
   };
 
+  // GET THE CURRENT PRODUCT SELECTED AND GET THE PRODUCT TO DATABASE
   const getProductId = async (id) => {
     const res = await fetch(
       `http://localhost:3000/api/customer/menu/product/${id}`
@@ -74,12 +73,13 @@ const CustomerMenu = () => {
     handleInput(results.productId);
   };
 
+  // REDIRECT PAGE TO SPECIFIC PRODUCT ORDERING PAGE
   const handleInput = (id) => {
     router.push(`/customer/menu/${id}`);
   };
 
   useEffect(() => {
-    getAllExample();
+    getAllProducts();
   }, []);
 
   return (

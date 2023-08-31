@@ -67,9 +67,13 @@ const AdminMenu = () => {
     rating: 0,
   });
   const [editOpen, setEditOpen] = useState(false);
+  const [removeOpen, setRemoveOpen] = useState(false);
+  const [relaunchOpen, setRelaunchOpen] = useState(false);
+
+  const [productId, setProductId] = useState(false);
 
   // category getter
-  const getAllExample = async () => {
+  const getAllProducts = async () => {
     const res = await fetch(`http://localhost:3000/api/admin/menu/product`);
     const data = await res.json();
     const { results } = data;
@@ -88,10 +92,27 @@ const AdminMenu = () => {
     setEditOpen(false);
   };
 
-  const handleRemove = (id) => {
-    const productId = id;
+  const openRemove = (id) => {
+    setProductId(id);
+
+    setRemoveOpen(true);
   };
 
+  const closeRemove = () => {
+    setRemoveOpen(false);
+  };
+
+  const openRelaunch = (id) => {
+    setProductId(id);
+
+    setRelaunchOpen(true);
+  };
+
+  const closeRelaunch = () => {
+    setRelaunchOpen(false);
+  };
+
+  // update function
   const editProduct = async () => {
     const postData = {
       method: "PUT",
@@ -119,7 +140,53 @@ const AdminMenu = () => {
       console.log(error);
     }
     closeEdit();
-    getAllExample();
+    getAllProducts();
+  };
+
+  const removeProduct = async (id) => {
+    const postData = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        isRemoved: 1,
+      }),
+    };
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/admin/menu/product/${id}`,
+        postData
+      );
+      const response = await res.json();
+    } catch (error) {
+      console.log(error);
+    }
+    getAllProducts();
+    closeRemove();
+  };
+
+  const relaunchProduct = async (id) => {
+    const postData = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        isRemoved: 0,
+      }),
+    };
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/admin/menu/product/${id}`,
+        postData
+      );
+      const response = await res.json();
+    } catch (error) {
+      console.log(error);
+    }
+    getAllProducts();
+    closeRelaunch();
   };
 
   // getter of id from database
@@ -135,7 +202,7 @@ const AdminMenu = () => {
   };
 
   useEffect(() => {
-    getAllExample();
+    getAllProducts();
   }, []);
 
   return (
@@ -283,32 +350,56 @@ const AdminMenu = () => {
                 >
                   Edit
                 </Button>
-                <Button
-                  sx={{
-                    marginLeft: "auto",
-                    width: "6rem",
-                    backgroundColor: "#7C5F35",
-                    color: "white",
-                    fontWeight: "bold",
-                    fontFamily: "Aileron Regular",
-                    padding: "6px",
-                    borderRadius: "9999px",
-                    "&:hover": {
-                      backgroundColor: "#977441",
-                      transitionDuration: "0.8s",
-                      boxShadow: "3",
-                    },
-                  }}
-                  onClick={() => handleRemove(prod.productId)}
-                >
-                  Remove
-                </Button>
+                {!prod.isRemoved ? (
+                  <Button
+                    sx={{
+                      marginLeft: "auto",
+                      width: "6rem",
+                      backgroundColor: "#7C5F35",
+                      color: "white",
+                      fontWeight: "bold",
+                      fontFamily: "Aileron Regular",
+                      padding: "6px",
+                      borderRadius: "9999px",
+                      "&:hover": {
+                        backgroundColor: "#977441",
+                        transitionDuration: "0.8s",
+                        boxShadow: "3",
+                      },
+                    }}
+                    onClick={() => openRemove(prod.productId)}
+                  >
+                    Remove
+                  </Button>
+                ) : (
+                  <Button
+                    sx={{
+                      marginLeft: "auto",
+                      width: "6rem",
+                      backgroundColor: "#7C5F35",
+                      color: "white",
+                      fontWeight: "bold",
+                      fontFamily: "Aileron Regular",
+                      padding: "6px",
+                      borderRadius: "9999px",
+                      "&:hover": {
+                        backgroundColor: "#977441",
+                        transitionDuration: "0.8s",
+                        boxShadow: "3",
+                      },
+                    }}
+                    onClick={() => openRelaunch(prod.productId)}
+                  >
+                    Relaunch
+                  </Button>
+                )}
               </CardActions>
             </Card>
           </Grid>
         ))}
       </Grid>
 
+      {/* edit */}
       <Dialog
         open={editOpen}
         TransitionComponent={Transition}
@@ -447,6 +538,84 @@ const AdminMenu = () => {
           >
             Save
           </Box>
+        </DialogActions>
+      </Dialog>
+
+      {/* remove  */}
+      <Dialog
+        open={removeOpen}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={closeRemove}
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <Box className="bg-slate-600 text-white">
+          <DialogTitle className="font-extrabold text-2xl">
+            CAUTION!
+          </DialogTitle>
+        </Box>
+        <DialogContent>
+          <DialogContentText
+            id="alert-dialog-slide-description"
+            className="font-semibold text-lg text-black"
+          >
+            Are you sure you want to remove this product on the menu?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            className="bg-blue-600 py-3 px-6 rounded-xl text-white font-semibold hover:bg-blue-800 duration-700"
+            onClick={() => closeRemove()}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            className="bg-red-500 py-3 px-6 rounded-xl text-white font-semibold hover:bg-red-800 duration-700"
+            onClick={() => removeProduct(productId)}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* relaunch */}
+      <Dialog
+        open={relaunchOpen}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={closeRelaunch}
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <Box className="bg-slate-600 text-white">
+          <DialogTitle className="font-extrabold text-2xl">
+            CAUTION!
+          </DialogTitle>
+        </Box>
+        <DialogContent>
+          <DialogContentText
+            id="alert-dialog-slide-description"
+            className="font-semibold text-lg text-black"
+          >
+            Are you sure you want to relaunch this product on the menu?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            className="bg-blue-600 py-3 px-6 rounded-xl text-white font-semibold hover:bg-blue-800 duration-700"
+            onClick={() => closeRelaunch()}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            className="bg-green-500 py-3 px-6 rounded-xl text-white font-semibold hover:bg-green-800 duration-700"
+            onClick={() => relaunchProduct(productId)}
+          >
+            Relaunch
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>

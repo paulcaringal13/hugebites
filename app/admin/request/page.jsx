@@ -39,41 +39,42 @@ const AdminOrders = () => {
       ? localStorage.getItem("accountId")
       : "";
 
-  const [orderList, setOrderList] = useState([]);
+  const [requestList, setRequestList] = useState([]);
+  const [request, setRequest] = useState({});
   const [order, setOrder] = useState({});
   const [productsOrderedList, setProductsOrderedList] = useState([]);
   const [viewOpen, setViewOpen] = useState(false);
 
   // prints all records
-  const getOrders = async () => {
-    const res = await fetch(`http://localhost:3000/api/admin/orders?`);
+  const getRequests = async () => {
+    const res = await fetch(`http://localhost:3000/api/request`);
     const results = await res.json();
+
+    console.log(results);
 
     results.forEach((element) => {});
 
     const x = results.map((element) => {
-      const newDateOrdered = new Date(element.dateOrdered);
-      const newDatePickUp = new Date(element.datePickUp);
-      const newPaymentDeadline = new Date(element.paymentDeadline);
-      const newRefundDeadline = new Date(element.refundDeadline);
+      const refundDeadline = new Date(element.refundDeadline);
+      const dateRequested = new Date(element.dateRequested);
 
       return {
-        accountId: element.accountId,
+        customerRequestId: element.customerRequestId,
+        customerId: element.customerId,
         orderId: element.orderId,
-        status: element.status,
+        requestStatus: element.requestStatus,
         paymentMethod: element.paymentMethod,
         totalPrice: element.totalPrice,
-        dateOrdered: newDateOrdered,
-        datePickUp: newDatePickUp,
-        paymentDeadline: newPaymentDeadline,
-        refundDeadline: newRefundDeadline,
+        isAcknowledged: element.isAcknowledged,
+        typeOfRequest: element.typeOfRequest,
+        dateRequested: dateRequested,
+        refundDeadline: refundDeadline,
       };
     });
 
-    setOrderList(x);
+    setRequestList(x);
   };
 
-  console.log(orderList);
   const getSpecificOrder = async (orderId) => {
     const id = orderId;
 
@@ -91,7 +92,6 @@ const AdminOrders = () => {
     const formattedDateOrdered = dayjs(order.dateOrdered).format(
       "MMM DD, YYYY"
     );
-
     const formattedDatePickUp = dayjs(order.datePickUp).format("MMM DD, YYYY");
     const formattedPaymentDeadline = dayjs(order.paymentDeadline).format(
       "MMM DD, YYYY"
@@ -103,7 +103,6 @@ const AdminOrders = () => {
     try {
       setOrder({
         orderId: order.orderId,
-        refundDeadline: formattedRefundDeadline,
         contact: order.contact,
         dateOrdered: formattedDateOrdered,
         datePickUp: formattedDatePickUp,
@@ -115,7 +114,7 @@ const AdminOrders = () => {
         paymentMethod: order.paymentMethod,
         status: order.status,
         totalPrice: order.totalPrice,
-        transactionId: order.transactionId,
+        refundDeadline: formattedRefundDeadline,
       });
 
       // products ordered
@@ -133,6 +132,7 @@ const AdminOrders = () => {
     }
   };
 
+  console.log(order);
   // open and close order view
   const openView = (orderId) => {
     setViewOpen(true);
@@ -145,51 +145,49 @@ const AdminOrders = () => {
 
   // get all orders
   useEffect(() => {
-    getOrders();
+    getRequests();
   }, []);
 
   const columns = [
-    { field: "orderId", headerName: "Order ID", width: 75 },
+    { field: "customerRequestId", headerName: "Request ID", width: 100 },
     {
-      field: "accountId",
+      field: "customerId",
       headerName: "Customer ID",
-      width: 110,
+      width: 100,
+    },
+    {
+      field: "orderId",
+      headerName: "Order ID",
+      type: "number",
+      width: 100,
+    },
+    {
+      field: "requestStatus",
+      headerName: "Request Status",
+      width: 140,
     },
     {
       field: "totalPrice",
       headerName: "Total Price",
       type: "number",
-      width: 100,
-    },
-    {
-      field: "status",
-      headerName: "Status",
-      width: 140,
-    },
-    { field: "paymentMethod", headerName: "Payment Method", width: 120 },
-    {
-      field: "dateOrdered",
-      headerName: "Date Ordered",
-      type: "date",
-      width: 100,
-    },
-    {
-      field: "datePickUp",
-      headerName: "Pick up date",
-      type: "date",
-      width: 100,
-    },
-    {
-      field: "paymentDeadline",
-      headerName: "Payment Deadline",
-      type: "date",
-      width: 140,
+      width: 110,
     },
     {
       field: "refundDeadline",
       headerName: "Refund Due Date",
       type: "date",
-      width: 150,
+      width: 170,
+    },
+    {
+      field: "typeOfRequest",
+      headerName: "Type of Request",
+      width: 180,
+    },
+    {
+      field: "dateRequested",
+      headerName: "Date Requested",
+      type: "date",
+      width: 140,
     },
     {
       field: "view",
@@ -225,11 +223,11 @@ const AdminOrders = () => {
   return (
     <Box className="m-9">
       <Box className="flex flex-row justify-between">
-        <Box className="font-extrabold text-5xl mb-6 font-serif">Orders</Box>
+        <Box className="font-extrabold text-5xl mb-6 font-serif">Requests</Box>
       </Box>
       <DataGrid
         sx={{ overflowY: "hidden" }}
-        rows={orderList}
+        rows={requestList}
         columns={columns}
         // getRowId={rows}
         getRowId={(row) => row.orderId}

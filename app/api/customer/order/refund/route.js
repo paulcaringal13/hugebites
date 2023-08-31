@@ -12,21 +12,6 @@ async function con() {
   return connection;
 }
 
-export async function GET(request) {
-  const connection = await con();
-
-  const { searchParams } = new URL(request.url);
-  const orderId = searchParams.get("orderId");
-
-  const query = `SELECT orders.orderId, orders.accountId, firstName, lastName, contact, email, totalPrice, dateOrdered, datePickUp, paymentDeadline, refundDeadline, status, paymentMethod, hasRequest, isPaid, isCancelled FROM orders LEFT JOIN accounts ON orders.accountId = accounts.accountId WHERE orders.orderId = ${orderId}`;
-  const res = await connection.execute(query);
-  connection.end();
-
-  const results = res[0];
-
-  return NextResponse.json(results);
-}
-
 export async function PUT(request) {
   const connection = await con();
 

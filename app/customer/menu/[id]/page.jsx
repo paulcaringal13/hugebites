@@ -231,6 +231,7 @@ const CustomerProduct = (path) => {
     getOrderedProductDatas();
   };
 
+  // DELETE CART DATA ON DATABASE
   const deleteCart = async () => {
     const deletedCart = {
       method: "DELETE",
@@ -254,13 +255,6 @@ const CustomerProduct = (path) => {
     }
   };
 
-  const handleTransaction = async (name, value) => {
-    setTransaction((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
   // CHECK OUT, CREATE ORDER THEN USE THE NEWLY ADDED ORDER ID TO USE AS REFERENCE FOR NEW ORDERED PRODUCT DATA FROM CART ID, THEN DELETE THE PASSED CART TO RESET THE USER CART.
   const placeOrder = async () => {
     let orderTotalPrice = 0;
@@ -278,7 +272,7 @@ const CustomerProduct = (path) => {
         dateOrdered: dayjs(),
         datePickUp: dayjs(chosenDate),
         paymentDeadline: dayjs(chosenDate).subtract(5, "day"),
-        cancellationDeadline: dayjs(chosenDate).subtract(3, "day"),
+        refundDeadline: dayjs(chosenDate).subtract(3, "day"),
         status: "Not Paid",
         paymentMethod: paymentMethod,
       }),
@@ -336,58 +330,6 @@ const CustomerProduct = (path) => {
     setCartList([]);
     closeCalendar();
   };
-
-  // const updateOrderTransactionId = async (orderId) => {
-  //   const id = orderId;
-
-  //   console.log(loggedInUserId);
-
-  //   const transactionPost = {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       orderId: id,
-  //       accountId: loggedInUserId,
-  //       status: transaction.status,
-  //       paymentMethod: transaction.paymentMethod,
-  //     }),
-  //   };
-  //   try {
-  //     const res = await fetch(
-  //       `http://localhost:3000/api/customer/transaction`,
-  //       transactionPost
-  //     );
-
-  //     const data = await res.json();
-  //     const { insertId } = data[0];
-  //     const transactionId = insertId;
-
-  //     const updateOrderPost = {
-  //       method: "PUT",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         transactionId: transactionId,
-  //       }),
-  //     };
-  //     try {
-  //       const response = await fetch(
-  //         `http://localhost:3000/api/customer/orders?` +
-  //           new URLSearchParams({
-  //             orderId: id,
-  //           }),
-  //         updateOrderPost
-  //       );
-  //     } catch (e) {
-  //       console.log(e);
-  //     }
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // };
 
   // SET PRICE PROPERTIES / FOR GETTING THE SUM OF THE CHOSEN PRODUCT WITH ADD ONS AND QTY PRICES
   const handleUpdatePrice = (name, value) => {

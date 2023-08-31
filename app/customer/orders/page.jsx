@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@mui/base";
 import { DataGrid } from "@mui/x-data-grid";
 import {
+  Alert,
   Avatar,
   Box,
   Card,
@@ -12,12 +13,10 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Divider,
   List,
   ListItem,
   ListItemAvatar,
-  ListItemIcon,
-  ListItemText,
+  Snackbar,
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
@@ -33,22 +32,48 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import EventIcon from "@mui/icons-material/Event";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
+import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
+import UndoRoundedIcon from "@mui/icons-material/UndoRounded";
 
+// FOR SLIDE EFFECT
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 const CustomerOrders = () => {
+  // GET CURRENT USER LOGGED IN
   const loggedInUserId =
     typeof window !== "undefined" && window.localStorage
       ? localStorage.getItem("accountId")
       : "";
 
+  // LIST OF ORDERS
   const [orderList, setOrderList] = useState([]);
+  // SPECIFIC ORDER
   const [order, setOrder] = useState({});
+  // LIST OF PRODUCTS ORDERED BY THE USER
   const [productsOrderedList, setProductsOrderedList] = useState([]);
 
-  // prints all account records
+  // OPEN STATE FOR DIALOGS + SNACKBAR
+  const [viewOpen, setViewOpen] = useState(false);
+  const [cancelOrderOpen, setCancelOrderOpen] = useState(false);
+  const [cancelSnackbarOpen, setCancelSnackbarOpen] = useState(false);
+  const [cancelledSnackbarOpen, setCancelledSnackbarOpen] = useState(false);
+
+  const [refundOpen, setRefundOpen] = useState(false);
+  const [refundPaymentSnackbarOpen, setRefundPaymentSnackbarOpen] =
+    useState(false);
+  const [refundRequestSnackbarOpen, setRefundRequestSnackbarOpen] =
+    useState(false);
+
+  const [refundDeadlineSnackbarOpen, setRefundDeadlineSnackbarOpen] =
+    useState(false);
+
+  const [isRefund, setIsRefund] = useState(true);
+  const [isView, setIsView] = useState(true);
+  const [isCancel, setIsCancel] = useState(true);
+
+  // GET ALL ORDERS
   const getOrders = async () => {
     const res = await fetch(
       `http://localhost:3000/api/customer/orders?` +
@@ -62,7 +87,7 @@ const CustomerOrders = () => {
       const newDateOrdered = new Date(element.dateOrdered);
       const newDatePickUp = new Date(element.datePickUp);
       const newPaymentDeadline = new Date(element.paymentDeadline);
-      const newCancellationDeadline = new Date(element.cancellationDeadline);
+      const newRefundDeadline = new Date(element.refundDeadline);
 
       return {
         accountId: element.accountId,
@@ -73,17 +98,20 @@ const CustomerOrders = () => {
         dateOrdered: newDateOrdered,
         datePickUp: newDatePickUp,
         paymentDeadline: newPaymentDeadline,
-        cancellationDeadline: newCancellationDeadline,
+        refundDeadline: newRefundDeadline,
       };
     });
 
     setOrderList(x);
   };
+  // , customerOption
 
-  const getSpecificOrder = async (orderId) => {
+  // GET SPECIFIC ORDER
+  const getSpecificOrder = async (orderId, customerOption) => {
     const id = orderId;
 
-    // parent order
+    console.log(typeof id);
+
     const orderRes = await fetch(
       `http://localhost:3000/api/customer/order?` +
         new URLSearchParams({
@@ -102,14 +130,15 @@ const CustomerOrders = () => {
     const formattedPaymentDeadline = dayjs(order.paymentDeadline).format(
       "MMM DD, YYYY"
     );
-    const formattedCancellationDeadline = dayjs(
-      order.cancellationDeadline
-    ).format("MMM DD, YYYY");
+    const formattedRefundDeadline = dayjs(order.refundDeadline).format(
+      "MMM DD, YYYY"
+    );
 
     try {
       setOrder({
         orderId: order.orderId,
-        cancellationDeadline: formattedCancellationDeadline,
+        accountId: order.accountId,
+        refundDeadline: formattedRefundDeadline,
         contact: order.contact,
         dateOrdered: formattedDateOrdered,
         datePickUp: formattedDatePickUp,
@@ -121,35 +150,223 @@ const CustomerOrders = () => {
         paymentMethod: order.paymentMethod,
         status: order.status,
         totalPrice: order.totalPrice,
-        transactionId: order.transactionId,
+        isPaid: order.isPaid,
+        isCancelled: order.isCancelled,
+        hasRequest: order.hasRequest,
       });
-
-      // products ordered
-      const productRes = await fetch(
-        `http://localhost:3000/api/customer/order/products?` +
-          new URLSearchParams({
-            orderId: id,
-          })
-      );
-      const productsResult = await productRes.json();
-
-      console.log("1");
-      console.log(productsResult);
-      setProductsOrderedList(productsResult);
     } catch (e) {
       console.log(e);
     }
+
+    // products ordered
+    const productRes = await fetch(
+      `http://localhost:3000/api/customer/order/products?` +
+        new URLSearchParams({
+          orderId: id,
+        })
+    );
+    const productsResult = await productRes.json();
+    // parent order
+    setProductsOrderedList(productsResult);
+
+    {
+      customerOption == 1 && validateRefundPayment(order);
+    }
+
+    {
+      customerOption == 2 && validateCancelRequest(order);
+    }
+
+    {
+      customerOption == 3 && openView(order.orderId);
+    }
   };
 
-  const [viewOpen, setViewOpen] = useState(false);
+  // VALIDATE IF THE USER ALREADY HAVE 1 REQUEST ON PROCESS
+  const validateRefundPayment = async (order) => {
+    const isPaid = order.isPaid;
 
+    {
+      !isPaid ? openRefundPaymentSnackbar() : valdiateRefundRequest(order);
+    }
+  };
+
+  const valdiateRefundRequest = async (order) => {
+    const hasRequest = order.hasRequest;
+    {
+      !hasRequest ? validateRefundDeadline(order) : openRefundRequestSnackbar();
+    }
+  };
+
+  // VALIDATE IF CANCELLATION DATE DEADLINE IS EXCEEDED
+  const validateRefundDeadline = async (order) => {
+    const refundDateDeadline = dayjs(order.refundDeadline);
+
+    {
+      !dayjs().isAfter(refundDateDeadline)
+        ? openRefund(order)
+        : openRefundDeadlineSnackbar();
+    }
+  };
+
+  const validateCancelRequest = async (order) => {
+    const isPaid = order.isPaid;
+
+    {
+      !isPaid ? openCancelOrder(order) : openCancelSnackbar();
+    }
+  };
+
+  // UPDATE ORDER TO REQUEST FOR CANCELLATION OF THE USER'S ORDER
+  const requestRefund = async () => {
+    const refundDeadline = dayjs(order.refundDeadline).add(1, "day");
+
+    const postData = {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        orderId: order.orderId,
+        customerId: order.accountId,
+        totalPrice: order.totalPrice,
+        dateRequested: dayjs(),
+        requestStatus: "Pending",
+        isAcknowledged: "0",
+        refundDeadline: refundDeadline,
+        typeOfRequest: "Refund",
+      }),
+    };
+
+    try {
+      const res = await fetch(`http://localhost:3000/api/request`, postData);
+
+      const putData = {
+        method: "PUT", // or 'PUT'
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: "Refund Request Pending",
+          hasRequest: 1,
+        }),
+      };
+
+      try {
+        const res = await fetch(
+          `http://localhost:3000/api/customer/order/refund?` +
+            new URLSearchParams({
+              orderId: order.orderId,
+            }),
+          putData
+        );
+        const response = await res.json();
+      } catch (error) {
+        console.log(error);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    getOrders();
+    closeRefundOrder();
+  };
+
+  const cancelOrder = async () => {
+    const postData = {
+      method: "PUT", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        isCancelled: 1,
+        isPaid: 1,
+        status: "Order Cancelled",
+      }),
+    };
+
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/customer/order/cancel?` +
+          new URLSearchParams({
+            orderId: order.orderId,
+          }),
+        postData
+      );
+    } catch (e) {
+      console.log(e);
+    }
+
+    getOrders();
+    closeCancelOrder();
+  };
+
+  // DIALOG + SNACKBAR OPEN AND CLOSE FUNCTIONS
   const openView = (orderId) => {
     setViewOpen(true);
-    getSpecificOrder(orderId);
   };
 
   const closeView = () => {
     setViewOpen(false);
+  };
+
+  const openCancelOrder = (order) => {
+    {
+      !order.isCancelled ? setCancelOrderOpen(true) : openCancelledSnackbar();
+    }
+  };
+
+  const closeCancelOrder = () => {
+    setCancelOrderOpen(false);
+  };
+
+  const closeCancelSnackbar = () => {
+    setCancelSnackbarOpen(false);
+  };
+
+  const openCancelSnackbar = () => {
+    setCancelSnackbarOpen(true);
+  };
+
+  const closeCancelledSnackbar = () => {
+    setCancelledSnackbarOpen(false);
+  };
+
+  const openCancelledSnackbar = () => {
+    setCancelledSnackbarOpen(true);
+  };
+
+  const openRefund = (order) => {
+    {
+      !order.isCancelled ? setRefundOpen(true) : openCancelledSnackbar();
+    }
+  };
+
+  const closeRefundOrder = () => {
+    setRefundOpen(false);
+  };
+
+  const closeRefundPaymentSnackbar = () => {
+    setRefundPaymentSnackbarOpen(false);
+  };
+
+  const openRefundPaymentSnackbar = () => {
+    setRefundPaymentSnackbarOpen(true);
+  };
+
+  const closeRefundRequestSnackbar = () => {
+    setRefundRequestSnackbarOpen(false);
+  };
+
+  const openRefundRequestSnackbar = () => {
+    setRefundRequestSnackbarOpen(true);
+  };
+
+  const openRefundDeadlineSnackbar = () => {
+    setRefundDeadlineSnackbarOpen(true);
+  };
+
+  const closeRefundDeadlineSnackbar = () => {
+    setRefundDeadlineSnackbarOpen(false);
   };
 
   useEffect(() => {
@@ -172,7 +389,7 @@ const CustomerOrders = () => {
     {
       field: "status",
       headerName: "Status",
-      width: 105,
+      width: 140,
     },
     { field: "paymentMethod", headerName: "Payment Method", width: 120 },
     {
@@ -194,10 +411,70 @@ const CustomerOrders = () => {
       width: 140,
     },
     {
-      field: "cancellationDeadline",
-      headerName: "Deadline of Cancellation",
+      field: "refundDeadline",
+      headerName: "Refund Due Date",
       type: "date",
-      width: 180,
+      width: 140,
+    },
+    {
+      field: "refund",
+      headerName: "Refund Payment",
+      width: 130,
+      sortable: false,
+      renderCell: (cellValues) => {
+        const { orderId } = cellValues.row;
+        return (
+          <div className="w-full h-full">
+            <Button
+              className="w-full h-full mx-auto my-auto"
+              onClick={() => getSpecificOrder(orderId, 1)}
+            >
+              <UndoRoundedIcon
+                className="transform transition-all hover:scale-150 duration-1000"
+                sx={{
+                  fill: "white",
+                  bgcolor: "#334155",
+                  borderRadius: "9999px",
+                  padding: "4px",
+                  "&:hover": {
+                    backgroundColor: "#64748b",
+                  },
+                }}
+              />
+            </Button>
+          </div>
+        );
+      },
+    },
+    {
+      field: "cancel",
+      headerName: "Cancel Order",
+      width: 100,
+      sortable: false,
+      renderCell: (cellValues) => {
+        const { orderId } = cellValues.row;
+        return (
+          <div className="w-full h-full">
+            <Button
+              className="w-full h-full mx-auto my-auto"
+              onClick={() => getSpecificOrder(orderId, 2)}
+            >
+              <CancelOutlinedIcon
+                className="transform transition-all hover:scale-150 duration-1000"
+                sx={{
+                  fill: "white",
+                  bgcolor: "#334155",
+                  borderRadius: "9999px",
+                  padding: "4px",
+                  "&:hover": {
+                    backgroundColor: "#64748b",
+                  },
+                }}
+              />
+            </Button>
+          </div>
+        );
+      },
     },
     {
       field: "view",
@@ -210,7 +487,7 @@ const CustomerOrders = () => {
           <div className="w-full h-full">
             <Button
               className="w-full h-full mx-auto my-auto"
-              onClick={() => openView(orderId)}
+              onClick={() => getSpecificOrder(orderId, 3)}
             >
               <VisibilityOutlinedIcon
                 className="transform transition-all hover:scale-150 duration-1000"
@@ -230,6 +507,7 @@ const CustomerOrders = () => {
       },
     },
   ];
+
   return (
     <Box className="m-9">
       <Box className="flex flex-row justify-between">
@@ -249,6 +527,7 @@ const CustomerOrders = () => {
         pageSizeOptions={[5, 10]}
         checkboxSelection
       />
+      {/* ORDER VIEW DIALOG */}
       <Dialog
         sx={{ width: "100vw", marginLeft: "auto", marginRight: "auto" }}
         open={viewOpen}
@@ -404,10 +683,10 @@ const CustomerOrders = () => {
               >
                 <CardContent>
                   <Box>
-                    <EventBusyIcon sx={{ marginBottom: "2px" }} /> Cancellation
-                    Deadline
+                    <EventBusyIcon sx={{ marginBottom: "2px" }} /> Refund Due
+                    Date
                   </Box>
-                  <Typography>{order.cancellationDeadline} </Typography>
+                  <Typography>{order.refundDeadline} </Typography>
                 </CardContent>
               </Card>
             </Box>
@@ -509,6 +788,142 @@ const CustomerOrders = () => {
           </Box>
         </DialogContent>
       </Dialog>
+
+      {/* CANCEL ORDER DIALOG */}
+      <Dialog
+        open={refundOpen}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={closeRefundOrder}
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <Box sx={{ bgcolor: "#EE7376", color: "white" }}>
+          <DialogTitle className="font-extrabold text-2xl">
+            CAUTION!
+          </DialogTitle>
+        </Box>
+        <DialogContent>
+          <DialogContentText
+            id="alert-dialog-slide-description"
+            className="font-semibold text-lg text-black"
+          >
+            Do you really want to refund and cancel your order pricing ₱
+            {order.totalPrice}?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            className="bg-blue-600 py-3 px-6 rounded-xl text-white font-semibold hover:bg-blue-800 duration-700"
+            onClick={() => requestRefund()}
+          >
+            Yes
+          </Button>
+          <Button
+            variant="contained"
+            className="bg-red-500 py-3 px-6 rounded-xl text-white font-semibold hover:bg-red-800 duration-700"
+            onClick={() => closeRefundOrder()}
+          >
+            No
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={cancelOrderOpen}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={closeCancelOrder}
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <Box sx={{ bgcolor: "#EE7376", color: "white" }}>
+          <DialogTitle className="font-extrabold text-2xl">
+            CAUTION!
+          </DialogTitle>
+        </Box>
+        <DialogContent>
+          <DialogContentText
+            id="alert-dialog-slide-description"
+            className="font-semibold text-lg text-black"
+          >
+            Do you really want to cancel this order?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            className="bg-blue-600 py-3 px-6 rounded-xl text-white font-semibold hover:bg-blue-800 duration-700"
+            onClick={() => cancelOrder()}
+          >
+            Yes
+          </Button>
+          <Button
+            variant="contained"
+            className="bg-red-500 py-3 px-6 rounded-xl text-white font-semibold hover:bg-red-800 duration-700"
+            onClick={() => closeCancelOrder()}
+          >
+            No
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* PAST DUE DATE SNACKBAR */}
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={refundDeadlineSnackbarOpen}
+        autoHideDuration={6000}
+        onClose={closeRefundDeadlineSnackbar}
+      >
+        <Alert severity="error" sx={{ width: "100%" }}>
+          Refund Request Failed! — Past Refund Due Date.
+        </Alert>
+      </Snackbar>
+
+      {/* REQUEST COUNT SNACKBAR */}
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={refundPaymentSnackbarOpen}
+        autoHideDuration={6000}
+        onClose={closeRefundPaymentSnackbar}
+      >
+        <Alert severity="error" sx={{ width: "100%" }}>
+          Refund unavailable! — Order not paid.
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={refundRequestSnackbarOpen}
+        autoHideDuration={6000}
+        onClose={closeRefundRequestSnackbar}
+      >
+        <Alert severity="error" sx={{ width: "100%" }}>
+          Refund failed! — You already have a refund request on process.
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={cancelSnackbarOpen}
+        autoHideDuration={6000}
+        onClose={closeCancelSnackbar}
+      >
+        <Alert severity="error" sx={{ width: "100%" }}>
+          Cannot cancel this order because you are already paid! — Press the
+          refund button instead.
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={cancelledSnackbarOpen}
+        autoHideDuration={6000}
+        onClose={closeCancelledSnackbar}
+      >
+        <Alert severity="error" sx={{ width: "100%" }}>
+          Error! — Order already cancelled.
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

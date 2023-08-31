@@ -1,5 +1,4 @@
-import Sidebar from "../admin/components/AdminSidebar"
-
+import Sidebar from "./components/EmployeeSidebar";
 
 const page = () => {
   return (
@@ -7,8 +6,7 @@ const page = () => {
       <div>Admin page</div>
       <Sidebar />
     </div>
+  );
+};
 
-  )
-}
-
-export default page
+export default page;

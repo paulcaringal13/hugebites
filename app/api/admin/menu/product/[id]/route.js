@@ -28,3 +28,22 @@ export async function GET(request, path) {
 
   return NextResponse.json({ results: product });
 }
+
+export async function PUT(req, path) {
+  try {
+    const connection = await con();
+
+    const { id } = path.params;
+
+    const reqBody = await req.json();
+    const { isRemoved } = reqBody;
+
+    const query = `UPDATE products SET isRemoved ='${isRemoved}' WHERE productId = ${id}`;
+    const results = await connection.execute(query);
+    connection.end();
+
+    return NextResponse.json({ results });
+  } catch (error) {
+    console.log(error);
+  }
+}

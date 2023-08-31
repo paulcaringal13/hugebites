@@ -18,8 +18,6 @@ export async function GET(request, path) {
   const results = await connection.execute(query);
   connection.end();
 
-  console.log(results);
-
   return NextResponse.json({ results: results });
 }
 
