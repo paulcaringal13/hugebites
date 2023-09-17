@@ -22,7 +22,7 @@ import ContactMailRoundedIcon from "@mui/icons-material/ContactMailRounded";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import { useState } from "react";
 
-const AdminSidebar = ({ props }) => {
+const MiniAdminSidebar = ({ props }) => {
   const router = useRouter();
 
   // const [openDraw, setOpenDraw] = useState(drawerState);
@@ -75,69 +75,33 @@ const AdminSidebar = ({ props }) => {
       id: 8,
       name: "Request",
       icon: <ContactMailRoundedIcon />,
-      route: "admin/request",
+      route: "request",
     },
   ];
 
   return (
-    <Drawer
+    <List
       sx={{
-        overflowY: "auto",
-        height: "calc(100vh - 88px)",
-        marginTop: "88px",
-        top: 72,
+        width: "88px",
       }}
-      open={props}
     >
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          paddingLeft: "30px",
-          paddingRight: "30px",
-          paddingTop: "12px",
-          paddingBottom: "12px",
-        }}
-      >
-        <Box component="button">
-          <MenuRoundedIcon />
-        </Box>
-        <Box
-          component="img"
+      {routes.map((items) => (
+        <ListItem
+          button
+          key={items.id}
+          onClick={() => router.push(items.route)}
           sx={{
-            height: "60px",
-            width: "45px",
+            "&:hover": {
+              backgroundColor: "#e6e6e6",
+              transitionDuration: "0.3s",
+              boxShadow: "3",
+            },
           }}
-          alt="huge-bites-logo"
-          src="/initial-images/Logo.png"
-        />
-        <Typography
-          // sx={{ fontSize: "40px" }}
-          // className="font-mono font-extrabold"
-          sx={{ fontFamily: "cursive", fontWeight: "800", fontSize: "40px" }}
         >
-          HugeBites
-        </Typography>
-      </Box>
-      <List>
-        {routes.map((items) => (
-          <ListItem
-            button
-            key={items.id}
-            onClick={() => router.push(items.route)}
-            sx={{
-              "&:hover": {
-                backgroundColor: "#e6e6e6",
-                transitionDuration: "0.3s",
-                boxShadow: "3",
-              },
-            }}
-          >
-            <ListItemIcon sx={{ color: "black" }}>{items.icon} </ListItemIcon>
-            <Typography sx={{ fontFamily: "cursive", fontWeight: "800" }}>
-              {items.name}
-            </Typography>
-            {/* <ListItemButton
+          <ListItemIcon sx={{ color: "black", marginLeft: "15px" }}>
+            {items.icon}
+          </ListItemIcon>
+          {/* <ListItemButton
               sx={{
                 "&:hover": {
                   background: "transparent",
@@ -158,11 +122,10 @@ const AdminSidebar = ({ props }) => {
                 />
               </Link>
             </ListItemButton> */}
-          </ListItem>
-        ))}
-      </List>
-    </Drawer>
+        </ListItem>
+      ))}
+    </List>
   );
 };
 
-export default AdminSidebar;
+export default MiniAdminSidebar;

@@ -27,8 +27,8 @@ export const routes = [
   },
   {
     id: 4,
-    name: "Transaction",
-    route: "customer/transaction",
+    name: "Requests",
+    route: "customer/request",
   },
 ];
 

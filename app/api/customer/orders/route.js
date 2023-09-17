@@ -41,9 +41,13 @@ export async function POST(req, res) {
       refundDeadline,
       status,
       paymentMethod,
+      proofOfPaymentImage,
+      hasRequest,
+      isPaid,
+      isCancelled,
     } = reqBody;
-
-    const query = `INSERT INTO orders (totalPrice, accountId, dateOrdered, datePickUp, paymentDeadline, refundDeadline, status, paymentMethod) VALUES ('${totalPrice}', '${accountId}', '${dateOrdered}', '${datePickUp}', '${paymentDeadline}', '${refundDeadline}', '${status}', '${paymentMethod}')`;
+    console.log(proofOfPaymentImage);
+    const query = `INSERT INTO orders (totalPrice, accountId, dateOrdered, datePickUp, paymentDeadline, refundDeadline, status, paymentMethod, proofOfPaymentImage, hasRequest, isPaid, isCancelled) VALUES ('${totalPrice}', '${accountId}', '${dateOrdered}', '${datePickUp}', '${paymentDeadline}', '${refundDeadline}', '${status}', '${paymentMethod}', '${proofOfPaymentImage}', '${hasRequest}', '${isPaid}', '${isCancelled}')`;
     const results = await connection.execute(query);
     connection.end();
 

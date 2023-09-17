@@ -211,11 +211,16 @@ const CustomerProduct = (path) => {
 
       const { insertId } = response[0];
 
+      console.log("214", orderedProductList);
+
       getCart();
+      getOrderedProductDatas();
     } catch (e) {
       console.log(e);
     }
   };
+
+  console.log("orderedProductList", orderedProductList);
 
   // CART STATE SETTER
   const handleCart = (name, value) => {
@@ -228,7 +233,6 @@ const CustomerProduct = (path) => {
   // ON CLICK OF ADD TO CART BUTTON / ADD PRODUCTS TO CART / UPDATES ORDERED PRODUCT LIST
   const handleAddToCart = async () => {
     addCart();
-    getOrderedProductDatas();
   };
 
   // DELETE CART DATA ON DATABASE
@@ -274,7 +278,11 @@ const CustomerProduct = (path) => {
         paymentDeadline: dayjs(chosenDate).subtract(5, "day"),
         refundDeadline: dayjs(chosenDate).subtract(3, "day"),
         status: "Not Paid",
+        proofOfPaymentImage: "",
         paymentMethod: paymentMethod,
+        hasRequest: 0,
+        isPaid: 0,
+        isCancelled: 0,
       }),
     };
 
@@ -967,7 +975,6 @@ const CustomerProduct = (path) => {
               name="paymentMethod"
               onChange={(e) => {
                 const value = e.target.value;
-                console.log(value);
 
                 setPaymentMethod(value);
               }}

@@ -23,7 +23,10 @@ async function con() {
 export async function GET(request) {
   const connection = await con();
 
-  const query = `SELECT * FROM customer_request`;
+  const { searchParams } = new URL(request.url);
+  const accountId = searchParams.get("accountId");
+
+  const query = `SELECT * FROM customer_request WHERE customerId = ${accountId}`;
   const res = await connection.execute(query);
   connection.end();
 
@@ -44,22 +47,22 @@ export async function POST(req, res) {
       totalPrice,
       dateRequested,
       requestStatus,
-      isAcknowledged,
+      isRejected,
+      isAccepted,
       refundDeadline,
-      orderStatus,
       typeOfRequest,
     } = reqBody;
 
-    const query = `INSERT INTO customer_request (      
+    const query = `INSERT INTO customer_request (
       orderId,
       customerId,
       totalPrice,
       dateRequested,
       requestStatus,
-      isAcknowledged,
+      isRejected,
+      isAccepted,
       refundDeadline,
-      orderStatus,
-      typeOfRequest) VALUES ('${orderId}', '${customerId}','${totalPrice}','${dateRequested}','${requestStatus}','${isAcknowledged}','${refundDeadline}','${orderStatus}','${typeOfRequest}')`;
+      typeOfRequest) VALUES ('${orderId}', '${customerId}','${totalPrice}','${dateRequested}','${requestStatus}','${isRejected}','${isAccepted}','${refundDeadline}','${typeOfRequest}')`;
     const results = await connection.execute(query);
     connection.end();
 

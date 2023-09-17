@@ -18,7 +18,7 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const accountId = searchParams.get("accountId");
 
-    const query = `SELECT * FROM cart WHERE accountId = ${accountId}`; // change accountID
+    const query = `SELECT * FROM cart WHERE accountId = ${accountId}`;
     const res = await connection.execute(query);
     connection.end();
 

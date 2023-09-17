@@ -1,11 +1,11 @@
-import React from "react";
+import { Box } from "@mui/material";
+import AdminSignIn from "./components/AdminSignIn";
 
 const page = () => {
   return (
-    <>
-      <h1>Admin Page</h1>
-      <h3>page content</h3>
-    </>
+    <Box>
+      <AdminSignIn />
+    </Box>
   );
 };
 

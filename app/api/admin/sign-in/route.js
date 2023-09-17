@@ -1,8 +1,6 @@
 import mysql from "mysql2/promise";
 import { NextRequest, NextResponse } from "next/server";
 
-// CUSTOMER
-
 async function con() {
   const connection = await mysql.createConnection({
     host: "localhost",
@@ -20,7 +18,7 @@ export async function GET(request) {
   const username = searchParams.get("username");
   const password = searchParams.get("password");
 
-  const query = `SELECT * FROM accounts WHERE email = '${username}' AND password = '${password}'`; // change accountID
+  const query = `SELECT adminId AS accountId, firstName, lastName, email, username, password, address, contact, accountType FROM tbl_admin WHERE email = '${username}' OR username = '${username}' AND password = '${password}' UNION SELECT employeeId AS accountId, firstName, lastName, email, username, password, address, contact, accountType FROM tbl_employee WHERE email = '${username}' OR username = '${username}' AND password = '${password}';`;
   const res = await connection.execute(query);
   connection.end();
 

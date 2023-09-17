@@ -14,9 +14,12 @@ async function con() {
 export async function GET() {
   const connection = await con();
 
-  const query = "SELECT * FROM accounts";
+  const query =
+    "SELECT adminId AS accountId, firstName, lastName, email, username, password, address, contact, accountType FROM tbl_admin UNION SELECT employeeId AS accountId, firstName, lastName, email, username, password, address, contact, accountType FROM tbl_employee UNION SELECT customerId AS accountId, firstName, lastName, email, username, password, address, contact, accountType FROM tbl_customer";
   const results = await connection.execute(query, []);
   connection.end();
+
+  console.log(results[0]);
 
   return NextResponse.json({ results: results[0] });
 }

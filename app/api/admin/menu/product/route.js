@@ -18,9 +18,22 @@ export async function GET(request, path) {
   const results = await connection.execute(query);
   connection.end();
 
-  console.log(results);
-
   return NextResponse.json({ results: results });
+}
+
+export async function POST(request, path) {
+  const connection = await con();
+
+  const reqBody = await request.json();
+  const { categoryId, productName, image, isRemoved, price, rating } = reqBody;
+  try {
+    const query = `INSERT INTO products ( categoryId, productName, image, isRemoved, price, rating ) VALUES ('${categoryId}', '${productName}','${image}','${isRemoved}','${price}','${rating}')`;
+    const results = await connection.execute(query);
+    connection.end();
+    return NextResponse.json({ results: results });
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export async function PUT(req) {

@@ -3,19 +3,16 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@mui/base";
 import { DataGrid } from "@mui/x-data-grid";
 import {
-  Alert,
   Avatar,
   Box,
   Card,
   CardContent,
   Dialog,
-  DialogActions,
   DialogContent,
   DialogTitle,
   List,
   ListItem,
   ListItemAvatar,
-  Snackbar,
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
@@ -36,74 +33,50 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const AdminOrders = () => {
+const CustomerOrders = () => {
   const loggedInUserId =
     typeof window !== "undefined" && window.localStorage
       ? localStorage.getItem("accountId")
       : "";
 
-  const [orderList, setOrderList] = useState([]);
+  const [requestList, setRequestList] = useState([]);
+  const [viewOpen, setViewOpen] = useState(false);
   const [order, setOrder] = useState({});
   const [productsOrderedList, setProductsOrderedList] = useState([]);
-  const [viewOpen, setViewOpen] = useState(false);
-  const [proofOfPaymentOpen, setProofOfPaymentOpen] = useState(false);
-  const [errorProofOfPaymentSnackbarOpen, setErrorProofOfPaymentSnackbarOpen] =
-    useState(false);
 
-  // prints all records
-  const getOrders = async () => {
-    const res = await fetch(`http://localhost:3000/api/admin/orders?`);
+  const getRequests = async () => {
+    const res = await fetch(
+      `http://localhost:3000/api/customer/request?` +
+        new URLSearchParams({
+          accountId: loggedInUserId,
+        })
+    );
     const results = await res.json();
 
     results.forEach((element) => {});
 
     const x = results.map((element) => {
-      const newDateOrdered = new Date(element.dateOrdered);
-      const newDatePickUp = new Date(element.datePickUp);
-      const newPaymentDeadline = new Date(element.paymentDeadline);
-      const newRefundDeadline = new Date(element.refundDeadline);
+      const refundDeadline = new Date(element.refundDeadline);
+      const dateRequested = new Date(element.dateRequested);
 
       return {
-        accountId: element.accountId,
+        customerRequestId: element.customerRequestId,
+        customerId: element.customerId,
         orderId: element.orderId,
-        status: element.status,
+        requestStatus: element.requestStatus,
         paymentMethod: element.paymentMethod,
         totalPrice: element.totalPrice,
-        dateOrdered: newDateOrdered,
-        datePickUp: newDatePickUp,
-        proofOfPaymentImage: element.proofOfPaymentImage,
-        paymentDeadline: newPaymentDeadline,
-        refundDeadline: newRefundDeadline,
+        isAcknowledged: element.isAcknowledged,
+        typeOfRequest: element.typeOfRequest,
+        dateRequested: dateRequested,
+        refundDeadline: refundDeadline,
       };
     });
 
-    setOrderList(x);
+    setRequestList(x);
   };
 
-  const updateOrderPaymentStatus = async () => {
-    const putData = {
-      method: "PUT", // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        status: "Order Paid",
-      }),
-    };
-
-    try {
-      const res = await fetch(
-        `http://localhost:3000/api/admin/order/payment?` +
-          new URLSearchParams({ orderId: order.orderId }),
-        putData
-      );
-    } catch (error) {
-      console.log(error);
-    }
-    getOrders();
-  };
-
-  const getSpecificOrder = async (orderId, customerOption) => {
+  const getSpecificOrder = async (orderId) => {
     const id = orderId;
 
     // parent specific order
@@ -120,7 +93,6 @@ const AdminOrders = () => {
     const formattedDateOrdered = dayjs(order.dateOrdered).format(
       "MMM DD, YYYY"
     );
-
     const formattedDatePickUp = dayjs(order.datePickUp).format("MMM DD, YYYY");
     const formattedPaymentDeadline = dayjs(order.paymentDeadline).format(
       "MMM DD, YYYY"
@@ -132,7 +104,6 @@ const AdminOrders = () => {
     try {
       setOrder({
         orderId: order.orderId,
-        refundDeadline: formattedRefundDeadline,
         contact: order.contact,
         dateOrdered: formattedDateOrdered,
         datePickUp: formattedDatePickUp,
@@ -141,11 +112,10 @@ const AdminOrders = () => {
         lastName: order.lastName,
         orderId: order.orderId,
         paymentDeadline: formattedPaymentDeadline,
-        proofOfPaymentImage: order.proofOfPaymentImage,
         paymentMethod: order.paymentMethod,
         status: order.status,
         totalPrice: order.totalPrice,
-        transactionId: order.transactionId,
+        refundDeadline: formattedRefundDeadline,
       });
 
       // products ordered
@@ -157,40 +127,13 @@ const AdminOrders = () => {
       );
       const productsResult = await productRes.json();
 
-      {
-        customerOption == 1 && openView(order.orderId);
-      }
-      {
-        customerOption == 2 && openProofOfPayment(order);
-      }
-
       setProductsOrderedList(productsResult);
     } catch (e) {
       console.log(e);
     }
   };
-  console.log(order);
+
   // open and close order view
-  const openProofOfPayment = (order) => {
-    const isPaid = order.isPaid;
-
-    {
-      !isPaid ? openErrorProofOfPaymentSnackbar() : setProofOfPaymentOpen(true);
-    }
-  };
-
-  const closeProofOfPayment = () => {
-    setProofOfPaymentOpen(false);
-  };
-
-  const openErrorProofOfPaymentSnackbar = () => {
-    setErrorProofOfPaymentSnackbarOpen(true);
-  };
-
-  const closeErrorProofOfPaymentSnackbar = () => {
-    setErrorProofOfPaymentSnackbarOpen(false);
-  };
-
   const openView = (orderId) => {
     setViewOpen(true);
     getSpecificOrder(orderId);
@@ -200,83 +143,50 @@ const AdminOrders = () => {
     setViewOpen(false);
   };
 
-  // get all orders
   useEffect(() => {
-    getOrders();
+    getRequests();
   }, []);
 
   const columns = [
-    { field: "orderId", headerName: "Order ID", width: 75 },
+    { field: "customerRequestId", headerName: "Request ID", width: 100 },
+    // {
+    //   field: "employeeId",
+    //   headerName: "Employee ID",
+    //   width: 100,
+    // },
     {
-      field: "accountId",
-      headerName: "Customer ID",
-      width: 110,
+      field: "orderId",
+      headerName: "Order ID",
+      type: "number",
+      width: 100,
+    },
+    {
+      field: "requestStatus",
+      headerName: "Request Status",
+      width: 140,
     },
     {
       field: "totalPrice",
       headerName: "Total Price",
       type: "number",
-      width: 100,
-    },
-    {
-      field: "status",
-      headerName: "Status",
-      width: 140,
-    },
-    { field: "paymentMethod", headerName: "Payment Method", width: 120 },
-    {
-      field: "dateOrdered",
-      headerName: "Date Ordered",
-      type: "date",
-      width: 100,
-    },
-    {
-      field: "datePickUp",
-      headerName: "Pick up date",
-      type: "date",
-      width: 100,
-    },
-    {
-      field: "paymentDeadline",
-      headerName: "Payment Deadline",
-      type: "date",
-      width: 140,
+      width: 110,
     },
     {
       field: "refundDeadline",
       headerName: "Refund Due Date",
       type: "date",
-      width: 150,
+      width: 170,
     },
     {
-      field: "proofOfPaymentImage",
-      headerName: "Proof of Payment",
-      width: 130,
-      sortable: false,
-      renderCell: (cellValues) => {
-        const { orderId } = cellValues.row;
-        return (
-          <div className="w-full h-full">
-            <Button
-              className="w-full h-full mx-auto my-auto"
-              onClick={() => getSpecificOrder(orderId, 2)}
-            >
-              <VisibilityOutlinedIcon
-                className="transform transition-all hover:scale-150 duration-1000"
-                sx={{
-                  fill: "white",
-                  bgcolor: "#334155",
-                  borderRadius: "9999px",
-                  padding: "4px",
-                  "&:hover": {
-                    backgroundColor: "#64748b",
-                  },
-                }}
-              />
-            </Button>
-          </div>
-        );
-      },
+      field: "typeOfRequest",
+      headerName: "Type of Request",
+      width: 180,
+    },
+    {
+      field: "dateRequested",
+      headerName: "Date Requested",
+      type: "date",
+      width: 140,
     },
     {
       field: "view",
@@ -289,7 +199,7 @@ const AdminOrders = () => {
           <div className="w-full h-full">
             <Button
               className="w-full h-full mx-auto my-auto"
-              onClick={() => getSpecificOrder(orderId, 1)}
+              onClick={() => openView(orderId)}
             >
               <VisibilityOutlinedIcon
                 className="transform transition-all hover:scale-150 duration-1000"
@@ -312,14 +222,14 @@ const AdminOrders = () => {
   return (
     <Box className="m-9">
       <Box className="flex flex-row justify-between">
-        <Box className="font-extrabold text-5xl mb-6 font-serif">Orders</Box>
+        <Box className="font-extrabold text-5xl mb-6 font-serif">Requests</Box>
       </Box>
       <DataGrid
         sx={{ overflowY: "hidden" }}
-        rows={orderList}
+        rows={requestList}
         columns={columns}
         // getRowId={rows}
-        getRowId={(row) => row.orderId}
+        getRowId={(row) => row.customerRequestId}
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 8 },
@@ -588,67 +498,8 @@ const AdminOrders = () => {
           </Box>
         </DialogContent>
       </Dialog>
-
-      <Dialog
-        open={proofOfPaymentOpen}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={closeProofOfPayment}
-        aria-describedby="alert-dialog-slide-description"
-      >
-        <Box sx={{ bgcolor: "#EE7376", color: "white" }}>
-          <DialogTitle className="font-serif font-extrabold text-2xl">
-            PROOF OF PAYMENT
-          </DialogTitle>
-        </Box>
-        <DialogContent>
-          {order.proofOfPaymentImage && (
-            <Box
-              component="img"
-              sx={{
-                margin: "auto",
-                maxHeight: { xs: 233, md: 167 },
-                maxWidth: { xs: 350, md: 250 },
-              }}
-              alt="proof-of-payment-img"
-              src={`/epayment-receipt/${order.proofOfPaymentImage}`}
-            />
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Box
-            component="button"
-            className="font-mono"
-            sx={{
-              bgcolor: "#7C5F35",
-              color: "white",
-              padding: "10px",
-              borderRadius: "15px",
-              marginRight: "auto",
-              marginLeft: "auto",
-              "&:hover": {
-                bgcolor: "#8a6a3b",
-              },
-            }}
-            onClick={() => updateOrderPaymentStatus()}
-          >
-            Update order status
-          </Box>
-        </DialogActions>
-      </Dialog>
-
-      <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        open={errorProofOfPaymentSnackbarOpen}
-        autoHideDuration={6000}
-        onClose={closeErrorProofOfPaymentSnackbar}
-      >
-        <Alert severity="error" sx={{ width: "100%" }}>
-          Error! — Order not paid.
-        </Alert>
-      </Snackbar>
     </Box>
   );
 };
 
-export default AdminOrders;
+export default CustomerOrders;
