@@ -49,11 +49,22 @@ const AdminAccounts = () => {
   const [lastNameError, setLastNameError] = useState(false);
   const [lastNameErrorMessage, setLastNameErrorMessage] = useState("");
 
-  const { register, handleSubmit, errors } = useForm();
+  const form = useForm({
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+    },
+    mode: "onTouched",
+  });
+  const { register, handleSubmit, formState, reset } = form;
+  const { errors, isDirty, isValid } = formState;
 
   const onSubmit = (data) => {
     console.log(data);
   };
+
+  console.log(errors);
 
   // const handleSubmit = (event) => {
   //   event.preventDefault();
@@ -108,14 +119,15 @@ const AdminAccounts = () => {
 
   const closeDialog = () => {
     setCreateOpen(false);
+    reset();
 
-    setFirstName("");
-    setLastName("");
-    setEmail("");
-    setPassword("");
-    setAddress("");
-    setContact("");
-    setAccountType("");
+    // setFirstName("");
+    // setLastName("");
+    // setEmail("");
+    // setPassword("");
+    // setAddress("");
+    // setContact("");
+    // setAccountType("");
   };
 
   const closeEdit = () => {
@@ -364,7 +376,7 @@ const AdminAccounts = () => {
 // secondary=#EE7376 hover=#ea5054
 // tertiary=#7C5F35
  */}
-        <Dialog open={createOpen}>
+        <Dialog open={createOpen} onClose={closeDialog}>
           <Box
             sx={{
               display: "flex",
@@ -394,7 +406,7 @@ const AdminAccounts = () => {
             </Button>
           </Box>
           <DialogContent>
-            <form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)} noValidate>
               <Box className="flex flex-row justify-between">
                 <Box className="flex-1 me-1 form-group">
                   <InputLabel className="font-semibold">First Name</InputLabel>
@@ -404,9 +416,19 @@ const AdminAccounts = () => {
                     name="firstName"
                     type="text"
                     label={"First Name"}
-                    {...register("firstName")}
-                    fullWidth
+                    {...register("firstName", {
+                      required: "Please fill up the field",
+                      minLength: {
+                        value: 12,
+                        message: "Please enter a valid name",
+                      },
+                      maxLength: {
+                        value: 2,
+                        message: "Please enter a valid name", // JS only: <p>Please enter a valid name</p> TS only support string
+                      },
+                    })}
                   />
+                  <Typography>{errors.firstName?.message}</Typography>
                 </Box>
                 <Box className="flex-1 form-group">
                   <InputLabel className="font-semibold">Last Name</InputLabel>
@@ -416,20 +438,48 @@ const AdminAccounts = () => {
                     name="lastName"
                     type="text"
                     label={"Last Name"}
-                    {...register("lastName")}
-                    fullWidth
+                    {...register("lastName", {
+                      required: "Please fill up the field",
+                      minLength: {
+                        value: 2,
+                        message: "Please enter a valid surname",
+                      },
+                      maxLength: {
+                        value: 12,
+                        message: "Please enter a valid surname",
+                      },
+                    })}
                   />
+                  <Typography>{errors.lastName?.message}</Typography>
                 </Box>
+                <InputLabel className="font-semibold">Email</InputLabel>
+                <TextField
+                  className="form-control"
+                  margin="dense"
+                  name="email"
+                  type="text"
+                  label={"Email"}
+                  {...register("email", {
+                    required: "Please fill up the field",
+                    pattern: {
+                      value: /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
+                      message: "Please enter a valid email address!",
+                    },
+                  })}
+                />
+                <Typography>{errors.email?.message}</Typography>
               </Box>
 
-              <Button
+              <Box
+                component="button"
+                disabled={!isDirty || !isValid}
                 variant="contained"
-                className="bg-blue-600 w-full py-3 mt-2 rounded-md text-white font-semibold text-lg hover:bg-blue-800 duration-700"
+                className="bg-blue-600 w-full py-3 mt-2 rounded-md text-white font-semibold text-lg"
                 // onClick={createAccount}
                 type="submit"
               >
                 Submit
-              </Button>
+              </Box>
             </form>
           </DialogContent>
         </Dialog>
@@ -585,18 +635,7 @@ const AdminAccounts = () => {
 export default AdminAccounts;
 
 {
-  /* <InputLabel className="font-semibold">Email</InputLabel>
-<TextField
-  required
-  margin="dense"
-  name="email"
-  label="Input Email Address"
-  type="email"
-  fullWidth
-  variant="outlined"
-  value={email}
-  onChange={(e) => setEmail(e.target.value)}
-/>
+  /* 
 <InputLabel className="font-semibold">Password</InputLabel>
 <TextField
   required
