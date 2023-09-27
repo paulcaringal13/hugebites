@@ -1,8 +1,19 @@
 "use client";
 import "../../styles/globals.css";
-import { Box, Button, Tab, TextField, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Snackbar,
+  Tab,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useState, useEffect, useRef } from "react";
 import dayjs from "dayjs";
+import { Lexend } from "next/font/google";
+
+const lexend = Lexend({ subsets: ["latin"], weight: "400" });
 
 const AdminSignIn = () => {
   var relativeTime = require("dayjs/plugin/relativeTime");
@@ -15,6 +26,26 @@ const AdminSignIn = () => {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isNotExisting, setIsNotExisting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("Invalid Login Credentials");
+  const [invalidLoginOpen, setInvalidLoginOpen] = useState(false);
+  const [successLoginOpen, setSuccessLoginOpen] = useState(false);
+
+  const openSuccessLogin = () => {
+    setSuccessLoginOpen(true);
+  };
+
+  const closeSuccessLogin = () => {
+    setSuccessLoginOpen(false);
+  };
+
+  const openInvalidLogin = () => {
+    setInvalidLoginOpen(true);
+  };
+
+  const closeInvalidLogin = () => {
+    setInvalidLoginOpen(false);
+  };
 
   const showDateTime = () => {
     console.log(typeof dayjs().format("MMM DD, YYYY hh:mma"));
@@ -34,18 +65,40 @@ const AdminSignIn = () => {
     const account = results[0];
 
     {
-      res && localStorage.setItem("accountId", account.accountId);
+      !account && setIsNotExisting(true);
     }
 
-    {
-      res && localStorage.setItem("userName", account.firstName);
-    }
+    try {
+      {
+        account.username && account.password
+          ? localStorage.setItem("accountId", account.accountId)
+          : null;
+      }
 
-    {
-      account.accountType == "Employee" && recordAudit(account.accountId);
-    }
+      {
+        account.username && account.password
+          ? localStorage.setItem("userName", account.firstName)
+          : null;
+      }
+      {
+        account.username &&
+        account.password &&
+        account.accountType == "Employee"
+          ? console.log("employee nilogin mo")
+          : null;
+      }
 
-    redirect(account);
+      {
+        account.username && account.password ? redirect(account) : null;
+      }
+      {
+        account.username && account.password && account.isDeactivated != 1
+          ? openSuccessLogin()
+          : openInvalidLogin();
+      }
+    } catch (e) {
+      openInvalidLogin();
+    }
   };
 
   const redirect = (account) => {
@@ -117,31 +170,61 @@ const AdminSignIn = () => {
           }}
         >
           <Typography
-            className="font-mono font-bold"
             sx={{ marginTop: "15px", fontSize: "30px" }}
+            className={lexend.className}
           >
             Sign In
           </Typography>
           <TextField
             sx={{ width: "100%", marginTop: "10px" }}
-            className="font-mono"
             id="username"
             type="text"
             required
-            placeholder="User Id / Email"
+            placeholder="User Id / Email / Username"
+            error={isNotExisting}
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
+          {isNotExisting == true ? (
+            <Typography
+              sx={{
+                fontFamily: "cursive",
+                color: "#ff3333",
+                marginTop: "8px",
+                marginBottom: "8px",
+                fontSize: "13px",
+                fontWeight: "bold",
+              }}
+            >
+              {errorMessage}
+            </Typography>
+          ) : null}
           <TextField
             sx={{ width: "100%", marginTop: "10px" }}
             className="font-mono"
             id="username"
             type="password"
             required
+            error={isNotExisting}
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          {isNotExisting == true ? (
+            <Typography
+              sx={{
+                fontFamily: "cursive",
+                color: "#ff3333",
+                marginTop: "8px",
+                marginBottom: "8px",
+                fontSize: "13px",
+                fontWeight: "bold",
+              }}
+            >
+              {errorMessage}
+            </Typography>
+          ) : null}
+
           <Box
             component="button"
             className="font-mono"
@@ -151,7 +234,7 @@ const AdminSignIn = () => {
           </Box>
           <Box
             component="button"
-            className="font-mono"
+            // className="font-mono"
             sx={{
               bgcolor: "#EE7376",
               color: "white",
@@ -174,23 +257,28 @@ const AdminSignIn = () => {
             sx={{ display: "none" }}
             ref={employeeButtonRef}
           />
-          {/* <Button
-            href="/admin/dashboard"
-            // ref={hiddenLink}
-            component="button"
-            className="font-mono"
-            underline="none"
-            sx={{
-              bgcolor: "#EE7376",
-              color: "white",
-              marginTop: "8px",
-              width: "fit-content",
-              padding: "15px",
-              borderRadius: "15px",
-            }}
+
+          <Snackbar
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            open={successLoginOpen}
+            autoHideDuration={6000}
+            onClose={closeSuccessLogin}
           >
-            Sign in
-          </Button> */}
+            <Alert severity="success" sx={{ width: "100%" }}>
+              Login Successfully! — Please wait.
+            </Alert>
+          </Snackbar>
+
+          <Snackbar
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            open={invalidLoginOpen}
+            autoHideDuration={6000}
+            onClose={closeInvalidLogin}
+          >
+            <Alert severity="error" sx={{ width: "100%" }}>
+              Login Failed! — Username or Password incorrect.
+            </Alert>
+          </Snackbar>
         </Box>
       </Box>
     </Box>

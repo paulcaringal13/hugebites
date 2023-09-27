@@ -19,7 +19,7 @@ import dayjs from "dayjs";
 
 //sidebard w-271.2
 
-const CustomerNavbar = () => {
+const HomePageNavbar = () => {
   var relativeTime = require("dayjs/plugin/relativeTime");
   dayjs.extend(relativeTime);
   const router = useRouter();
@@ -174,4 +174,4 @@ const CustomerNavbar = () => {
   );
 };
 
-export default CustomerNavbar;
+export default HomePageNavbar;

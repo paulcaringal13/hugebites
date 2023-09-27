@@ -20,7 +20,7 @@ export async function GET(request) {
   const username = searchParams.get("username");
   const password = searchParams.get("password");
 
-  const query = `SELECT * FROM accounts WHERE email = '${username}' AND password = '${password}'`; // change accountID
+  const query = `SELECT * FROM tbl_customer WHERE username = '${username}' AND password = '${password}'`; // change accountID
   const res = await connection.execute(query);
   connection.end();
 

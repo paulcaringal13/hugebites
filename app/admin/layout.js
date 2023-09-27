@@ -1,13 +1,13 @@
 "use client";
 
 import AdminNavbar from "./components/Navbar";
-import { Inter } from "next/font/google";
 import { useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import AdminSidebar from "./components/AdminSidebar";
 import MiniAdminSidebar from "./components/MiniAdminSidebar";
+import { Lexend } from "next/font/google";
 
-const inter = Inter({ subsets: ["latin"] });
+const lexend = Lexend({ subsets: ["latin"], weight: "400" });
 
 export default function AdminLayout({ children }) {
   const [loggedInUserName, setLoggedInUserName] = useState("");
@@ -33,10 +33,9 @@ export default function AdminLayout({ children }) {
   }, []);
 
   return (
-    <Box className={inter.className}>
+    <main>
       {loggedInUserId && <AdminNavbar />}
-
-      {children}
-    </Box>
+      <Box>{children}</Box>
+    </main>
   );
 }

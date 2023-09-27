@@ -1,11 +1,12 @@
+import HomePageHome from "@/components/HomePageHome";
+import { Box } from "@mui/material";
 import React from "react";
 
 const page = () => {
   return (
-    <>
-      <h1>Customer Page</h1>
-      <h3>page content</h3>
-    </>
+    <Box sx={{ marginTop: "124px" }}>
+      <HomePageHome />
+    </Box>
   );
 };
 

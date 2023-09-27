@@ -17,6 +17,8 @@ import {
 import { useForm } from "react-hook-form";
 import Slide from "@mui/material/Slide";
 import MiniAdminSidebar from "../components/MiniAdminSidebar";
+import CreateAccountForm from "../components/CreateAccountForm";
+import EditAccountForm from "../components/EditAccountForm";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -24,67 +26,18 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const AdminAccounts = () => {
   // for creating obj
-  const [users, setUsers] = useState([]);
+  const [employeeUsers, setEmployeeUsers] = useState([]);
+  const [customerUsers, setCustomerUsers] = useState([]);
+
   const [userId, setUserId] = useState(0);
+  const [user, setUser] = useState({});
 
   // button open dialog
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  // for input values
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [address, setAddress] = useState("");
-  const [contact, setContact] = useState("");
   const [accountType, setAccountType] = useState("");
-
-  const [firstNameLabel, setFirstNameLabel] = useState("FirstName");
-
-  const [firstNameError, setFirstNameError] = useState(false);
-  const [firstNameErrorMessage, setFirstNameErrorMessage] = useState("");
-  const [lastNameError, setLastNameError] = useState(false);
-  const [lastNameErrorMessage, setLastNameErrorMessage] = useState("");
-
-  const form = useForm({
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-    },
-    mode: "onTouched",
-  });
-  const { register, handleSubmit, formState, reset } = form;
-  const { errors, isDirty, isValid } = formState;
-
-  const onSubmit = (data) => {
-    console.log(data);
-  };
-
-  console.log(errors);
-
-  // const handleSubmit = (event) => {
-  //   event.preventDefault();
-
-  //   setFirstNameError(false);
-  //   setLastNameError(false);
-
-  //   if (firstName == "") {
-  //     setFirstNameError(true);
-  //     setFirstNameLabel("Please Fill First Name Field");
-  //   }
-  //   if (lastName == "") {
-  //     setLastNameError(true);
-  //     // firstNameLabel("Please Fill Last Name Field");
-  //   }
-
-  //   if (firstName && lastName) {
-  //     console.log(firstName, lastName);
-  //   }
-  // };
 
   // handle onclick
   const openDialog = () => {
@@ -112,35 +65,18 @@ const AdminAccounts = () => {
     setAccountType(accountType);
   };
 
-  const openDelete = (id) => {
-    setUserId(id);
-    setDeleteOpen(true);
+  const openDelete = (data) => {
+    const { accountId, accountType } = data;
+    setUserId(accountId);
+    setAccountType(accountType), setDeleteOpen(true);
   };
 
   const closeDialog = () => {
     setCreateOpen(false);
-    reset();
-
-    // setFirstName("");
-    // setLastName("");
-    // setEmail("");
-    // setPassword("");
-    // setAddress("");
-    // setContact("");
-    // setAccountType("");
   };
 
   const closeEdit = () => {
     setEditOpen(false);
-
-    // clear states
-    setFirstName("");
-    setLastName("");
-    setEmail("");
-    setPassword("");
-    setAddress("");
-    setContact("");
-    setAccountType("");
   };
 
   const closeDelete = () => {
@@ -152,81 +88,37 @@ const AdminAccounts = () => {
     const res = await fetch(`http://localhost:3000/api/admin/account`);
     const data = await res.json();
 
-    const userArray = [...data.results];
-    setUsers(userArray);
-  };
+    const { results } = data;
+    console.log(results);
 
-  // create function
-  const createAccount = async () => {
-    const postData = {
-      method: "POST", // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        password: password,
-        address: address,
-        contact: contact,
-        accountType: accountType,
-      }),
-    };
+    const employeeArray = results.filter(
+      (user) => user.accountType != "Customer"
+    );
+    const customerArray = results.filter(
+      (user) => user.accountType == "Customer"
+    );
 
-    try {
-      const res = await fetch(
-        `http://localhost:3000/api/admin/account`,
-        postData
-      );
-      const response = await res.json();
-      closeDialog();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  // edit function
-  const updateAccount = async (id) => {
-    const postData = {
-      method: "PUT", // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        address: address,
-        contact: contact,
-        accountType: accountType,
-      }),
-    };
-
-    try {
-      const res = await fetch(
-        `http://localhost:3000/api/admin/account/${id}`,
-        postData
-      );
-      const response = await res.json();
-    } catch (error) {
-      console.log(error);
-    }
-    getAllAccounts();
-    closeEdit();
+    setEmployeeUsers(employeeArray);
+    setCustomerUsers(customerArray);
   };
 
   // delete function
-  const deleteAccount = async (id) => {
+  const deleteAccount = async (id, status, isDeactivated) => {
+    console.log(status);
     const postData = {
-      method: "DELETE",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        accountType: accountType,
+        accStatus: status,
+        isDeactivated: isDeactivated,
+      }),
     };
     try {
       const res = await fetch(
-        `http://localhost:3000/api/admin/account/${id}`,
+        `http://localhost:3000/api/admin/account/deactivate/${id}`,
         postData
       );
       const response = await res.json();
@@ -255,10 +147,121 @@ const AdminAccounts = () => {
   ];
 
   // GRID COLUMNS
-  const columns = [
-    { field: "accountId", headerName: "ID", width: 100 },
-    { field: "firstName", headerName: "First name", width: 100 },
-    { field: "lastName", headerName: "Last name", width: 100 },
+  const adminEmployeeColumn = [
+    { field: "accountId", headerName: "ID", width: 85 },
+    {
+      field: "fullName",
+      headerName: "Full name",
+      description: "This column has a value getter and is not sortable.",
+      sortable: false,
+      width: 130,
+      valueGetter: (params) =>
+        `${params.row.firstName || ""} ${params.row.lastName || ""}`,
+    },
+    {
+      field: "address",
+      headerName: "Address",
+      width: 260,
+    },
+    {
+      field: "email",
+      headerName: "Email Add",
+      type: "email",
+      width: 170,
+    },
+    { field: "username", headerName: "Username", width: "100" },
+    {
+      field: "contact",
+      headerName: "Contact Number",
+      type: "contact",
+      width: 130,
+    },
+
+    {
+      field: "accountType",
+      headerName: "Account Type",
+      sortable: false,
+      width: 115,
+    },
+    {
+      field: "accStatus",
+      headerName: "Account Status",
+      sortable: false,
+      width: 115,
+    },
+    {
+      field: "edit",
+      headerName: "Action",
+      width: 85,
+      sortable: false,
+      renderCell: (cellValues) => {
+        const { row } = cellValues;
+        return (
+          <Box>
+            <Button
+              variant="contained"
+              className="bg-green-600 py-3 px-6 rounded-xl text-white font-semibold hover:bg-green-900 duration-700"
+              onClick={() => {
+                openEdit(row);
+                setUser(row);
+              }}
+            >
+              Edit
+            </Button>
+          </Box>
+        );
+      },
+    },
+    {
+      field: "deactivate",
+      headerName: "",
+      sortable: false,
+      width: 135,
+      sortable: false,
+      renderCell: (cellValues) => {
+        const { row } = cellValues;
+        return row.accStatus == "Deactivated" ? (
+          <Box>
+            <Button
+              variant="contained"
+              className="bg-red-400 py-3 px-6 rounded-xl text-white font-semibold hover:bg-red-500 duration-700"
+              onClick={() => {
+                openDelete(row);
+                setUser(row);
+              }}
+            >
+              Reactivate
+            </Button>
+          </Box>
+        ) : (
+          <Box>
+            <Button
+              variant="contained"
+              className="bg-red-600 py-3 px-6 rounded-xl text-white font-semibold hover:bg-red-900 duration-700"
+              onClick={() => {
+                openDelete(row);
+                setUser(row);
+              }}
+            >
+              Deactivate
+            </Button>
+          </Box>
+        );
+      },
+    },
+  ];
+
+  const customerColumn = [
+    { field: "accountId", headerName: "ID", width: 85 },
+    {
+      field: "fullName",
+      headerName: "Full name",
+      description: "This column has a value getter and is not sortable.",
+      sortable: false,
+      width: 130,
+      valueGetter: (params) =>
+        `${params.row.firstName || ""} ${params.row.lastName || ""}`,
+    },
     {
       field: "address",
       headerName: "Address",
@@ -278,57 +281,35 @@ const AdminAccounts = () => {
       width: 130,
     },
     {
-      field: "fullName",
-      headerName: "Full name",
-      description: "This column has a value getter and is not sortable.",
-      sortable: false,
-      width: 150,
-      valueGetter: (params) =>
-        `${params.row.firstName || ""} ${params.row.lastName || ""}`,
-    },
-    {
       field: "accountType",
       headerName: "Account Type",
       sortable: false,
-      width: 130,
+      width: 115,
     },
     {
-      field: "edit",
-      headerName: "Action",
-      width: 85,
+      field: "accStatus",
+      headerName: "Account Status",
+      sortable: false,
+      width: 115,
+    },
+    {
+      field: "view",
+      headerName: "View",
+      width: 108,
       sortable: false,
       renderCell: (cellValues) => {
         const { row } = cellValues;
-
         return (
           <Box>
             <Button
               variant="contained"
-              className="bg-green-600 py-3 px-6 rounded-xl text-white font-semibold hover:bg-green-900 duration-700"
-              onClick={() => openEdit(row)}
+              className="bg-orange-400 py-3 px-6 rounded-xl text-white font-semibold hover:bg-orange-600 duration-700"
+              onClick={() => {
+                openEdit(row);
+                setUser(row);
+              }}
             >
-              Edit
-            </Button>
-          </Box>
-        );
-      },
-    },
-    {
-      field: "delete",
-      headerName: "",
-      sortable: false,
-      width: 100,
-      sortable: false,
-      renderCell: (cellValues) => {
-        const { accountId } = cellValues.row;
-        return (
-          <Box>
-            <Button
-              variant="contained"
-              className="bg-red-500 py-3 px-6 rounded-xl text-white font-semibold hover:bg-red-800 duration-700"
-              onClick={() => openDelete(accountId)}
-            >
-              Delete
+              Orders
             </Button>
           </Box>
         );
@@ -346,347 +327,178 @@ const AdminAccounts = () => {
     >
       <MiniAdminSidebar />
       <Box sx={{ marginTop: "15px", width: "100%" }}>
-        <Box className="flex flex-row justify-between me-10">
-          <Box className="font-extrabold text-4xl font-serif mt-2">
-            User Accounts
-          </Box>
-          <Button
-            variant="contained"
-            className="bg-blue-600 py-3 px-6 rounded-xl text-white font-semibold text-lg hover:bg-blue-800 duration-700 mb-2"
-            onClick={openDialog}
-          >
-            Create Account
-          </Button>
-        </Box>
-        <DataGrid
-          sx={{ overflowY: "hidden" }}
-          rows={users}
-          columns={columns}
-          getRowId={(row) => row.firstName}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 8 },
-            },
-          }}
-          pageSizeOptions={[5, 10]}
-        />
-
-        {/* create modal */}
-        {/* // primary=#FDF9F9
-// secondary=#EE7376 hover=#ea5054
-// tertiary=#7C5F35
- */}
-        <Dialog open={createOpen} onClose={closeDialog}>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginBottom: "12px",
-              bgcolor: "#7C5F35",
-              color: "white",
-            }}
-          >
-            <Typography
-              sx={{
-                padding: "24px",
-                fontWeight: "800",
-                fontSize: "30px",
-                lineHeight: "36px",
-                fontFamily: "cursive",
-              }}
+        <Box sx={{ display: "flex", flexDirection: "column" }}>
+          <Box className="flex flex-row justify-between me-10">
+            <Box className="font-extrabold text-4xl font-serif mt-2">
+              Admin & Employee Accounts
+            </Box>
+            <Button
+              variant="contained"
+              className="bg-blue-600 py-3 px-6 rounded-xl text-white font-semibold text-lg hover:bg-blue-800 duration-700 mb-2"
+              onClick={openDialog}
             >
               Create Account
-            </Typography>
-            <Button
-              className="my-auto p-7 font-extrabold text-sm rounded hover:text-lg duration-500"
-              onClick={closeDialog}
-            >
-              X
             </Button>
           </Box>
-          <DialogContent>
-            <form onSubmit={handleSubmit(onSubmit)} noValidate>
-              <Box className="flex flex-row justify-between">
-                <Box className="flex-1 me-1 form-group">
-                  <InputLabel className="font-semibold">First Name</InputLabel>
-                  <TextField
-                    className="form-control"
-                    margin="dense"
-                    name="firstName"
-                    type="text"
-                    label={"First Name"}
-                    {...register("firstName", {
-                      required: "Please fill up the field",
-                      minLength: {
-                        value: 12,
-                        message: "Please enter a valid name",
-                      },
-                      maxLength: {
-                        value: 2,
-                        message: "Please enter a valid name", // JS only: <p>Please enter a valid name</p> TS only support string
-                      },
-                    })}
-                  />
-                  <Typography>{errors.firstName?.message}</Typography>
-                </Box>
-                <Box className="flex-1 form-group">
-                  <InputLabel className="font-semibold">Last Name</InputLabel>
-                  <TextField
-                    className="form-control"
-                    margin="dense"
-                    name="lastName"
-                    type="text"
-                    label={"Last Name"}
-                    {...register("lastName", {
-                      required: "Please fill up the field",
-                      minLength: {
-                        value: 2,
-                        message: "Please enter a valid surname",
-                      },
-                      maxLength: {
-                        value: 12,
-                        message: "Please enter a valid surname",
-                      },
-                    })}
-                  />
-                  <Typography>{errors.lastName?.message}</Typography>
-                </Box>
-                <InputLabel className="font-semibold">Email</InputLabel>
-                <TextField
-                  className="form-control"
-                  margin="dense"
-                  name="email"
-                  type="text"
-                  label={"Email"}
-                  {...register("email", {
-                    required: "Please fill up the field",
-                    pattern: {
-                      value: /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
-                      message: "Please enter a valid email address!",
-                    },
-                  })}
-                />
-                <Typography>{errors.email?.message}</Typography>
-              </Box>
+          <DataGrid
+            sx={{ overflowY: "scroll" }}
+            rows={employeeUsers}
+            columns={adminEmployeeColumn}
+            getRowId={(row) => row.firstName}
+            initialState={{
+              pagination: {
+                paginationModel: { page: 0, pageSize: 8 },
+              },
+            }}
+            pageSizeOptions={[5, 10]}
+          />
 
-              <Box
-                component="button"
-                disabled={!isDirty || !isValid}
-                variant="contained"
-                className="bg-blue-600 w-full py-3 mt-2 rounded-md text-white font-semibold text-lg"
-                // onClick={createAccount}
-                type="submit"
+          {!createOpen ? null : (
+            <CreateAccountForm
+              props={createOpen}
+              button={
+                <Button
+                  className="my-auto p-7 font-extrabold text-sm rounded hover:text-lg duration-500"
+                  onClick={closeDialog}
+                >
+                  X
+                </Button>
+              }
+              closeForm={closeDialog}
+              refreshTable={getAllAccounts}
+            />
+          )}
+
+          {!editOpen ? null : (
+            <EditAccountForm
+              props={editOpen}
+              button={
+                <Button
+                  className="my-auto p-7 font-extrabold text-sm rounded hover:text-lg duration-500"
+                  onClick={closeEdit}
+                >
+                  X
+                </Button>
+              }
+              closeForm={closeEdit}
+              refreshTable={getAllAccounts}
+              user={user}
+            />
+          )}
+
+          {/* DELETE MODAL */}
+          <Dialog
+            open={deleteOpen}
+            TransitionComponent={Transition}
+            keepMounted
+            onClose={closeDelete}
+            aria-describedby="alert-dialog-slide-description"
+          >
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: "12px",
+                bgcolor: "#7C5F35",
+                color: "white",
+              }}
+            >
+              <Typography
+                sx={{
+                  padding: "24px",
+                  fontWeight: "800",
+                  fontSize: "30px",
+                  lineHeight: "36px",
+                  fontFamily: "cursive",
+                }}
               >
-                Submit
-              </Box>
-            </form>
-          </DialogContent>
-        </Dialog>
-
-        {/* EDIT MODAL */}
-        {/* <Dialog open={editOpen}>
-          <Box className="flex flex-row mb-3 justify-between text-center bg-slate-600 w-full text-white">
-            <h1 className="p-6 font-extrabold text-3xl">Edit Account</h1>
-            <button
-              className="my-auto p-7 font-extrabold text-sm rounded hover:text-lg duration-500"
-              onClick={closeEdit}
-            >
-              X
-            </button>
-          </Box>
-          <DialogContent>
-            <Box className="flex flex-row justify-between">
-              <Box className="flex-1 me-1">
-                <InputLabel className="font-semibold">First Name</InputLabel>
-                <TextField
-                  required
-                  margin="dense"
-                  name="firstName"
-                  label="Input First Name"
-                  type="text"
-                  fullWidth
-                  variant="outlined"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                />
-              </Box>
-              <Box className="flex-1">
-                <InputLabel className="font-semibold">Last Name</InputLabel>
-                <TextField
-                  required
-                  margin="dense"
-                  name="lastName"
-                  label="Input Last Name"
-                  type="text"
-                  fullWidth
-                  variant="outlined"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                />
-              </Box>
+                {user.accStatus == "Deactivated"
+                  ? `Reactivate Account`
+                  : `Deactivate Account`}
+              </Typography>
+              <Button
+                className="my-auto p-7 font-extrabold text-sm rounded hover:text-lg duration-500"
+                onClick={closeDelete}
+              >
+                X
+              </Button>
             </Box>
-            <InputLabel className="font-semibold">Email</InputLabel>
-            <TextField
-              required
-              margin="dense"
-              name="email"
-              label="Input Email Address"
-              type="email"
-              fullWidth
-              variant="outlined"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <InputLabel className="font-semibold">Address</InputLabel>
-            <TextField
-              required
-              margin="dense"
-              name="address"
-              label="Address"
-              type="number"
-              fullWidth
-              variant="outlined"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-            />
-            <InputLabel className="font-semibold">Contact Number</InputLabel>
-            <TextField
-              required
-              margin="dense"
-              name="contact"
-              label="Contact"
-              type="number"
-              fullWidth
-              variant="outlined"
-              value={contact}
-              onChange={(e) => setContact(e.target.value)}
-            />
-            <InputLabel className="font-semibold">Account Type</InputLabel>
-            <TextField
-              name="accountType"
-              margin="dense"
-              select
-              defaultValue="Employee"
-              helperText="Choose Account Type"
-              fullWidth
-              value={accountType}
-              onChange={(e) => setAccountType(e.target.value)}
-            >
-              {accountTypes.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
-            <Button
-              variant="contained"
-              className="bg-blue-600 w-full py-3 mt-2 rounded-md text-white font-semibold text-lg hover:bg-blue-800 duration-700"
-              onClick={() => updateAccount(userId)}
-            >
-              Submit
-            </Button>
-          </DialogContent>
-        </Dialog> */}
-
-        {/* DELETE MODAL */}
-        {/* <Dialog
-          open={deleteOpen}
-          TransitionComponent={Transition}
-          keepMounted
-          onClose={closeDelete}
-          aria-describedby="alert-dialog-slide-description"
-        >
-          <Box className="bg-slate-600 text-white">
-            <DialogTitle className="font-extrabold text-2xl">
-              CAUTION!
-            </DialogTitle>
+            <DialogContent>
+              <Typography
+                sx={{
+                  fontWeight: "800",
+                  fontSize: "20px",
+                  fontFamily: "cursive",
+                }}
+              >
+                {user.accStatus == "Deactivated"
+                  ? `Are you sure you want to Reactivate this account?`
+                  : `Are you sure you want to Deactivate this account?`}
+              </Typography>
+            </DialogContent>
+            <DialogActions>
+              <Box
+                variant="contained"
+                component="button"
+                sx={{
+                  fontFamily: "cursive",
+                  color: "black",
+                  "&:hover": {
+                    color: "white",
+                    backgroundColor: "#a57f47",
+                  },
+                }}
+                className=" py-3 px-6 rounded-xl font-semibold duration-700"
+                onClick={() => closeDelete()}
+              >
+                Cancel
+              </Box>
+              <Box
+                variant="contained"
+                component="button"
+                sx={{
+                  fontFamily: "cursive",
+                  color: "black",
+                  "&:hover": {
+                    color: "white",
+                    backgroundColor: "#a57f47",
+                  },
+                }}
+                className=" py-3 px-6 rounded-xl font-semibold duration-700"
+                onClick={() => {
+                  user.accStatus == "Deactivated"
+                    ? deleteAccount(userId, "Active", 0)
+                    : deleteAccount(userId, "Deactivated", 1);
+                }}
+              >
+                {user.accStatus == "Deactivated" ? `Reactivate` : `Deactivate`}
+              </Box>
+            </DialogActions>
+          </Dialog>
+        </Box>
+        <Box sx={{ marginTop: "15px", width: "100%" }}>
+          <Box className="font-extrabold text-4xl font-serif mt-2 mb-4">
+            Customer Accounts
           </Box>
-          <DialogContent>
-            <DialogContentText
-              id="alert-dialog-slide-description"
-              className="font-semibold text-lg text-black"
-            >
-              Are you sure you want to delete this account?
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              variant="contained"
-              className="bg-blue-600 py-3 px-6 rounded-xl text-white font-semibold hover:bg-blue-800 duration-700"
-              onClick={() => closeDelete()}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="contained"
-              className="bg-red-500 py-3 px-6 rounded-xl text-white font-semibold hover:bg-red-800 duration-700"
-              onClick={() => deleteAccount(userId)}
-            >
-              Delete
-            </Button>
-          </DialogActions>
-        </Dialog> */}
+          <Box>
+            <DataGrid
+              sx={{ overflowY: "scroll" }}
+              rows={customerUsers}
+              columns={customerColumn}
+              getRowId={(row) => row.firstName}
+              initialState={{
+                pagination: {
+                  paginationModel: { page: 0, pageSize: 8 },
+                },
+              }}
+              pageSizeOptions={[5, 10]}
+            />
+          </Box>
+        </Box>
       </Box>
     </Box>
   );
 };
 
 export default AdminAccounts;
-
-{
-  /* 
-<InputLabel className="font-semibold">Password</InputLabel>
-<TextField
-  required
-  name="password"
-  margin="dense"
-  label="Input Password"
-  type="password"
-  fullWidth
-  variant="outlined"
-  value={password}
-  onChange={(e) => setPassword(e.target.value)}
-/>
-<InputLabel className="font-semibold">Address</InputLabel>
-<TextField
-  required
-  multiline
-  rows={4}
-  margin="dense"
-  name="address"
-  label="Address"
-  type="number"
-  fullWidth
-  variant="outlined"
-  value={address}
-  onChange={(e) => setAddress(e.target.value)}
-/>
-<InputLabel className="font-semibold">Contact Number</InputLabel>
-<TextField
-  required
-  margin="dense"
-  name="contact"
-  label="Contact"
-  type="number"
-  fullWidth
-  variant="outlined"
-  value={contact}
-  onChange={(e) => setContact(e.target.value)}
-/>
-<InputLabel className="font-semibold">Account Type</InputLabel>
-<TextField
-  name="accountType"
-  margin="dense"
-  select
-  fullWidth
-  value={accountType}
-  onChange={(e) => setAccountType(e.target.value)}
->
-  {accountTypes.map((option) => (
-    <MenuItem key={option.value} value={option.value}>
-      {option.label}
-    </MenuItem>
-  ))}
-</TextField> */
-}

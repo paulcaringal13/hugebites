@@ -1,11 +1,8 @@
 "use client";
 import "./styles/globals.css";
-import { Inter } from "next/font/google";
-import { Box } from "@mui/material";
-import CustomerNavbar from "@/components/CustomerNavBar";
-import { useEffect, useState } from "react";
+import { Lexend } from "next/font/google";
 
-const inter = Inter({ subsets: ["latin"] });
+const lexend = Lexend({ subsets: ["latin"], weight: "400" });
 
 export const metadata = {
   title: "Huge Bites",
@@ -13,35 +10,33 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  const [loggedInUserName, setLoggedInUserName] = useState("");
-  const [loggedInUserId, setLoggedInUserId] = useState("");
-
-  useEffect(() => {
-    const userId =
-      typeof window !== "undefined" && window.localStorage
-        ? localStorage.getItem("accountId")
-        : "";
-    const userName =
-      typeof window !== "undefined" && window.localStorage
-        ? localStorage.getItem("userName")
-        : "";
-
-    {
-      userId && setLoggedInUserId(userId);
-    }
-
-    {
-      userName && setLoggedInUserName(userName);
-    }
-  }, []);
   return (
     <html lang="en">
       <title>Huge Bites</title>
-      <body className={inter.className}>
-        {loggedInUserId && <CustomerNavbar />}
 
-        {children}
-      </body>
+      <body className={lexend.className}>{children}</body>
     </html>
   );
 }
+
+// const [loggedInUserName, setLoggedInUserName] = useState("");
+// const [loggedInUserId, setLoggedInUserId] = useState("");
+
+// useEffect(() => {
+//   const userId =
+//     typeof window !== "undefined" && window.localStorage
+//       ? localStorage.getItem("accountId")
+//       : "";
+//   const userName =
+//     typeof window !== "undefined" && window.localStorage
+//       ? localStorage.getItem("userName")
+//       : "";
+
+//   {
+//     userId && setLoggedInUserId(userId);
+//   }
+
+//   {
+//     userName && setLoggedInUserName(userName);
+//   }
+// }, []);

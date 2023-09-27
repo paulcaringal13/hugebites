@@ -27,7 +27,6 @@ import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import { StarBorder } from "@mui/icons-material";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-import SuperAdminModules from "./SuperAdminModules";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import AdminSidebar from "./AdminSidebar";
 

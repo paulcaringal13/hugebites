@@ -31,6 +31,7 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import EventIcon from "@mui/icons-material/Event";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
+import MiniAdminSidebar from "../components/MiniAdminSidebar";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -310,24 +311,28 @@ const AdminOrders = () => {
     },
   ];
   return (
-    <Box className="m-9">
-      <Box className="flex flex-row justify-between">
-        <Box className="font-extrabold text-5xl mb-6 font-serif">Orders</Box>
+    <Box sx={{ display: "flex", flexDirection: "row", marginTop: "88px" }}>
+      <MiniAdminSidebar />
+      <Box sx={{ display: "flex", flexDirection: "column", marginTop: "15px" }}>
+        <Box className="flex flex-row justify-between">
+          <Box className="font-extrabold text-5xl mb-6 font-serif">Orders</Box>
+        </Box>
+        <DataGrid
+          sx={{ overflowY: "hidden" }}
+          rows={orderList}
+          columns={columns}
+          // getRowId={rows}
+          getRowId={(row) => row.orderId}
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 8 },
+            },
+          }}
+          pageSizeOptions={[5, 10]}
+          checkboxSelection
+        />
       </Box>
-      <DataGrid
-        sx={{ overflowY: "hidden" }}
-        rows={orderList}
-        columns={columns}
-        // getRowId={rows}
-        getRowId={(row) => row.orderId}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 8 },
-          },
-        }}
-        pageSizeOptions={[5, 10]}
-        checkboxSelection
-      />
+
       <Dialog
         sx={{ width: "100vw", marginLeft: "auto", marginRight: "auto" }}
         open={viewOpen}
