@@ -20,12 +20,13 @@ export async function GET(request) {
   const username = searchParams.get("username");
   const password = searchParams.get("password");
 
-  const query = `SELECT * FROM tbl_customer WHERE username = '${username}' AND password = '${password}'`; // change accountID
+  const query = `SELECT * FROM accounts WHERE username = '${username}' OR email = '${username}' AND password = '${password}' AND accountType = '0'`; // change accountID
   const res = await connection.execute(query);
   connection.end();
 
   const results = res[0];
-  console.log(results);
+
+  console.log(query);
 
   return NextResponse.json(results);
 }

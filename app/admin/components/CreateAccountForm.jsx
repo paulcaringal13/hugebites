@@ -1,23 +1,59 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Button } from "@mui/base";
+import "../../styles/globals.css";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import * as React from "react";
+import { Button } from "../../../components/ui/button";
 import {
   Dialog,
-  TextField,
   DialogContent,
-  InputLabel,
-  MenuItem,
-  Box,
-  Typography,
-} from "@mui/material";
-import { useForm } from "react-hook-form";
-import Slide from "@mui/material/Slide";
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../../../components/ui/dialog";
+import { Input } from "../../../components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Toaster } from "@/components/ui/toaster";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { X } from "lucide-react";
+import {
+  Toast,
+  ToastClose,
+  ToastDescription,
+  ToastProvider,
+  ToastTitle,
+  ToastViewport,
+} from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+const CreateAccountForm = ({ refreshTable }) => {
+  // { openCreate, closeCreateDialog }
+  const [openCreate, setOpenCreate] = useState(false);
+  const [accountType, setAccountType] = useState("");
+  const [createSuccess, setCreateSuccess] = useState(false);
+  const [createFail, setCreateFail] = useState(false);
 
-const CreateAccountForm = ({ props, button, closeForm, refreshTable }) => {
+  const { toast } = useToast();
+
+  const openCreateDialog = () => {
+    setOpenCreate(true);
+    reset();
+  };
+
+  const closeCreateDialog = () => {
+    setOpenCreate(false);
+    reset();
+  };
+
   const form = useForm({
     defaultValues: {
       firstName: "",
@@ -25,471 +61,393 @@ const CreateAccountForm = ({ props, button, closeForm, refreshTable }) => {
       email: "",
       password: "",
       checkPass: "",
-      address: "",
+      // address: "",
       contact: "",
-      accountType: "",
     },
     mode: "onTouched",
   });
+
   const { register, handleSubmit, formState, reset, getValues } = form;
   const { errors, isDirty, isValid } = formState;
-  const checkPassword = getValues("password");
 
   const createAccount = async (data) => {
-    const {
-      firstName,
-      lastName,
-      email,
-      password,
-      address,
-      contact,
-      accountType,
-    } = data;
+    const { firstName, lastName, email, password, contact } = data;
 
-    const postData = {
+    const accountRow = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        firstName: firstName,
-        lastName: lastName,
         email: email,
         password: password,
-        address: address,
+        username: "",
         contact: contact,
-        accountType: accountType,
+        accountType: 0,
+        userRole: accountType,
+        isDeactivated: 0,
         accStatus: "Active",
       }),
     };
 
     try {
       const res = await fetch(
-        `http://localhost:3000/api/admin/account`,
-        postData
+        `http://localhost:3000/api/admin/account/create-account/accounts`,
+        accountRow
       );
       const response = await res.json();
+
+      const { insertId } = response[0];
+
+      const tblEmployeeRow = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName: firstName,
+          lastName: lastName,
+          accountId: insertId,
+        }),
+      };
+
+      try {
+        const employeeResponse = await fetch(
+          `http://localhost:3000/api/admin/account/employee/create-account/tbl_employee`,
+          tblEmployeeRow
+        );
+        const empRes = await employeeResponse.json();
+
+        {
+          empRes ? setCreateSuccess(true) : setCreateFail(true);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+
+      refreshTable();
     } catch (error) {
       console.log(error);
     }
-
-    refreshTable();
-  };
-
-  const checkInput = (message) => {
-    const errMsg = message;
-
-    let isInvalid = false;
-
-    {
-      !errMsg ? (isInvalid = false) : (isInvalid = true);
-    }
-
-    return isInvalid;
   };
 
   const onSubmit = (data) => {
     createAccount(data);
-    refreshTable();
-    closeForm();
-    reset();
+    refreshTable;
+    closeCreateDialog();
   };
 
-  const accountTypes = [
-    {
-      value: "Employee",
-      label: "Employee",
-    },
-    {
-      value: "Sub Admin",
-      label: "Sub Admin",
-    },
-  ];
-
   return (
-    <Dialog open={props} fullWidth maxWidth="lg" sx={{ overflow: "scroll" }}>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          marginBottom: "12px",
-          bgcolor: "#7C5F35",
-          color: "white",
-        }}
-      >
-        <Typography
-          sx={{
-            padding: "24px",
-            fontWeight: "800",
-            fontSize: "30px",
-            lineHeight: "36px",
-            fontFamily: "cursive",
-          }}
-        >
-          Create Account
-        </Typography>
-        {button}
-      </Box>
-      <DialogContent sx={{ width: "80vw" }}>
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              width: "fit-content",
-            }}
+    <>
+      <Dialog open={openCreate}>
+        <DialogTrigger asChild>
+          <Button
+            variant="outline"
+            className="hover:bg-primary hover:text-white duration-150 "
+            onClick={openCreateDialog}
           >
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-              }}
-            >
-              <Box className="flex-1">
-                <InputLabel
-                  sx={{ fontFamily: "cursive", opacity: "0.8" }}
-                  className="font-bold"
-                >
-                  First Name
-                </InputLabel>
-                <TextField
-                  sx={{
-                    width: "37vw",
-                    marginRight: "15px",
-                  }}
-                  className="form-control"
-                  margin="dense"
-                  name="firstName"
-                  type="text"
-                  error={checkInput(errors.firstName?.message)}
-                  label={"First Name"}
-                  {...register("firstName", {
-                    required: "Please fill up the field!",
-                    maxLength: {
-                      value: 12,
-                      message: "Please enter a valid name!",
-                    },
-                    minLength: {
-                      value: 2,
-                      message: "Please enter a valid name!", // JS only: <p>Please enter a valid name</p> TS only support string
-                    },
-                  })}
-                />
-                <Typography
-                  sx={{
-                    fontFamily: "cursive",
-                    color: "#ff3333",
-                    marginTop: "8px",
-                    marginBottom: "8px",
-                    fontSize: "13px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {errors.firstName?.message}
-                </Typography>
-              </Box>
-              <Box className="flex-1">
-                <InputLabel
-                  sx={{ fontFamily: "cursive", opacity: "0.8" }}
-                  className="font-bold"
-                >
-                  Last Name
-                </InputLabel>
-                <TextField
-                  sx={{ width: "37vw", marginBottom: "10px" }}
-                  className="form-control"
-                  margin="dense"
-                  name="lastName"
-                  type="text"
-                  label={"Last Name"}
-                  error={checkInput(errors.lastName?.message)}
-                  {...register("lastName", {
-                    required: "Please fill up the field",
-                    minLength: {
-                      value: 2,
-                      message: "Please enter a valid surname",
-                    },
-                    maxLength: {
-                      value: 12,
-                      message: "Please enter a valid surname",
-                    },
-                  })}
-                />
-                <Typography
-                  sx={{
-                    fontFamily: "cursive",
-                    color: "#ff3333",
-                    marginTop: "8px",
-                    marginBottom: "8px",
-                    fontSize: "13px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {errors.lastName?.message}
-                </Typography>
-              </Box>
-            </Box>
-            <InputLabel
-              sx={{ fontFamily: "cursive", opacity: "0.8" }}
-              className="font-bold"
-            >
-              Email
-            </InputLabel>
-            <TextField
-              className="form-control"
-              margin="dense"
-              name="email"
-              type="text"
-              label={"Email"}
-              error={checkInput(errors.email?.message)}
-              {...register("email", {
-                required: "Please fill up the field",
-                pattern: {
-                  value: /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
-                  message: "Please enter a valid email address!",
-                },
-                validate: {
-                  emailAvailable: async (fieldValue) => {
-                    try {
-                      const response = await fetch(
-                        `http://localhost:3000/api/admin/account/email?email=${fieldValue}`
-                      );
-                      const data = await response.json();
-                      return data.email.length == 0 || "Email already exists!";
-                    } catch (error) {
-                      console.log(error);
-                    }
-                  },
-                },
-              })}
-            />
-            <Typography
-              sx={{
-                fontFamily: "cursive",
-                color: "#ff3333",
-                marginTop: "8px",
-                marginBottom: "8px",
-                fontSize: "13px",
-                fontWeight: "bold",
-              }}
-            >
-              {errors.email?.message}
-            </Typography>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-              }}
-            >
-              <Box className="flex-1">
-                <InputLabel
-                  sx={{ fontFamily: "cursive", opacity: "0.8" }}
-                  className="font-bold"
-                >
-                  Password
-                </InputLabel>
-                <TextField
-                  className="form-control"
-                  sx={{
-                    width: "37vw",
-                    marginRight: "15px",
-                  }}
-                  margin="dense"
-                  name="password"
-                  type="password"
-                  label={"Password"}
-                  error={checkInput(errors.password?.message)}
-                  {...register("password", {
-                    required: "Please fill up the field",
-                    minLength: {
-                      value: 8,
-                      message:
-                        "Password too weak. Password should at least have 8 characters!",
-                    },
-                    maxLength: {
-                      value: 30,
-                      message: "Password too long!",
-                    },
-                  })}
-                />
-                <Typography
-                  sx={{
-                    fontFamily: "cursive",
-                    color: "#ff3333",
-                    marginTop: "8px",
-                    marginBottom: "8px",
-                    fontSize: "13px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {errors.password?.message}
-                </Typography>
-              </Box>
-              <Box className="flex-1">
-                <InputLabel
-                  sx={{ fontFamily: "cursive", opacity: "0.8" }}
-                  className="font-bold"
-                >
-                  Confirm Password
-                </InputLabel>
-                <TextField
-                  sx={{
-                    width: "37vw",
-                  }}
-                  className="form-control"
-                  margin="dense"
-                  name="checkPass"
-                  type="password"
-                  label={"Re-enter Password"}
-                  error={checkInput(errors.checkPass?.message)}
-                  {...register("checkPass", {
-                    required: "Please fill up the field",
-                    validate: (fieldValue) => {
-                      return (
-                        fieldValue == checkPassword || "Password don't match"
-                      );
-                    },
-                  })}
-                />
-                <Typography
-                  sx={{
-                    fontFamily: "cursive",
-                    color: "#ff3333",
-                    marginTop: "8px",
-                    marginBottom: "8px",
-                    fontSize: "13px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {errors.checkPass?.message}
-                </Typography>
-              </Box>
-            </Box>
+            Create Account
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex flex-row justify-between">
+              <Label className="my-auto text-lg font-semibold leading-none tracking-tight">
+                Create Account
+              </Label>
+              <Button
+                className="bg-transparent text-gray-400"
+                onClick={() => closeCreateDialog()}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </DialogTitle>
+            <DialogDescription>
+              Fill up all the fields to enable the 'Create' button.
+            </DialogDescription>
+          </DialogHeader>
 
-            <InputLabel
-              sx={{ fontFamily: "cursive", opacity: "0.8" }}
-              className="font-bold"
-            >
-              Address
-            </InputLabel>
-            <TextField
-              className="form-control"
-              multiline
-              rows={3}
-              margin="dense"
-              name="address"
-              type="text"
-              label={"Address"}
-              error={checkInput(errors.address?.message)}
-              {...register("address", {
-                required: "Please fill up the field",
-              })}
-            />
-            <Typography
-              sx={{
-                fontFamily: "cursive",
-                color: "#ff3333",
-                marginTop: "8px",
-                marginBottom: "8px",
-                fontSize: "13px",
-                fontWeight: "bold",
-              }}
-            >
-              {errors.address?.message}
-            </Typography>
-            <InputLabel
-              sx={{ fontFamily: "cursive", opacity: "0.8" }}
-              className="font-bold"
-            >
-              Contact Number
-            </InputLabel>
-            <TextField
-              className="form-control"
-              margin="dense"
-              name="contact"
-              type="number"
-              label={"Contact Number"}
-              error={checkInput(errors.contact?.message)}
-              {...register("contact", {
-                required: "Please fill up the field",
-                // valueAsNumber: true,
-                validate: {
-                  isReal: (fieldValue) => {
-                    return (
-                      fieldValue.length == 11 || "Please input a valid number!"
-                    );
-                  },
-                  isValid: (fieldValue) => {
-                    return fieldValue == "E" || fieldValue == "e" || null;
-                  },
-                },
-              })}
-            />
-            <Typography
-              sx={{
-                fontFamily: "cursive",
-                color: "#ff3333",
-                marginTop: "8px",
-                marginBottom: "8px",
-                fontSize: "13px",
-                fontWeight: "bold",
-              }}
-            >
-              {errors.contact?.message}
-            </Typography>
-            <InputLabel
-              sx={{ fontFamily: "cursive", opacity: "0.8" }}
-              className="font-bold"
-            >
-              Account Type
-            </InputLabel>
-            <TextField
-              name="accountType"
-              margin="dense"
-              select
-              defaultValue={""}
-              label={"Account Type"}
-              {...register("accountType")}
-            >
-              {accountTypes.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.value}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Box>
-          <Box
-            sx={{
-              color: "white",
-              bgcolor: "#7c5f35",
-              width: "fit-content",
-              marginLeft: "auto",
-              fontFamily: "cursive",
-              paddingLeft: "20px",
-              paddingRight: "20px",
-              paddingTop: "12px",
-              paddingBottom: "12px",
-              marginTop: "12px",
-              marginRight: "12px",
-              borderRadius: "6px",
-              fontSize: "18px",
-              lineHeight: "28px",
-              fontWeight: "600",
-            }}
-          >
-            <Box
-              component="button"
-              disabled={!isDirty || !isValid}
-              variant="contained"
-              type="submit"
-            >
-              Create Account
-            </Box>
-          </Box>
-        </form>
-      </DialogContent>
-    </Dialog>
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
+            <div className="flex flex-col">
+              <div className="flex flex-row flex-wrap">
+                <div className="flex-1 me-2">
+                  <Label
+                    htmlFor="firstName"
+                    className="text-right my-auto me-2"
+                  >
+                    First Name
+                  </Label>
+                  <Input
+                    id="firstName"
+                    className="form-control w-full"
+                    name="firstName"
+                    type="text"
+                    placeholder="First Name"
+                    {...register("firstName", {
+                      required: "Please fill up the field!",
+                      maxLength: {
+                        value: 12,
+                        message: "Please enter a valid name!",
+                      },
+                      minLength: {
+                        value: 2,
+                        message: "Please enter a valid name!", // JS only: <p>Please enter a valid name</p> TS only support string
+                      },
+                    })}
+                  />
+                  {!errors.firstName?.message ? null : (
+                    <Label htmlFor="firstNameErr" className="errorMessage mb-2">
+                      {errors.firstName?.message}
+                    </Label>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <Label htmlFor="lastName" className="text-right">
+                    Last Name
+                  </Label>
+                  <Input
+                    className="form-control w-full"
+                    name="lastName"
+                    type="text"
+                    placeholder="Last Name"
+                    {...register("lastName", {
+                      required: "Please fill up the field",
+                      minLength: {
+                        value: 2,
+                        message: "Please enter a valid surname",
+                      },
+                      maxLength: {
+                        value: 12,
+                        message: "Please enter a valid surname",
+                      },
+                    })}
+                  />
+
+                  <Label htmlFor="lastNameErr" className="errorMessage mb-2">
+                    {errors.lastName?.message}
+                  </Label>
+                </div>
+              </div>
+              <div className="flex flex-row flex-wrap">
+                <div className="flex-1 me-2">
+                  <Label htmlFor="email" className="text-right my-auto me-2">
+                    Email
+                  </Label>
+                  <Input
+                    className="form-control w-full"
+                    name="email"
+                    type="text"
+                    placeholder="Email"
+                    {...register("email", {
+                      required: "Please fill up the field",
+                      pattern: {
+                        value: /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
+                        message: "Please enter a valid email address!",
+                      },
+                      validate: {
+                        emailAvailable: async (fieldValue) => {
+                          try {
+                            const response = await fetch(
+                              `http://localhost:3000/api/admin/account/validate-email?email=${fieldValue}`
+                            );
+                            const data = await response.json();
+                            return data == "Success" || "Email already taken!";
+                          } catch (error) {
+                            console.log(error);
+                          }
+                        },
+                      },
+                    })}
+                  />
+                  <Label htmlFor="emailErr" className="errorMessage mb-2">
+                    {errors.email?.message}
+                  </Label>
+                </div>
+                <div className="flex-1">
+                  <Label htmlFor="contact" className="text-right">
+                    Contact Number
+                  </Label>
+                  <Input
+                    className="form-control w-full"
+                    name="contact"
+                    type="text"
+                    placeholder="Contact"
+                    {...register("contact", {
+                      required: "Please fill up the field",
+                      pattern: {
+                        value: /^[0-9]*$/,
+                        message: "Please enter a valid contact number!",
+                      },
+                      validate: {
+                        isReal: (fieldValue) => {
+                          return (
+                            fieldValue.length == 11 ||
+                            "Please input a valid number!"
+                          );
+                        },
+                        isExisting: async (fieldValue) => {
+                          try {
+                            const response = await fetch(
+                              `http://localhost:3000/api/admin/account/validate-contact?contact=${fieldValue}`
+                            );
+                            const data = await response.json();
+                            return (
+                              data == "Success" || "Number already registered!"
+                            );
+                          } catch (error) {
+                            console.log(error);
+                          }
+                        },
+                      },
+                    })}
+                  />
+                  <Label htmlFor="contactErr" className="errorMessage mb-2">
+                    {errors.contact?.message}
+                  </Label>
+                </div>
+              </div>
+              <div className="flex flex-row flex-wrap">
+                <div className="flex-1 me-2">
+                  <Label htmlFor="password" className="text-right">
+                    Password
+                  </Label>
+                  <Input
+                    className="form-control w-full"
+                    sx={{
+                      width: "37vw",
+                      marginRight: "15px",
+                    }}
+                    name="password"
+                    type="password"
+                    placeholder="Password"
+                    {...register("password", {
+                      required: "Please fill up the field",
+                      minLength: {
+                        value: 8,
+                        message:
+                          "Password too weak. Password should at least have 8 characters!",
+                      },
+                      maxLength: {
+                        value: 30,
+                        message: "Password too long!",
+                      },
+                    })}
+                  />
+
+                  <Label htmlFor="passwordErr" className="errorMessage mb-2">
+                    {errors.password?.message}
+                  </Label>
+                </div>
+                <div className="flex-1 me-2">
+                  <Label htmlFor="checkPass" className="text-right">
+                    Confirm Password
+                  </Label>
+                  <Input
+                    className="form-control w-full"
+                    name="checkPass"
+                    type="password"
+                    placeholder="Re-enter Password"
+                    {...register("checkPass", {
+                      required: "Please fill up the field",
+                      validate: (fieldValue) => {
+                        return (
+                          fieldValue == getValues("password") ||
+                          "Password don't match"
+                        );
+                      },
+                    })}
+                  />
+                  <Label htmlFor="checkPassErr" className="errorMessage mb-2">
+                    {errors.checkPass?.message}
+                  </Label>
+                </div>
+              </div>
+
+              {/* address input field, can use in customer not needed in employee */}
+              {/* <div>
+                <Label htmlFor="address" className="text-right">
+                  Address
+                </Label>
+                <Textarea
+                  placeholder="Type your message here."
+                  className="form-control w-full my-1"
+                  name="address"
+                  type="text"
+                  {...register("address", {
+                    required: "Please fill up the field",
+                  })}
+                />
+                <Label htmlFor="checkPassErr" className="errorMessage mb-2">
+                  {errors.address?.message}
+                </Label>
+              </div> */}
+              <div>
+                <Label htmlFor="accountType" className="text-right">
+                  Account Type
+                </Label>
+                <Select
+                  asChild
+                  value={accountType}
+                  onValueChange={setAccountType}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select Account Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem id="accountType" value="Sub Admin">
+                      Sub Admin
+                    </SelectItem>
+                    <SelectItem id="employee" value="Employee">
+                      Employee
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                disabled={!isDirty || !isValid}
+                type="submit"
+                className="mt-3 hover:bg-ring"
+              >
+                Create
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+      {createSuccess ? (
+        <ToastProvider duration={2000}>
+          <Toast variant="success" className="w-fit h-fit">
+            <div className="grid gap-1">
+              <ToastTitle className="text-lg">Success!</ToastTitle>
+              <ToastDescription className="text-sm font-light">
+                Account Created Successfully
+              </ToastDescription>
+            </div>
+            <ToastClose />
+          </Toast>
+          <ToastViewport />
+        </ToastProvider>
+      ) : null}
+
+      {createFail ? (
+        <ToastProvider duration={10000}>
+          <Toast variant="destructive" className="w-fit h-fit">
+            <div className="grid gap-1">
+              <ToastTitle className="text-lg">
+                Uh oh! Something went wrong.
+              </ToastTitle>
+              <ToastDescription className="text-sm font-light">
+                There was a problem with your request.
+              </ToastDescription>
+            </div>
+            <ToastClose />
+          </Toast>
+          <ToastViewport />
+        </ToastProvider>
+      ) : null}
+    </>
   );
 };
 

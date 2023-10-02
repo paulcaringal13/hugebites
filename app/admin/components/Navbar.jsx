@@ -1,33 +1,43 @@
 "use client";
-import Link from "next/link";
-import {
-  AppBar,
-  Box,
-  Button,
-  Collapse,
-  Drawer,
-  FormControl,
-  Icon,
-  InputLabel,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  MenuItem,
-  Select,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import * as React from "react";
 import Image from "next/image";
-import ExpandLess from "@mui/icons-material/ExpandLess";
-import ExpandMore from "@mui/icons-material/ExpandMore";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
-import { StarBorder } from "@mui/icons-material";
-import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../../../components/ui/popover";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCoffee } from "@fortawesome/free-solid-svg-icons";
+import { Button } from "../../../components/ui/button";
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../../../components/ui/card";
+import { Input } from "../../../components/ui/input";
+import { Label } from "../../../components/ui/label";
+import { BiChevronDown } from "react-icons/bi";
+import * as Avatar from "@radix-ui/react-avatar";
+import { RxHamburgerMenu } from "react-icons/rx";
+
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../../../components/ui/sheet";
+import MiniAdminSidebar from "./MiniAdminSidebar";
 import AdminSidebar from "./AdminSidebar";
 
 // primary=#FDF9F9
@@ -45,6 +55,7 @@ const AdminNavbar = () => {
 
   const [loggedInUserName, setLoggedInUserName] = useState("");
   const [loggedInUserId, setLoggedInUserId] = useState("");
+  const [userInitials, setUserInitials] = useState("");
 
   const [open, setOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -100,9 +111,14 @@ const AdminNavbar = () => {
       typeof window !== "undefined" && window.localStorage
         ? localStorage.getItem("accountId")
         : "";
-    const userName =
+    const firstName =
       typeof window !== "undefined" && window.localStorage
-        ? localStorage.getItem("userName")
+        ? localStorage.getItem("firstName")
+        : "";
+
+    const lastName =
+      typeof window !== "undefined" && window.localStorage
+        ? localStorage.getItem("lastName")
         : "";
 
     {
@@ -110,121 +126,166 @@ const AdminNavbar = () => {
     }
 
     {
-      userName && setLoggedInUserName(userName);
+      firstName && lastName
+        ? setLoggedInUserName(`${firstName} ${lastName}`)
+        : null;
+    }
+
+    const initials = `${Array.from(firstName)[0]}${Array.from(lastName)[0]}`;
+
+    {
+      firstName && lastName ? setUserInitials(initials) : null;
     }
   }, []);
-
   return (
-    <Box>
-      <AppBar
-        sx={{ bgcolor: "#FFF", padding: "12px", zIndex: "50", color: "black" }}
-      >
-        <Toolbar>
-          <Box component="button" onClick={handleDrawer}>
-            <MenuRoundedIcon />
-            <AdminSidebar props={drawerOpen} />
-          </Box>
-          <Box sx={{ display: "flex", flexDirection: "row" }}>
-            <Box
-              component="img"
-              className="my-auto"
-              sx={{
-                height: "60px",
-                width: "45px",
-              }}
-              alt="huge-bites-logo"
-              src="/initial-images/Logo.png"
-            />
-            <Typography
-              sx={{
-                fontSize: "40px",
-                fontFamily: "cursive",
-                fontWeight: "600",
-              }}
-              // className="font-bold"
+    <div className="w-full h-1/6 z-10 ">
+      <div className="flex h-1/6 items-center bg-white border">
+        <Image src="/initial-images/Logo.png" alt="bg" height={33} width={72} />
+        <Label className="my-auto text-3xl ms-10">HugeBites</Label>
+        <Popover>
+          <PopoverTrigger className="ms-auto me-16 flex flex-row">
+            <Avatar.Root className="bg-blackA3 inline-flex h-[35px] w-[35px] select-none items-center justify-center my-auto overflow-hidden rounded-full align-middle">
+              <Avatar.Fallback className="text-violet11 leading-1 flex h-full w-full items-center justify-center bg-primary text-white text-[15px] font-medium">
+                {userInitials}
+              </Avatar.Fallback>
+            </Avatar.Root>
+            <div className="flex flex-col ms-2 text-sm">
+              {loggedInUserName}
+              <div className="flex flex-row text-sm">
+                {loggedInUserId}
+                <BiChevronDown className="text-lg my-auto" />
+              </div>
+            </div>
+          </PopoverTrigger>
+          <PopoverContent className="flex flex-col w-fit h-fit p-0">
+            <Button
+              className="my-auto bg-transparent text-black hover:bg-accent"
+              // onClick={() => handleLogout()}
             >
-              HugeBites
-            </Typography>
-          </Box>
+              View Profile
+            </Button>
+            <Button
+              className="justify-start my-auto bg-transparent text-black hover:bg-accent"
+              onClick={() => handleLogout()}
+            >
+              Logout
+            </Button>
+            <a href="/admin" className="hidden" ref={buttonRef} />
+          </PopoverContent>
+        </Popover>
+      </div>
+    </div>
 
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
+    // <Box>
+    //   <AppBar
+    //     sx={{ bgcolor: "#FFF", padding: "12px", zIndex: "50", color: "black" }}
+    //   >
+    //     <Toolbar>
+    //       <Box component="button" onClick={handleDrawer}>
+    //         <MenuRoundedIcon />
+    //         <AdminSidebar props={drawerOpen} />
+    //       </Box>
+    //       <Box sx={{ display: "flex", flexDirection: "row" }}>
+    //         <Box
+    //           component="img"
+    //           className="my-auto"
+    //           sx={{
+    //             height: "60px",
+    //             width: "45px",
+    //           }}
+    //           alt="huge-bites-logo"
+    //           src="/initial-images/Logo.png"
+    //         />
+    //         <Typography
+    //           sx={{
+    //             fontSize: "40px",
+    //             fontFamily: "cursive",
+    //             fontWeight: "600",
+    //           }}
+    //           // className="font-bold"
+    //         >
+    //           HugeBites
+    //         </Typography>
+    //       </Box>
 
-              marginLeft: "auto",
-            }}
-          >
-            <Box
-              component="button"
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                width: "fit-content",
-                alignContent: "space-evenly",
-              }}
-              onClick={handleClick}
-            >
-              <Box
-                sx={{
-                  bgcolor: "#7C5F35",
-                  borderRadius: "555px",
-                  padding: "3px",
-                  color: "white",
-                  marginRight: "4px",
-                }}
-              >
-                <PersonOutlineIcon color="light" />
-              </Box>
-              <Typography
-                sx={{
-                  fontFamily: "cursive",
-                  fontWeight: "700",
-                  marginLeft: "4px",
-                  marginTop: "4px",
-                }}
-                // className="font-medium ms-1 mt-1"
-              >
-                Welcome, User {loggedInUserId}
-              </Typography>
-              {open ? (
-                <ExpandLess className="mt-1" />
-              ) : (
-                <ExpandMore className="mt-1" />
-              )}
-            </Box>
-            <Collapse
-              in={open}
-              timeout="auto"
-              sx={{ marginLeft: "auto", marginRight: "20px" }}
-              unmountOnExit
-            >
-              <List component="div" disablePadding>
-                <Box
-                  className="duration-1000 "
-                  component="button"
-                  sx={{
-                    fontFamily: "cursive",
-                    fontWeight: "700",
-                    "&:hover": {
-                      textDecoration: "underline",
-                    },
-                  }}
-                  onClick={(e) => handleLogout()}
-                >
-                  Logout
-                </Box>
-                <Button
-                  href="/admin"
-                  sx={{ display: "none" }}
-                  ref={buttonRef}
-                />
-              </List>
-            </Collapse>
-          </Box>
-        </Toolbar>
-      </AppBar>
-    </Box>
+    //       <Box
+    //         sx={{
+    //           display: "flex",
+    //           flexDirection: "column",
+
+    //           marginLeft: "auto",
+    //         }}
+    //       >
+    //         <Box
+    //           component="button"
+    //           sx={{
+    //             display: "flex",
+    //             flexDirection: "row",
+    //             width: "fit-content",
+    //             alignContent: "space-evenly",
+    //           }}
+    //           onClick={handleClick}
+    //         >
+    //           <Box
+    //             sx={{
+    //               bgcolor: "#7C5F35",
+    //               borderRadius: "555px",
+    //               padding: "3px",
+    //               color: "white",
+    //               marginRight: "4px",
+    //             }}
+    //           >
+    //             <PersonOutlineIcon color="light" />
+    //           </Box>
+    //           <Typography
+    //             sx={{
+    //               fontFamily: "cursive",
+    //               fontWeight: "700",
+    //               marginLeft: "4px",
+    //               marginTop: "4px",
+    //             }}
+    //             // className="font-medium ms-1 mt-1"
+    //           >
+    //             Welcome, User {loggedInUserId}
+    //           </Typography>
+    //           {open ? (
+    //             <ExpandLess className="mt-1" />
+    //           ) : (
+    //             <ExpandMore className="mt-1" />
+    //           )}
+    //         </Box>
+    //         <Collapse
+    //           in={open}
+    //           timeout="auto"
+    //           sx={{ marginLeft: "auto", marginRight: "20px" }}
+    //           unmountOnExit
+    //         >
+    //           <List component="div" disablePadding>
+    //             <Box
+    //               className="duration-1000 "
+    //               component="button"
+    //               sx={{
+    //                 fontFamily: "cursive",
+    //                 fontWeight: "700",
+    //                 "&:hover": {
+    //                   textDecoration: "underline",
+    //                 },
+    //               }}
+    //               onClick={(e) => handleLogout()}
+    //             >
+    //               Logout
+    //             </Box>
+    //             <Button
+    //               href="/admin"
+    //               sx={{ display: "none" }}
+    //               ref={buttonRef}
+    //             />
+    //           </List>
+    //         </Collapse>
+    //       </Box>
+    //     </Toolbar>
+    //   </AppBar>
+    // </Box>
   );
 };
 

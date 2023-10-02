@@ -1,432 +1,326 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Button } from "@mui/base";
-import { DataGrid } from "@mui/x-data-grid";
+import "../../styles/globals.css";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import * as React from "react";
+import { Button } from "../../../components/ui/button";
 import {
   Dialog,
-  DialogTitle,
-  TextField,
-  DialogActions,
   DialogContent,
-  InputLabel,
-  MenuItem,
-  DialogContentText,
-  Box,
-  Typography,
-} from "@mui/material";
-import { useForm } from "react-hook-form";
-import Slide from "@mui/material/Slide";
-import MiniAdminSidebar from "../components/MiniAdminSidebar";
-import CreateAccountForm from "../components/CreateAccountForm";
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../../../components/ui/dialog";
+import { Input } from "../../../components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Toaster } from "@/components/ui/toaster";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { X } from "lucide-react";
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+import { useToast } from "@/components/ui/use-toast";
 
-const EditAccountForm = ({ props, button, refreshTable, closeForm, user }) => {
-  // for input values
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [address, setAddress] = useState("");
-  const [contact, setContact] = useState("");
+const EditAccountForm = ({
+  editOpen,
+  user,
+  handleEditClose,
+  refreshTable,
+  handleEditSuccess,
+  setEditFail,
+}) => {
   const [accountType, setAccountType] = useState("");
-  const form = useForm({
+
+  const editForm = useForm({
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      checkPass: "",
-      address: "",
-      contact: "",
-      accountType: "",
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      contact: user.contact,
+      userRole: user.userRole,
     },
     mode: "onTouched",
   });
-  const { register, handleSubmit, formState, reset, getValues } = form;
+
+  const { register, handleSubmit, formState, reset, getValues } = editForm;
   const { errors, isDirty, isValid } = formState;
 
-  const checkInput = (message) => {
-    const errMsg = message;
+  const onSubmit = async (data) => {
+    const { firstName, lastName, email, contact, userRole } = data;
 
-    let isInvalid = false;
-
-    {
-      !errMsg ? (isInvalid = false) : (isInvalid = true);
-    }
-
-    return isInvalid;
-  };
-
-  const onSubmitEdit = (data) => {
-    const updateValues = {
-      firstName: "",
-      lastName: "",
-      email: "",
-      address: "",
-      contact: "",
-      accountType: "",
+    let editChanges = {
+      email: email,
+      contact: contact,
     };
 
     {
-      !data.firstName
-        ? (updateValues.firstName = user.firstName)
-        : (updateValues.firstName = data.firstName);
+      !accountType
+        ? (editChanges = { ...editChanges, userRole: userRole })
+        : (editChanges = { ...editChanges, userRole: accountType });
     }
 
-    {
-      !data.lastName
-        ? (updateValues.lastName = user.lastName)
-        : (updateValues.lastName = data.lastName);
-    }
-
-    {
-      !data.email
-        ? (updateValues.email = user.email)
-        : (updateValues.email = data.email);
-    }
-
-    {
-      !data.address
-        ? (updateValues.address = user.address)
-        : (updateValues.address = data.address);
-    }
-
-    {
-      !data.contact
-        ? (updateValues.contact = user.contact)
-        : (updateValues.contact = data.contact);
-    }
-
-    {
-      !data.accountType
-        ? (updateValues.accountType = user.accountType)
-        : (updateValues.accountType = data.accountType);
-    }
-
-    updateAccount(updateValues);
-  };
-
-  const updateAccount = async (updateValues) => {
-    const { firstName, lastName, email, address, contact, accountType } =
-      updateValues;
-
-    const postData = {
+    const editAccountsData = {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        address: address,
-        contact: contact,
-        accountType: accountType,
-      }),
+      body: JSON.stringify(editChanges),
     };
 
     try {
       const res = await fetch(
-        `http://localhost:3000/api/admin/account/${user.accountId}`,
-        postData
+        `http://localhost:3000/api/admin/account/employee/update/accounts?` +
+          new URLSearchParams({ accountId: user.accountId }),
+        editAccountsData
       );
-      const response = await res.json();
+      const accountsResponse = await res.json();
+
+      {
+        accountsResponse ? handleEditSuccess(true) : setEditFail(true);
+      }
+
+      const editTableEmployeeData = {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName: firstName,
+          lastName: lastName,
+        }),
+      };
+
+      try {
+        const res = await fetch(
+          `http://localhost:3000/api/admin/account/employee/update/tbl_employee?` +
+            new URLSearchParams({ accountId: user.accountId }),
+          editTableEmployeeData
+        );
+
+        const response = await res.json();
+      } catch (e) {
+        console.log(e);
+      }
     } catch (error) {
       console.log(error);
     }
     refreshTable();
-    closeForm();
+    handleEditClose();
   };
 
-  const accountTypes = [
-    {
-      value: "Employee",
-      label: "Employee",
-    },
-    {
-      value: "Sub Admin",
-      label: "Sub Admin",
-    },
-  ];
-
   return (
-    <Dialog open={props}>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          marginBottom: "12px",
-          bgcolor: "#7C5F35",
-          color: "white",
-        }}
-      >
-        <Typography
-          sx={{
-            padding: "24px",
-            fontWeight: "800",
-            fontSize: "30px",
-            lineHeight: "36px",
-            fontFamily: "cursive",
-          }}
-        >
-          Edit Account
-        </Typography>
-        {button}
-        {/* <Button
-          className="my-auto p-7 font-extrabold text-sm rounded hover:text-lg duration-500"
-          onClick={closeEdit}
-        >
-          X
-        </Button> */}
-      </Box>
-      <DialogContent>
-        <form onSubmit={handleSubmit(onSubmitEdit)} noValidate>
-          <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <InputLabel
-              sx={{ fontFamily: "cursive", opacity: "0.8" }}
-              className="font-bold"
-            >
-              First Name: {user.firstName}
-            </InputLabel>
-            <TextField
-              sx={{
-                width: "37vw",
-                marginRight: "15px",
-              }}
-              className="form-control"
-              margin="dense"
-              name="firstName"
-              type="text"
-              error={checkInput(errors.firstName?.message)}
-              label={"New First Name"}
-              {...register("firstName", {
-                maxLength: {
-                  value: 12,
-                  message: "Please enter a valid name!",
-                },
-                minLength: {
-                  value: 2,
-                  message: "Please enter a valid name!", // JS only: <p>Please enter a valid name</p> TS only support string
-                },
-              })}
-            />
-            <Typography
-              sx={{
-                fontFamily: "cursive",
-                color: "#ff3333",
-                marginTop: "8px",
-                marginBottom: "8px",
-                fontSize: "13px",
-                fontWeight: "bold",
-              }}
-            >
-              {errors.firstName?.message}
-            </Typography>
-
-            <InputLabel
-              sx={{ fontFamily: "cursive", opacity: "0.8" }}
-              className="font-bold"
-            >
-              Last Name: {user.lastName}
-            </InputLabel>
-            <TextField
-              sx={{ width: "37vw", marginBottom: "10px" }}
-              className="form-control"
-              margin="dense"
-              name="lastName"
-              type="text"
-              label={"New Last Name"}
-              error={checkInput(errors.lastName?.message)}
-              {...register("lastName", {
-                minLength: {
-                  value: 2,
-                  message: "Please enter a valid surname",
-                },
-                maxLength: {
-                  value: 12,
-                  message: "Please enter a valid surname",
-                },
-              })}
-            />
-            <Typography
-              sx={{
-                fontFamily: "cursive",
-                color: "#ff3333",
-                marginTop: "8px",
-                marginBottom: "8px",
-                fontSize: "13px",
-                fontWeight: "bold",
-              }}
-            >
-              {errors.lastName?.message}
-            </Typography>
-
-            <InputLabel
-              sx={{ fontFamily: "cursive", opacity: "0.8" }}
-              className="font-bold"
-            >
-              Email: {user.email}
-            </InputLabel>
-            <TextField
-              className="form-control"
-              margin="dense"
-              name="email"
-              type="text"
-              label={"New Email"}
-              error={checkInput(errors.email?.message)}
-              {...register("email", {
-                pattern: {
-                  value: /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
-                  message: "Please enter a valid email address!",
-                },
-                validate: {
-                  //   emailAvailable: async (fieldValue) => {
-                  //     try {
-                  //       const response = await fetch(
-                  //         `http://localhost:3000/api/admin/account/email?email=${fieldValue}`
-                  //       );
-                  //       const data = await response.json();
-                  //       return data.email.length == 0 || "Email already exists!";
-                  //     } catch (error) {
-                  //       console.log(error);
-                  //     }
-                  //   },
-                },
-              })}
-            />
-            <Typography
-              sx={{
-                fontFamily: "cursive",
-                color: "#ff3333",
-                marginTop: "8px",
-                marginBottom: "8px",
-                fontSize: "13px",
-                fontWeight: "bold",
-              }}
-            >
-              {errors.email?.message}
-            </Typography>
-            <InputLabel
-              sx={{ fontFamily: "cursive", opacity: "0.8" }}
-              className="font-bold"
-            >
-              Address: {user.address}
-            </InputLabel>
-            <TextField
-              className="form-control"
-              multiline
-              rows={3}
-              margin="dense"
-              name="address"
-              type="text"
-              label={"New Address"}
-              error={checkInput(errors.address?.message)}
-              {...register("address", {})}
-            />
-            <Typography
-              sx={{
-                fontFamily: "cursive",
-                color: "#ff3333",
-                marginTop: "8px",
-                marginBottom: "8px",
-                fontSize: "13px",
-                fontWeight: "bold",
-              }}
-            >
-              {errors.address?.message}
-            </Typography>
-            <InputLabel
-              sx={{ fontFamily: "cursive", opacity: "0.8" }}
-              className="font-bold"
-            >
-              Contact Number: {user.contact}
-            </InputLabel>
-            <TextField
-              className="form-control"
-              margin="dense"
-              name="contact"
-              type="number"
-              label={"New Contact Number"}
-              error={checkInput(errors.contact?.message)}
-              {...register("contact", {
-                validate: {
-                  isReal: (fieldValue) => {
-                    return (
-                      fieldValue.length == 11 ||
-                      fieldValue.length == 0 ||
-                      "Please input a valid number!"
-                    );
-                  },
-                },
-              })}
-            />
-            <Typography
-              sx={{
-                fontFamily: "cursive",
-                color: "#ff3333",
-                marginTop: "8px",
-                marginBottom: "8px",
-                fontSize: "13px",
-                fontWeight: "bold",
-              }}
-            >
-              {errors.contact?.message}
-            </Typography>
-            <InputLabel
-              sx={{ fontFamily: "cursive", opacity: "0.8" }}
-              className="font-bold"
-            >
-              Account Type: {user.accountType}
-            </InputLabel>
-            <TextField
-              name="accountType"
-              margin="dense"
-              select
-              defaultValue={""}
-              label={"New Account Type"}
-              {...register("accountType")}
-            >
-              {accountTypes.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.value}
-                </MenuItem>
-              ))}
-            </TextField>
-            <Box
-              sx={{
-                color: "white",
-                bgcolor: "#7c5f35",
-                width: "fit-content",
-                marginLeft: "auto",
-                fontFamily: "cursive",
-                paddingLeft: "20px",
-                paddingRight: "20px",
-                paddingTop: "12px",
-                paddingBottom: "12px",
-                marginTop: "12px",
-                marginRight: "12px",
-                borderRadius: "6px",
-                fontSize: "18px",
-                lineHeight: "28px",
-                fontWeight: "600",
-              }}
-            >
-              <Box
-                component="button"
-                disabled={!!Object.keys(errors).length}
-                variant="contained"
-                type="submit"
+    <>
+      <Dialog open={editOpen} onOpenChange={handleEditClose}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex flex-row justify-between">
+              <Label className="my-auto text-lg font-semibold leading-none tracking-tight">
+                Edit Account
+              </Label>
+              <Button
+                className="bg-t{ransparent text-gray-400"
+                onClick={() => {
+                  handleEditClose();
+                  reset();
+                }}
               >
-                Save Changes
-              </Box>
-            </Box>
-          </Box>
-        </form>
-      </DialogContent>
-    </Dialog>
+                <X className="h-4 w-4" />
+              </Button>
+            </DialogTitle>
+            <DialogDescription>
+              Press the 'Save' button to save changes.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
+            <div className="flex flex-col">
+              <div className="flex flex-row flex-wrap">
+                <div className="flex-1 me-2">
+                  <Label
+                    htmlFor="firstName"
+                    className="text-right my-auto me-2"
+                  >
+                    First Name
+                  </Label>
+                  <Input
+                    id="firstName"
+                    className="form-control w-full"
+                    name="firstName"
+                    type="text"
+                    placeholder="First Name"
+                    {...register("firstName", {
+                      required: "Please fill up the field!",
+                      maxLength: {
+                        value: 12,
+                        message: "Please enter a valid name!",
+                      },
+                      minLength: {
+                        value: 2,
+                        message: "Please enter a valid name!", // JS only: <p>Please enter a valid name</p> TS only support string
+                      },
+                    })}
+                  />
+                  {!errors.firstName?.message ? null : (
+                    <Label htmlFor="firstNameErr" className="errorMessage mb-2">
+                      {errors.firstName?.message}
+                    </Label>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <Label htmlFor="lastName" className="text-right">
+                    Last Name
+                  </Label>
+                  <Input
+                    className="form-control w-full"
+                    name="lastName"
+                    type="text"
+                    placeholder="Last Name"
+                    {...register("lastName", {
+                      required: "Please fill up the field",
+                      minLength: {
+                        value: 2,
+                        message: "Please enter a valid surname",
+                      },
+                      maxLength: {
+                        value: 12,
+                        message: "Please enter a valid surname",
+                      },
+                    })}
+                  />
+
+                  <Label htmlFor="lastNameErr" className="errorMessage mb-2">
+                    {errors.lastName?.message}
+                  </Label>
+                </div>
+              </div>
+              <div className="flex flex-row flex-wrap">
+                <div className="flex-1 me-2">
+                  <Label htmlFor="email" className="text-right my-auto me-2">
+                    Email
+                  </Label>
+                  <Input
+                    className="form-control w-full"
+                    name="email"
+                    type="text"
+                    placeholder="Email"
+                    {...register("email", {
+                      required: "Please fill up the field",
+                      pattern: {
+                        value: /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
+                        message: "Please enter a valid email address!",
+                      },
+                      validate: {
+                        emailAvailable: async (fieldValue) => {
+                          try {
+                            const response = await fetch(
+                              `http://localhost:3000/api/admin/account/validate-email?email=${fieldValue}`
+                            );
+                            const data = await response.json();
+                            return (
+                              data == "Success" ||
+                              data === fieldValue ||
+                              "Email already taken!"
+                            );
+                          } catch (error) {
+                            console.log(error);
+                          }
+                        },
+                      },
+                    })}
+                  />
+                  <Label htmlFor="emailErr" className="errorMessage mb-2">
+                    {errors.email?.message}
+                  </Label>
+                </div>
+                <div className="flex-1">
+                  <Label htmlFor="contact" className="text-right">
+                    Contact Number
+                  </Label>
+                  <Input
+                    className="form-control w-full"
+                    name="contact"
+                    type="text"
+                    placeholder="Contact"
+                    {...register("contact", {
+                      required: "Please fill up the field",
+                      pattern: {
+                        value: /^[0-9]*$/,
+                        message: "Please enter a valid contact number!",
+                      },
+                      validate: {
+                        isReal: (fieldValue) => {
+                          return (
+                            fieldValue.length == 11 ||
+                            "Please input a valid number!"
+                          );
+                        },
+                        isExisting: async (fieldValue) => {
+                          try {
+                            const response = await fetch(
+                              `http://localhost:3000/api/admin/account/validate-contact?contact=${fieldValue}`
+                            );
+                            const data = await response.json();
+                            return (
+                              data == "Success" ||
+                              data === fieldValue ||
+                              "Number already registered!"
+                            );
+                          } catch (error) {
+                            console.log(error);
+                          }
+                        },
+                      },
+                    })}
+                  />
+                  <Label htmlFor="contactErr" className="errorMessage mb-2">
+                    {errors.contact?.message}
+                  </Label>
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="accountType" className="text-right">
+                  Account Type
+                </Label>
+                <Select
+                  asChild
+                  // defaultValue={user.userRole}
+                  value={accountType}
+                  onValueChange={setAccountType}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={user.userRole} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem id="accountType" value="Sub Admin">
+                      Sub Admin
+                    </SelectItem>
+                    <SelectItem id="employee" value="Employee">
+                      Employee
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                // disabled={!isDirty || !isValid}
+                type="submit"
+                className="mt-3 hover:bg-ring"
+              >
+                Save
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

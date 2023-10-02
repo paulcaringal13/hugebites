@@ -28,7 +28,7 @@ export async function PUT(req, path) {
     const results = await connection.execute(query);
     connection.end();
 
-    console.log(query);
+    // console.log(query);
 
     return NextResponse.json({ results });
   } catch (error) {

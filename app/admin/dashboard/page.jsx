@@ -4,17 +4,11 @@ import AdminNavbar from "../components/Navbar";
 
 const AdminDashboard = () => {
   return (
-    <Box>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          marginTop: "88px",
-        }}
-      >
+    <div>
+      <div className="w-fit" style={{ zIndex: "1" }}>
         <MiniAdminSidebar />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

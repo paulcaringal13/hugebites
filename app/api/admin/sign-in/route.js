@@ -15,14 +15,11 @@ export async function GET(request) {
   const connection = await con();
 
   const { searchParams } = new URL(request.url);
-  const username = searchParams.get("username");
-  const password = searchParams.get("password");
+  const accountId = searchParams.get("accountId");
 
-  const query = `SELECT adminId AS accountId, firstName, lastName, email, username, password, address, contact, accountType FROM tbl_admin WHERE email = '${username}' OR username = '${username}' OR adminId = '${username}' AND password = '${password}' UNION SELECT employeeId AS accountId, firstName, lastName, email, username, password, address, contact, accountType FROM tbl_employee WHERE email = '${username}' OR username = '${username}' OR employeeId = '${username}' AND password = '${password}';`;
+  const query = `SELECT * FROM tbl_employee WHERE accountId = '${accountId}';`;
   const res = await connection.execute(query);
   connection.end();
-
-  console.log(query);
 
   const results = res[0];
   console.log(results);

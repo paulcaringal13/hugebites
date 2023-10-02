@@ -11,19 +11,17 @@ async function con() {
   return connection;
 }
 
-export async function PUT(req, path) {
+export async function PUT(req) {
   try {
     const connection = await con();
 
-    const { id } = path.params;
+    const { searchParams } = new URL(req.url);
+    const accountId = searchParams.get("accountId");
 
     const reqBody = await req.json();
-    const { accountType, accStatus, isDeactivated } = reqBody;
+    const { accStatus, isDeactivated } = reqBody;
 
-    const tableName = accountType == "Sub Admin" ? "tbl_admin" : "tbl_employee";
-    const tableIdName = accountType == "Sub Admin" ? "adminId" : "employeeId";
-
-    const query = `UPDATE ${tableName} SET isDeactivated = '${isDeactivated}', accStatus = '${accStatus}' WHERE ${tableIdName} = ${id}`;
+    const query = `UPDATE accounts SET isDeactivated = '${isDeactivated}', accStatus = '${accStatus}' WHERE accountId = ${accountId}`;
 
     const results = await connection.execute(query);
     connection.end();

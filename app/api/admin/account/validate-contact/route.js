@@ -16,12 +16,20 @@ export async function GET(request) {
 
   const { searchParams } = new URL(request.url);
 
-  const emailAdd = searchParams.get("email");
+  const contact = searchParams.get("contact");
 
-  const query = `SELECT email FROM tbl_admin WHERE email = '${emailAdd}' UNION SELECT email FROM tbl_customer WHERE email = '${emailAdd}' UNION SELECT email FROM tbl_employee WHERE email = '${emailAdd}'`;
+  const query = `SELECT contact FROM accounts WHERE contact = '${contact}'`;
   const results = await connection.execute(query);
 
+  console.log(results);
+  let data = results[0][0];
+
+  {
+    !data ? (data = "Success") : (data = results[0][0].contact);
+  }
+
+  console.log(data);
   connection.end();
 
-  return NextResponse.json(results[0][0]);
+  return NextResponse.json(data);
 }

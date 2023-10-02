@@ -4,7 +4,6 @@ import AdminNavbar from "./components/Navbar";
 import { useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import AdminSidebar from "./components/AdminSidebar";
-import MiniAdminSidebar from "./components/MiniAdminSidebar";
 import { Lexend } from "next/font/google";
 
 const lexend = Lexend({ subsets: ["latin"], weight: "400" });
@@ -33,9 +32,11 @@ export default function AdminLayout({ children }) {
   }, []);
 
   return (
-    <main>
-      {loggedInUserId && <AdminNavbar />}
-      <Box>{children}</Box>
+    // style={{ zIndex: "-1", position: "relative" }}
+    <main className="bg-accent">
+      <div>{loggedInUserId && <AdminNavbar />}</div>
+
+      <div>{children}</div>
     </main>
   );
 }
