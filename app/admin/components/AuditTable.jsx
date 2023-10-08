@@ -1,23 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
-import Slide from "@mui/material/Slide";
-import CreateAccountForm from "../components/CreateAccountForm";
+import { useState } from "react";
 import * as React from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../../../components/ui/card";
-import { Label } from "../../../components/ui/label";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "../../../components/ui/tabs";
 import {
   flexRender,
   getCoreRowModel,
@@ -26,15 +9,13 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
 import { Input } from "../../../components/ui/input";
@@ -47,26 +28,8 @@ import {
   TableRow,
 } from "../../../components/ui/table";
 import { BiChevronDown } from "react-icons/bi";
-import { AiOutlineMinusCircle } from "react-icons/ai";
-import { IoIosAddCircleOutline } from "react-icons/io";
-import { MdOutlineModeEditOutline } from "react-icons/md";
-import EditStockForm from "./EditStockForm";
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
-const InventoryTable = ({
-  data,
-  updateStocks,
-  openEditStock,
-  closeEditStock,
-  editStockOpen,
-  setEditStockOpen,
-  rowSelected,
-  ingredientList,
-  refreshStocksTable,
-}) => {
+const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -74,7 +37,52 @@ const InventoryTable = ({
 
   const columns = [
     {
-      accessorKey: "purchaseDate",
+      accessorKey: "employeeId",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            className="mx-auto my-auto"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Employee Id
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+    },
+    {
+      accessorKey: "name",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            className="mx-auto my-auto"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Employee Name
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+    },
+    {
+      accessorKey: "userRole",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            className="mx-auto my-auto"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Position
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+    },
+    {
+      accessorKey: "timeIn",
       header: ({ column }) => {
         return (
           <Button
@@ -82,14 +90,14 @@ const InventoryTable = ({
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Purchase Date
+            Time In
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
       },
     },
     {
-      accessorKey: "ingredientName",
+      accessorKey: "timeOut",
       header: ({ column }) => {
         return (
           <Button
@@ -97,112 +105,8 @@ const InventoryTable = ({
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Ingredient Name
+            Time Out
             <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-    },
-    {
-      accessorKey: "unit",
-      header: ({ column }) => {
-        return (
-          <Button
-            className="mx-auto my-auto"
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Unit
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-    },
-    {
-      accessorKey: "quantity",
-      header: ({ column }) => {
-        return (
-          <Button
-            className="mx-auto my-auto"
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Quantity
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-    },
-
-    {
-      accessorKey: "expirationDate",
-      header: ({ column }) => {
-        return (
-          <Button
-            className="mx-auto my-auto"
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Expiration Date
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-    },
-    {
-      header: "Deduct",
-      id: "deduct",
-      cell: ({ row }) => {
-        const rowData = row.original;
-
-        return (
-          <Button
-            variant="ghost"
-            className="h-8 w-8 p-0 hover:bg-primary hover:text-white"
-            onClick={() => {
-              const quantity = new Number(-1);
-              updateStocks(rowData.ingredientId, quantity, rowData);
-            }}
-          >
-            <AiOutlineMinusCircle type="button" className="text-xl mx-auto " />
-          </Button>
-        );
-      },
-    },
-    {
-      header: "Add",
-      id: "add",
-      cell: ({ row }) => {
-        const rowData = row.original;
-
-        return (
-          <Button
-            variant="ghost"
-            className="h-8 w-8 p-0 hover:bg-primary hover:text-white"
-            onClick={() => {
-              const quantity = new Number(1);
-              updateStocks(rowData.ingredientId, quantity, rowData);
-            }}
-          >
-            <IoIosAddCircleOutline type="button" className="text-xl mx-auto " />
-          </Button>
-        );
-      },
-    },
-    {
-      header: "Edit",
-      id: "edit",
-      cell: ({ row }) => {
-        const rowData = row.original;
-
-        return (
-          <Button
-            variant="ghost"
-            className="h-8 w-8 p-0 hover:bg-primary hover:text-white"
-            onClick={() => openEditStock(rowData)}
-            //
-          >
-            <MdOutlineModeEditOutline className="text-lg font-light" />
           </Button>
         );
       },
@@ -234,66 +138,68 @@ const InventoryTable = ({
         {!columnSelected && (
           <Input
             placeholder="Select column to filter"
-            value={table.getColumn("purchaseDate")?.getFilterValue() ?? ""}
+            value={table.getColumn("employeeId")?.getFilterValue() ?? ""}
             onChange={(event) =>
-              table
-                .getColumn("purchaseDate")
-                ?.setFilterValue(event.target.value)
+              table.getColumn("employeeId")?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
         )}
-        {/* if first name is selected */}
-        {columnSelected == "ingredientName" ? (
+        {/* if EMPLOYEE ID is selected */}
+        {columnSelected == "employeeId" ? (
           <Input
-            placeholder="Filter first name..."
-            value={table.getColumn("ingredientName")?.getFilterValue() ?? ""}
+            placeholder="Filter employee id..."
+            value={table.getColumn("employeeId")?.getFilterValue() ?? ""}
             onChange={(event) =>
-              table
-                .getColumn("ingredientName")
-                ?.setFilterValue(event.target.value)
+              table.getColumn("employeeId")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm"
+          />
+        ) : null}{" "}
+        {/* if userRole is selected */}
+        {columnSelected == "userRole" ? (
+          <Input
+            placeholder="Filter position..."
+            value={table.getColumn("userRole")?.getFilterValue() ?? ""}
+            onChange={(event) =>
+              table.getColumn("userRole")?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
         ) : null}
-        {/* if last name is selected */}
-        {columnSelected == "unit" ? (
+        {/* if name is selected */}
+        {columnSelected == "name" ? (
           <Input
-            placeholder="Filter last name..."
-            value={table.getColumn("unit")?.getFilterValue() ?? ""}
+            placeholder="Filter name..."
+            value={table.getColumn("name")?.getFilterValue() ?? ""}
             onChange={(event) =>
-              table.getColumn("unit")?.setFilterValue(event.target.value)
+              table.getColumn("name")?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
         ) : null}
-        {/* if contact is selected */}
-        {columnSelected == "purchaseDate" ? (
+        {/* if time in is selected */}
+        {columnSelected == "timeIn" ? (
           <Input
-            placeholder="Filter purchase date..."
-            value={table.getColumn("purhcaseDate")?.getFilterValue() ?? ""}
+            placeholder="Filter time in..."
+            value={table.getColumn("timeIn")?.getFilterValue() ?? ""}
             onChange={(event) =>
-              table
-                .getColumn("purchaseDate")
-                ?.setFilterValue(event.target.value)
+              table.getColumn("timeIn")?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
         ) : null}
-        {/* if username is selected */}
-        {columnSelected == "expirationDate" ? (
+        {/* if time out is selected */}
+        {columnSelected == "timeOut" ? (
           <Input
-            placeholder="Filter expiration date..."
-            value={table.getColumn("expirationDate")?.getFilterValue() ?? ""}
+            placeholder="Filter time out..."
+            value={table.getColumn("timeOut")?.getFilterValue() ?? ""}
             onChange={(event) =>
-              table
-                .getColumn("expirationDate")
-                ?.setFilterValue(event.target.value)
+              table.getColumn("timeOut")?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
         ) : null}
-
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
@@ -302,46 +208,46 @@ const InventoryTable = ({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem
-              id="purchaseDate"
+              id="employeeId"
               onClick={(e) => {
                 setColumnSelected(e.target.id);
               }}
             >
-              Purchase date
+              Employee Id
             </DropdownMenuItem>
             <DropdownMenuItem
-              id="ingredientName"
+              id="name"
+              onClick={(e) => {
+                setColumnSelected(e.target.id);
+              }}
+            >
+              Employee Name
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              id="userRole"
+              onClick={(e) => {
+                setColumnSelected(e.target.id);
+              }}
+            >
+              Position
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              id="timeIn"
               onClick={(e) => {
                 setColumnSelected(e.target.id);
 
                 console.log(columnSelected);
               }}
             >
-              Ingredient Name
+              Time in
             </DropdownMenuItem>
             <DropdownMenuItem
-              id="unit"
+              id="Time out"
               onClick={(e) => {
                 setColumnSelected(e.target.id);
               }}
             >
-              Unit
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              id="quantity"
-              onClick={(e) => {
-                setColumnSelected(e.target.id);
-              }}
-            >
-              Quantity
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              id="expirationDate"
-              onClick={(e) => {
-                setColumnSelected(e.target.id);
-              }}
-            >
-              Expiration Date
+              Time out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -426,12 +332,13 @@ const InventoryTable = ({
           </TableBody>
         </Table>
         {/* pagination */}
-        <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex items-center justify-end space-x-2 py-4 me-5 ">
           <Button
             variant="outline"
             size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
+            className="hover:bg-primary hover:text-white duration-300"
           >
             Previous
           </Button>
@@ -440,26 +347,14 @@ const InventoryTable = ({
             size="sm"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
+            className="hover:bg-primary hover:text-white duration-300"
           >
             Next
           </Button>
         </div>
       </div>
-
-      {editStockOpen ? (
-        <EditStockForm
-          setEditStockOpen={setEditStockOpen}
-          editStockOpen={editStockOpen}
-          updateStocks={updateStocks}
-          closeEditStock={closeEditStock}
-          rowSelected={rowSelected}
-          ingredientList={ingredientList}
-          ingredientStock={data}
-          refreshStocksTable={refreshStocksTable}
-        />
-      ) : null}
     </div>
   );
 };
 
-export default InventoryTable;
+export default AdminTable;

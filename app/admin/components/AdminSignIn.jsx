@@ -1,40 +1,19 @@
 "use client";
 import "../../styles/globals.css";
-import {
-  Alert,
-  Box,
-  // Button,
-  Snackbar,
-  Tab,
-  TextField,
-  // Label,
-} from "@mui/material";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import dayjs from "dayjs";
-// import { Lexend } from "next/font/google";
-// import { Button } from "@/components/ui/button";
 import { Button } from "../../../components/ui/button";
-
 import { Label } from "../../../components/ui/label";
 import { Input } from "../../../components/ui/input";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "../../../components/ui/card";
 import Image from "next/image";
 
-// const lexend = Lexend({ subsets: ["latin"], weight: "400" });
-
 const AdminSignIn = () => {
-  var relativeTime = require("dayjs/plugin/relativeTime");
-  dayjs.extend(relativeTime);
-
-  const currentDate = dayjs();
-
   const adminButtonRef = useRef(null);
   const employeeButtonRef = useRef(null);
 
@@ -42,31 +21,9 @@ const AdminSignIn = () => {
   const [password, setPassword] = useState("");
   const [isNotExisting, setIsNotExisting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("Invalid Login Credentials");
-  const [invalidLoginOpen, setInvalidLoginOpen] = useState(false);
-  const [successLoginOpen, setSuccessLoginOpen] = useState(false);
-
-  const openSuccessLogin = () => {
-    setSuccessLoginOpen(true);
-  };
-
-  const closeSuccessLogin = () => {
-    setSuccessLoginOpen(false);
-  };
-
-  const openInvalidLogin = () => {
-    setInvalidLoginOpen(true);
-  };
-
-  const closeInvalidLogin = () => {
-    setInvalidLoginOpen(false);
-  };
-
-  const showDateTime = () => {
-    console.log(typeof dayjs().format("MMM DD, YYYY hh:mma"));
-    console.log(typeof dayjs().hour());
-  };
 
   const onSubmit = async (event) => {
+    // RETURNS ACCOUNT ID OF THE USER. PARA MAKUHA NIYA FROM TBL_EMPLOYEE TABLE YUNG DATA NIYA USING ACCOUNT ID FROM TABLE ACCOUNTS
     const res = await fetch(
       `http://localhost:3000/api/sign-in?` +
         new URLSearchParams({
@@ -81,10 +38,11 @@ const AdminSignIn = () => {
     {
       !account && setIsNotExisting(true);
     }
-    console.log(account);
+
     try {
+      // RETURNS THE DATA OF THE USER
       const adminRes = await fetch(
-        `http://localhost:3000/api/admin/sign-in?` +
+        `http://localhost:3000/api/admin/audit/sign-in?` +
           new URLSearchParams({
             accountId: account.accountId,
           })
@@ -93,43 +51,63 @@ const AdminSignIn = () => {
       const response = await adminRes.json();
 
       const loggedInUser = response[0];
+
+      // SET LOCAL STORAGE SA MGA DATA NI USER
       {
-        account.username && account.password
+        loggedInUser.username &&
+        loggedInUser.password &&
+        loggedInUser.isDeactivated != 1
           ? localStorage.setItem("accountId", loggedInUser.employeeId)
           : null;
       }
-
       {
-        account.username && account.password
+        loggedInUser.username &&
+        loggedInUser.password &&
+        loggedInUser.isDeactivated != 1
           ? localStorage.setItem("firstName", loggedInUser.firstName)
           : null;
       }
       {
-        account.username && account.password
+        loggedInUser.username &&
+        loggedInUser.password &&
+        loggedInUser.isDeactivated != 1
           ? localStorage.setItem("lastName", loggedInUser.lastName)
           : null;
       }
+
       {
-        account.username && account.password && account.userRole == "Employee"
-          ? console.log("employee nilogin mo")
+        loggedInUser.userRole &&
+        loggedInUser.userRole != "Customer" &&
+        loggedInUser.userRole != "Super Admin" &&
+        loggedInUser.isDeactivated != 1
+          ? recordAudit(loggedInUser)
           : null;
       }
 
+      // IREDIRECT SA NEXT PAGE IF SUCCESS ANG LOG IN
       {
-        account.username && account.password ? redirect(account) : null;
+        loggedInUser.username &&
+        loggedInUser.password &&
+        loggedInUser.isDeactivated != 1
+          ? redirect(loggedInUser)
+          : null;
       }
+
+      // IF DI EXISTING OR DEACTIVATED ANG ACCOUNT ISHOW ANG MESSAGE
       {
-        account.username && account.password && account.isDeactivated != 1
-          ? openSuccessLogin()
-          : openInvalidLogin();
+        loggedInUser.username &&
+        loggedInUser.password &&
+        loggedInUser.isDeactivated != 1
+          ? null
+          : setIsNotExisting(true);
       }
     } catch (e) {
-      openInvalidLogin();
+      setIsNotExisting(true);
     }
   };
 
+  // REDIRECT THEM TO SPECIFIC PATH
   const redirect = (account) => {
-    console.log(account.userRole);
     {
       account.userRole == "Super Admin" && adminButtonRef.current.click();
     }
@@ -142,15 +120,17 @@ const AdminSignIn = () => {
     }
   };
 
-  const recordAudit = async (employeeId) => {
+  // PASS A POST REQUEST TO RECORD THE LOG IN DETAILS OF THE EMPLOYEE OR SUB ADMIN TO THE AUDIT TABLE
+  const recordAudit = async (user) => {
     const postData = {
       method: "POST", // or 'PUT'
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        employeeId: employeeId,
-        timeIn: dayjs().format("MMM DD, YYYY hh:mma"),
+        accountId: user.accountId,
+        employeeId: user.employeeId,
+        timeIn: dayjs().format("MMMM DD, YYYY hh:mma"),
         timeOut: "Still Logged In",
       }),
     };
@@ -218,69 +198,6 @@ const AdminSignIn = () => {
         </Card>
       </div>
     </div>
-
-    //       <Label
-    //         // sx={{ marginTop: "15px", fontSize: "30px" }}
-    //         // className={lexend.className}
-    //         className="text-3xl"
-    //       >
-    //         Sign In
-    //       </Label>
-
-    // <div sx={{ display: "flex" }}>
-    //   <div
-    //     component="img"
-    //     sx={{
-    //       height: "100vh",
-    //       width: "100vw",
-    //       position: "absolute",
-    //       zIndex: "-1",
-    //     }}
-    //     alt="huge-bites-logo"
-    //     src="/initial-images/Huge_Bites_bg.png"
-    //   />
-    //   <div
-    //     sx={{
-    //       height: "35vh",
-    //       width: "45%",
-    //       marginTop: "30vh",
-    //       marginLeft: "auto",
-    //       position: "relative",
-    //     }}
-    //   >
-    //     <div
-    //       sx={{
-    //         marginRight: "25px",
-    //         display: "flex",
-    //         flexDirection: "column",
-    //         justifyContent: "start",
-    //       }}
-    //     >
-
-    //       <Snackbar
-    //         anchorOrigin={{ vertical: "top", horizontal: "center" }}
-    //         open={successLoginOpen}
-    //         autoHideDuration={6000}
-    //         onClose={closeSuccessLogin}
-    //       >
-    //         <Alert severity="success" sx={{ width: "100%" }}>
-    //           Login Successfully! — Please wait.
-    //         </Alert>
-    //       </Snackbar>
-
-    //       <Snackbar
-    //         anchorOrigin={{ vertical: "top", horizontal: "center" }}
-    //         open={invalidLoginOpen}
-    //         autoHideDuration={6000}
-    //         onClose={closeInvalidLogin}
-    //       >
-    //         <Alert severity="error" sx={{ width: "100%" }}>
-    //           Login Failed! — Username or Password incorrect.
-    //         </Alert>
-    //       </Snackbar>
-    //     </div>
-    //   </div>
-    // </div>
   );
 };
 

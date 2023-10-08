@@ -425,7 +425,10 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
         {/* hide columns */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
+            <Button
+              variant="outline"
+              className="ml-auto bg-transparent text-black border hover:border-ring hover:text-white hover:bg-primary"
+            >
               Hide Columns
             </Button>
           </DropdownMenuTrigger>

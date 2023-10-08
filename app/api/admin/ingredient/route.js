@@ -16,7 +16,7 @@ async function con() {
 export async function GET() {
   const connection = await con();
 
-  const query = `SELECT inventory_ingredients.stockId, inventory_ingredients.ingredientId, inventory_ingredients.quantity, inventory_ingredients.purchaseDate, inventory_ingredients.expirationDate, inventory_ingredients.isExpired, ingredients.ingredientName, ingredients.unit FROM inventory_ingredients LEFT JOIN ingredients ON inventory_ingredients.ingredientId = ingredients.ingredientId`;
+  const query = `SELECT * FROM ingredients`;
   const res = await connection.execute(query);
   connection.end();
 
@@ -29,10 +29,9 @@ export async function POST(request) {
   const connection = await con();
 
   const reqBody = await request.json();
-  const { ingredientId, quantity, purchaseDate, expirationDate, isExpired } =
-    reqBody;
+  const { ingredientName, unit } = reqBody;
 
-  const query = `INSERT INTO inventory_ingredients (ingredientId, quantity, purchaseDate, expirationDate, isExpired) VALUES ('${ingredientId}', '${quantity}', '${purchaseDate}', '${expirationDate}', '${isExpired}')`;
+  const query = `INSERT INTO ingredients (ingredientName, unit) VALUES ('${ingredientName}', '${unit}')`;
   const results = await connection.execute(query);
   connection.end();
 
@@ -43,9 +42,9 @@ export async function PUT(request) {
   const connection = await con();
 
   const reqBody = await request.json();
-  const { quantity, stockId } = reqBody;
+  const { totalQuantity, ingredientId } = reqBody;
 
-  const query = `UPDATE inventory_ingredients SET quantity ='${quantity}' WHERE stockId = ${stockId}`;
+  const query = `UPDATE ingredients SET totalQuantity ='${totalQuantity}' WHERE ingredientId = ${ingredientId}`;
   const results = await connection.execute(query);
   connection.end();
 
@@ -56,9 +55,9 @@ export async function DELETE(request) {
   const connection = await con();
 
   const reqBody = await request.json();
-  const { stockId } = reqBody;
+  const { ingredientId } = reqBody;
 
-  const query = `DELETE FROM inventory_ingredients WHERE stockId = ${stockId}`;
+  const query = `DELETE FROM ingredients WHERE ingredientId = ${ingredientId}`;
   const results = await connection.execute(query);
   connection.end();
 

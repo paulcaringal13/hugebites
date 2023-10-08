@@ -9,46 +9,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "../../../components/ui/popover";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCoffee } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "../../../components/ui/button";
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../../../components/ui/card";
-import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 import { BiChevronDown } from "react-icons/bi";
 import * as Avatar from "@radix-ui/react-avatar";
-import { RxHamburgerMenu } from "react-icons/rx";
-
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "../../../components/ui/sheet";
-import MiniAdminSidebar from "./MiniAdminSidebar";
-import AdminSidebar from "./AdminSidebar";
-
-// primary=#FDF9F9
-// secondary=#EE7376 hover=#ea5054
-// tertiary=#7C5F35
-
-//sidebard w-271.2
 
 const AdminNavbar = () => {
-  var relativeTime = require("dayjs/plugin/relativeTime");
-  dayjs.extend(relativeTime);
   const router = useRouter();
 
   const buttonRef = useRef(null);
@@ -57,23 +23,8 @@ const AdminNavbar = () => {
   const [loggedInUserId, setLoggedInUserId] = useState("");
   const [userInitials, setUserInitials] = useState("");
 
-  const [open, setOpen] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
-  const handleDrawer = () => {
-    {
-      !drawerOpen ? setDrawerOpen(true) : setDrawerOpen(false);
-    }
-  };
-  const closeDrawer = () => {
-    setDrawerOpen(false);
-  };
-
-  const handleClick = () => {
-    setOpen(!open);
-  };
-
   const handleLogout = async () => {
+    // GET THE AUDIT ID FROM THE LOCAL STORAGE FOR FINDING THE RIGHT ROW TO EDIT
     let auditId =
       typeof window !== "undefined" && window.localStorage
         ? localStorage.getItem("auditId")
@@ -85,28 +36,31 @@ const AdminNavbar = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        timeOut: dayjs().format("MMM DD, YYYY hh:mma"),
+        timeOut: dayjs().format("MMMM DD, YYYY hh:mma"),
       }),
     };
 
+    // UPDATE THE LOGOUT COLUMN TO THE DATE AND TIME THE USER LOGGED OUT
     try {
       const res = await fetch(
-        `http://localhost:3000/api/sign-in?` +
+        `http://localhost:3000/api/admin/audit/sign-in?` +
           new URLSearchParams({
             auditId: auditId,
           }),
         putData
       );
-      const response = await res.json();
     } catch (error) {
       console.log(error);
     }
 
+    // CLEAR LOCAL STORAGE
     localStorage.clear();
+    // REDIRECT TO SIGN IN PAGE
     buttonRef.current.click();
   };
 
   useEffect(() => {
+    // GET THE USER ID, FIRST AND LAST NAME.
     const userId =
       typeof window !== "undefined" && window.localStorage
         ? localStorage.getItem("accountId")
@@ -121,18 +75,22 @@ const AdminNavbar = () => {
         ? localStorage.getItem("lastName")
         : "";
 
+    // SET THE STATE TO THE LOCAL STORAGE ID VALUE
     {
       userId && setLoggedInUserId(userId);
     }
 
+    // CONCATINATE THE FIRST AND LAST NAME TO GET THE FULLNAME
     {
       firstName && lastName
         ? setLoggedInUserName(`${firstName} ${lastName}`)
         : null;
     }
 
+    // GET THE FIRST LETTER OF THE USERS FIRST AND LAST NAME FOR AVATAR PURPOSES
     const initials = `${Array.from(firstName)[0]}${Array.from(lastName)[0]}`;
 
+    // SET THE STATE
     {
       firstName && lastName ? setUserInitials(initials) : null;
     }
@@ -175,117 +133,6 @@ const AdminNavbar = () => {
         </Popover>
       </div>
     </div>
-
-    // <Box>
-    //   <AppBar
-    //     sx={{ bgcolor: "#FFF", padding: "12px", zIndex: "50", color: "black" }}
-    //   >
-    //     <Toolbar>
-    //       <Box component="button" onClick={handleDrawer}>
-    //         <MenuRoundedIcon />
-    //         <AdminSidebar props={drawerOpen} />
-    //       </Box>
-    //       <Box sx={{ display: "flex", flexDirection: "row" }}>
-    //         <Box
-    //           component="img"
-    //           className="my-auto"
-    //           sx={{
-    //             height: "60px",
-    //             width: "45px",
-    //           }}
-    //           alt="huge-bites-logo"
-    //           src="/initial-images/Logo.png"
-    //         />
-    //         <Typography
-    //           sx={{
-    //             fontSize: "40px",
-    //             fontFamily: "cursive",
-    //             fontWeight: "600",
-    //           }}
-    //           // className="font-bold"
-    //         >
-    //           HugeBites
-    //         </Typography>
-    //       </Box>
-
-    //       <Box
-    //         sx={{
-    //           display: "flex",
-    //           flexDirection: "column",
-
-    //           marginLeft: "auto",
-    //         }}
-    //       >
-    //         <Box
-    //           component="button"
-    //           sx={{
-    //             display: "flex",
-    //             flexDirection: "row",
-    //             width: "fit-content",
-    //             alignContent: "space-evenly",
-    //           }}
-    //           onClick={handleClick}
-    //         >
-    //           <Box
-    //             sx={{
-    //               bgcolor: "#7C5F35",
-    //               borderRadius: "555px",
-    //               padding: "3px",
-    //               color: "white",
-    //               marginRight: "4px",
-    //             }}
-    //           >
-    //             <PersonOutlineIcon color="light" />
-    //           </Box>
-    //           <Typography
-    //             sx={{
-    //               fontFamily: "cursive",
-    //               fontWeight: "700",
-    //               marginLeft: "4px",
-    //               marginTop: "4px",
-    //             }}
-    //             // className="font-medium ms-1 mt-1"
-    //           >
-    //             Welcome, User {loggedInUserId}
-    //           </Typography>
-    //           {open ? (
-    //             <ExpandLess className="mt-1" />
-    //           ) : (
-    //             <ExpandMore className="mt-1" />
-    //           )}
-    //         </Box>
-    //         <Collapse
-    //           in={open}
-    //           timeout="auto"
-    //           sx={{ marginLeft: "auto", marginRight: "20px" }}
-    //           unmountOnExit
-    //         >
-    //           <List component="div" disablePadding>
-    //             <Box
-    //               className="duration-1000 "
-    //               component="button"
-    //               sx={{
-    //                 fontFamily: "cursive",
-    //                 fontWeight: "700",
-    //                 "&:hover": {
-    //                   textDecoration: "underline",
-    //                 },
-    //               }}
-    //               onClick={(e) => handleLogout()}
-    //             >
-    //               Logout
-    //             </Box>
-    //             <Button
-    //               href="/admin"
-    //               sx={{ display: "none" }}
-    //               ref={buttonRef}
-    //             />
-    //           </List>
-    //         </Collapse>
-    //       </Box>
-    //     </Toolbar>
-    //   </AppBar>
-    // </Box>
   );
 };
 

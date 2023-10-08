@@ -2,8 +2,6 @@
 
 import AdminNavbar from "./components/Navbar";
 import { useEffect, useState } from "react";
-import { Box } from "@mui/material";
-import AdminSidebar from "./components/AdminSidebar";
 import { Lexend } from "next/font/google";
 
 const lexend = Lexend({ subsets: ["latin"], weight: "400" });

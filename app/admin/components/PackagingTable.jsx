@@ -50,31 +50,31 @@ import { BiChevronDown } from "react-icons/bi";
 import { AiOutlineMinusCircle } from "react-icons/ai";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { MdOutlineModeEditOutline } from "react-icons/md";
-import EditStockForm from "./EditStockForm";
+import EditPackagingForm from "./EditPackagingForm";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const InventoryTable = ({
+const PackagingTable = ({
   data,
-  updateStocks,
-  openEditStock,
-  closeEditStock,
-  editStockOpen,
-  setEditStockOpen,
+  updatePackagingStock,
+  openEditPackagingStock,
+  closeEditPackagingStock,
+  editPackagingStockOpen,
+  setEditPackagingStockOpen,
   rowSelected,
-  ingredientList,
+  packagingList,
   refreshStocksTable,
 }) => {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [columnSelected, setColumnSelected] = useState("");
-
+  console.log(data);
   const columns = [
     {
-      accessorKey: "purchaseDate",
+      accessorKey: "packagingName",
       header: ({ column }) => {
         return (
           <Button
@@ -82,14 +82,14 @@ const InventoryTable = ({
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Purchase Date
+            Packaging Name
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
       },
     },
     {
-      accessorKey: "ingredientName",
+      accessorKey: "size",
       header: ({ column }) => {
         return (
           <Button
@@ -97,22 +97,7 @@ const InventoryTable = ({
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Ingredient Name
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-    },
-    {
-      accessorKey: "unit",
-      header: ({ column }) => {
-        return (
-          <Button
-            className="mx-auto my-auto"
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Unit
+            Size
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
@@ -133,22 +118,6 @@ const InventoryTable = ({
         );
       },
     },
-
-    {
-      accessorKey: "expirationDate",
-      header: ({ column }) => {
-        return (
-          <Button
-            className="mx-auto my-auto"
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Expiration Date
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-    },
     {
       header: "Deduct",
       id: "deduct",
@@ -161,7 +130,7 @@ const InventoryTable = ({
             className="h-8 w-8 p-0 hover:bg-primary hover:text-white"
             onClick={() => {
               const quantity = new Number(-1);
-              updateStocks(rowData.ingredientId, quantity, rowData);
+              updatePackagingStock(rowData.packagingId, quantity, rowData);
             }}
           >
             <AiOutlineMinusCircle type="button" className="text-xl mx-auto " />
@@ -181,7 +150,7 @@ const InventoryTable = ({
             className="h-8 w-8 p-0 hover:bg-primary hover:text-white"
             onClick={() => {
               const quantity = new Number(1);
-              updateStocks(rowData.ingredientId, quantity, rowData);
+              updatePackagingStock(rowData.packagingId, quantity, rowData);
             }}
           >
             <IoIosAddCircleOutline type="button" className="text-xl mx-auto " />
@@ -199,8 +168,7 @@ const InventoryTable = ({
           <Button
             variant="ghost"
             className="h-8 w-8 p-0 hover:bg-primary hover:text-white"
-            onClick={() => openEditStock(rowData)}
-            //
+            onClick={() => openEditPackagingStock(rowData)}
           >
             <MdOutlineModeEditOutline className="text-lg font-light" />
           </Button>
@@ -234,61 +202,46 @@ const InventoryTable = ({
         {!columnSelected && (
           <Input
             placeholder="Select column to filter"
-            value={table.getColumn("purchaseDate")?.getFilterValue() ?? ""}
+            value={table.getColumn("packagingName")?.getFilterValue() ?? ""}
             onChange={(event) =>
               table
-                .getColumn("purchaseDate")
+                .getColumn("packagingName")
                 ?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
         )}
         {/* if first name is selected */}
-        {columnSelected == "ingredientName" ? (
+        {columnSelected == "packagingName" ? (
           <Input
-            placeholder="Filter first name..."
-            value={table.getColumn("ingredientName")?.getFilterValue() ?? ""}
+            placeholder="Filter packaging name..."
+            value={table.getColumn("packagingName")?.getFilterValue() ?? ""}
             onChange={(event) =>
               table
-                .getColumn("ingredientName")
+                .getColumn("packagingName")
                 ?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
         ) : null}
         {/* if last name is selected */}
-        {columnSelected == "unit" ? (
+        {columnSelected == "size" ? (
           <Input
-            placeholder="Filter last name..."
-            value={table.getColumn("unit")?.getFilterValue() ?? ""}
+            placeholder="Filter size..."
+            value={table.getColumn("size")?.getFilterValue() ?? ""}
             onChange={(event) =>
-              table.getColumn("unit")?.setFilterValue(event.target.value)
+              table.getColumn("size")?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
         ) : null}
         {/* if contact is selected */}
-        {columnSelected == "purchaseDate" ? (
+        {columnSelected == "quantity" ? (
           <Input
-            placeholder="Filter purchase date..."
-            value={table.getColumn("purhcaseDate")?.getFilterValue() ?? ""}
+            placeholder="Filter quantity..."
+            value={table.getColumn("quantity")?.getFilterValue() ?? ""}
             onChange={(event) =>
-              table
-                .getColumn("purchaseDate")
-                ?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm"
-          />
-        ) : null}
-        {/* if username is selected */}
-        {columnSelected == "expirationDate" ? (
-          <Input
-            placeholder="Filter expiration date..."
-            value={table.getColumn("expirationDate")?.getFilterValue() ?? ""}
-            onChange={(event) =>
-              table
-                .getColumn("expirationDate")
-                ?.setFilterValue(event.target.value)
+              table.getColumn("quantity")?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
@@ -302,30 +255,22 @@ const InventoryTable = ({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem
-              id="purchaseDate"
+              id="packagingName"
               onClick={(e) => {
                 setColumnSelected(e.target.id);
               }}
             >
-              Purchase date
+              Packaging Name
             </DropdownMenuItem>
             <DropdownMenuItem
-              id="ingredientName"
+              id="size"
               onClick={(e) => {
                 setColumnSelected(e.target.id);
 
                 console.log(columnSelected);
               }}
             >
-              Ingredient Name
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              id="unit"
-              onClick={(e) => {
-                setColumnSelected(e.target.id);
-              }}
-            >
-              Unit
+              Size
             </DropdownMenuItem>
             <DropdownMenuItem
               id="quantity"
@@ -334,14 +279,6 @@ const InventoryTable = ({
               }}
             >
               Quantity
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              id="expirationDate"
-              onClick={(e) => {
-                setColumnSelected(e.target.id);
-              }}
-            >
-              Expiration Date
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -446,15 +383,13 @@ const InventoryTable = ({
         </div>
       </div>
 
-      {editStockOpen ? (
-        <EditStockForm
-          setEditStockOpen={setEditStockOpen}
-          editStockOpen={editStockOpen}
-          updateStocks={updateStocks}
-          closeEditStock={closeEditStock}
+      {editPackagingStockOpen ? (
+        <EditPackagingForm
+          setEditPackagingStockOpen={setEditPackagingStockOpen}
+          editPackagingStockOpen={editPackagingStockOpen}
+          closeEditPackagingStock={closeEditPackagingStock}
           rowSelected={rowSelected}
-          ingredientList={ingredientList}
-          ingredientStock={data}
+          packagingList={packagingList}
           refreshStocksTable={refreshStocksTable}
         />
       ) : null}
@@ -462,4 +397,4 @@ const InventoryTable = ({
   );
 };
 
-export default InventoryTable;
+export default PackagingTable;

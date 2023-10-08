@@ -11,39 +11,25 @@ async function con() {
   return connection;
 }
 
+// GET THE DATA OF THE USER LOGGING IN TO TBL_EMPLOYEES
 export async function GET(request) {
   const connection = await con();
 
   const { searchParams } = new URL(request.url);
   const accountId = searchParams.get("accountId");
 
-  const query = `SELECT * FROM tbl_employee WHERE accountId = '${accountId}';`;
+  const query = `SELECT accounts.isDeactivated, accounts.accountId, accounts.accountType, accounts.email, accounts.username, accounts.password, accounts.userRole, tbl_employee.employeeId, tbl_employee.firstName, tbl_employee.lastName FROM accounts INNER JOIN tbl_employee ON accounts.accountId = tbl_employee.accountId WHERE accounts.accountId = ${accountId}`;
   const res = await connection.execute(query);
   connection.end();
 
+  console.log(query);
+
   const results = res[0];
-  console.log(results);
 
   return NextResponse.json(results);
 }
 
-export async function POST(req, res) {
-  try {
-    const connection = await con();
-
-    const reqBody = await req.json();
-    const { employeeId, timeIn, timeOut } = reqBody;
-
-    const query = `INSERT INTO audit ( employeeId, timeIn, timeOut  ) VALUES ('${employeeId}', '${timeIn}', '${timeOut}')`;
-    const results = await connection.execute(query);
-    connection.end();
-
-    return NextResponse.json(results[0]);
-  } catch (error) {
-    console.log(error);
-  }
-}
-
+// UPDATE LOG OUT COLUMN
 export async function PUT(req) {
   try {
     const connection = await con();

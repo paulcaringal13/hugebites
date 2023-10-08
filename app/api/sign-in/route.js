@@ -13,6 +13,7 @@ async function con() {
   return connection;
 }
 
+// FOR SIGN IN BOTH NI EMPLOYEE AND ADMINS. BINABALIK NITO YUNG ACCOUNT ID PARA MAGAMIT FOR GETTING THEIR NAMES ON TBL_EMPLOYEES
 export async function GET(request) {
   const connection = await con();
 
@@ -20,49 +21,28 @@ export async function GET(request) {
   const username = searchParams.get("username");
   const password = searchParams.get("password");
 
-  const query = `SELECT * FROM accounts WHERE username = '${username}' OR email = '${username}' AND password = '${password}' AND accountType = '0'`; // change accountID
+  const query = `SELECT accountId FROM accounts WHERE username = '${username}' OR email = '${username}' AND password = '${password}' AND accountType = '0';`;
   const res = await connection.execute(query);
   connection.end();
 
   const results = res[0];
 
-  console.log(query);
-
   return NextResponse.json(results);
 }
 
+// IRECORD ANG LOG IN DETAILS NI EMPLOYEE OR SUB ADMIN SA TABLE AUDIT
 export async function POST(req, res) {
   try {
     const connection = await con();
 
     const reqBody = await req.json();
-    const { employeeId, timeIn, timeOut } = reqBody;
+    const { accountId, employeeId, timeIn, timeOut } = reqBody;
 
-    const query = `INSERT INTO audit ( employeeId, timeIn, timeOut  ) VALUES ('${employeeId}', '${timeIn}', '${timeOut}')`;
+    const query = `INSERT INTO audit ( accountId, employeeId, timeIn, timeOut  ) VALUES ('${accountId}', '${employeeId}', '${timeIn}', '${timeOut}')`;
     const results = await connection.execute(query);
     connection.end();
 
     return NextResponse.json(results[0]);
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-export async function PUT(req) {
-  try {
-    const connection = await con();
-
-    const { searchParams } = new URL(req.url);
-    const auditId = searchParams.get("auditId");
-
-    const reqBody = await req.json();
-    const { timeOut } = reqBody;
-
-    const query = `UPDATE audit SET timeOut ='${timeOut}' WHERE auditId = ${auditId}`;
-    const results = await connection.execute(query);
-    connection.end();
-
-    return NextResponse.json({ results });
   } catch (error) {
     console.log(error);
   }
