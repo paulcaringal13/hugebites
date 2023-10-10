@@ -30,42 +30,13 @@ import {
 import { BiChevronDown } from "react-icons/bi";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const ProductMenu = ({ data }) => {
+const CategoryTable = ({ data }) => {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [columnSelected, setColumnSelected] = useState("");
 
   const columns = [
-    {
-      header: "Image",
-      id: "image",
-      cell: ({ row }) => {
-        const rowData = row.original;
-
-        return (
-          <Avatar>
-            <AvatarImage src={rowData.image} alt="product-image" />
-            <AvatarFallback>UNK</AvatarFallback>
-          </Avatar>
-        );
-      },
-    },
-    {
-      accessorKey: "productName",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            className="mx-auto my-auto"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Product Name
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-    },
     {
       accessorKey: "categoryName",
       header: ({ column }) => {
@@ -91,21 +62,6 @@ const ProductMenu = ({ data }) => {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Menu
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-    },
-    {
-      accessorKey: "status",
-      header: ({ column }) => {
-        return (
-          <Button
-            className="mx-auto my-auto"
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Status
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
@@ -340,4 +296,4 @@ const ProductMenu = ({ data }) => {
   );
 };
 
-export default ProductMenu;
+export default CategoryTable;

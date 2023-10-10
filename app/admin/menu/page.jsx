@@ -2,7 +2,6 @@ import MiniAdminSidebar from "../components/MiniAdminSidebar";
 import MenuTableTabs from "../components/MenuTableTabs";
 
 const getAllProducts = async () => {
-  // const res = await fetch(`http://localhost:3000/api/admin/menu/product`);
   const res = await fetch(`http://localhost:3000/api/admin/menu/product`);
 
   const data = await res.json();
@@ -14,17 +13,39 @@ const getAllProducts = async () => {
   return products;
 };
 
+const getAllCategories = async () => {
+  const res = await fetch(`http://localhost:3000/api/admin/menu/categories`);
+
+  const data = await res.json();
+
+  const { results } = data;
+
+  const categories = results[0];
+
+  const ctg = categories.map((category) => {
+    let cakeType;
+    {
+      categories.isSpecial == 0
+        ? (cakeType = "Common Cake")
+        : (cakeType = "Special Cake");
+    }
+
+    return { ...category, cakeType };
+  });
+
+  return ctg;
+};
+
 const AdminMenu = async () => {
   const productList = await getAllProducts();
-
-  console.log(productList);
+  const categoryList = await getAllCategories();
 
   return (
     <div className="flex flex-row">
       <div className="w-fit" style={{ zIndex: "1" }}>
         <MiniAdminSidebar />
       </div>
-      <MenuTableTabs productList={productList} />
+      <MenuTableTabs productList={productList} categoryList={categoryList} />
     </div>
   );
 };

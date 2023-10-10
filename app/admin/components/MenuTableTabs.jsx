@@ -14,22 +14,11 @@ import {
   TabsTrigger,
 } from "../../../components/ui/tabs";
 
-const MenuTableTabs = async ({ productList }) => {
-  const getAllProducts = async () => {
-    // const res = await fetch(`http://localhost:3000/api/admin/menu/product`);
-    const res = await fetch(`http://localhost:3000/api/admin/menu/product`);
+import ProductTable from "../components/ProductTable";
+import CategoryTable from "../components/CategoryTable";
 
-    const data = await res.json();
-
-    const { results } = data;
-
-    const products = results[0];
-
-    return products;
-  };
-
-  const productX = await getAllProducts();
-  console.log(productX);
+const MenuTableTabs = ({ productList, categoryList }) => {
+  console.log(categoryList);
   return (
     <div className="w-full mx-10 my-5">
       <Tabs defaultValue="product">
@@ -78,17 +67,7 @@ const MenuTableTabs = async ({ productList }) => {
               </div> */}
             </CardHeader>
             <CardContent className="px-6">
-              {/* <InventoryTable
-                data={ingredientStocks}
-                updateStocks={updateStocks}
-                openEditStock={openEditStock}
-                closeEditStock={closeEditStock}
-                editStockOpen={editStockOpen}
-                setEditStockOpen={setEditStockOpen}
-                rowSelected={rowSelected}
-                ingredientList={ingredientList}
-                refreshStocksTable={getAllIngredientStocks}
-              /> */}
+              <ProductTable data={productList} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -126,17 +105,7 @@ const MenuTableTabs = async ({ productList }) => {
               </div> */}
             </CardHeader>
             <CardContent className="px-6">
-              {/* <PackagingTable
-                data={packagingStocks}
-                updatePackagingStock={updatePackagingStock}
-                openEditPackagingStock={openEditPackagingStock}
-                closeEditPackagingStock={closeEditPackagingStock}
-                editPackagingStockOpen={editPackagingStockOpen}
-                setEditPackagingStockOpen={setEditPackagingStockOpen}
-                rowSelected={rowSelected}
-                packagingList={packagingList}
-                refreshStocksTable={getAllPackagingStocks}
-              /> */}
+              <CategoryTable data={categoryList} />
             </CardContent>
           </Card>
         </TabsContent>
