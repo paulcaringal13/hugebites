@@ -246,9 +246,10 @@ const EditPackagingForm = ({
                   className="form-control w-full mt-1"
                   name="quantity"
                   type="number"
+                  min={1}
                   placeholder="Quantity"
                   {...register("quantity", {
-                    required: "Please fill up the field",
+                    required: "Please fill out the field",
                     maxLength: {
                       value: 3,
                       message: "Please enter a real quantity",

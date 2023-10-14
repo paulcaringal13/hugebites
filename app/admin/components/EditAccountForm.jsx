@@ -156,7 +156,7 @@ const EditAccountForm = ({
                     type="text"
                     placeholder="First Name"
                     {...register("firstName", {
-                      required: "Please fill up the field!",
+                      required: "Please fill out the field!",
                       maxLength: {
                         value: 12,
                         message: "Please enter a valid name!",
@@ -183,7 +183,7 @@ const EditAccountForm = ({
                     type="text"
                     placeholder="Last Name"
                     {...register("lastName", {
-                      required: "Please fill up the field",
+                      required: "Please fill out the field",
                       minLength: {
                         value: 2,
                         message: "Please enter a valid surname",
@@ -211,7 +211,7 @@ const EditAccountForm = ({
                     type="text"
                     placeholder="Email"
                     {...register("email", {
-                      required: "Please fill up the field",
+                      required: "Please fill out the field",
                       pattern: {
                         value: /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
                         message: "Please enter a valid email address!",
@@ -249,7 +249,7 @@ const EditAccountForm = ({
                     type="text"
                     placeholder="Contact"
                     {...register("contact", {
-                      required: "Please fill up the field",
+                      required: "Please fill out the field",
                       pattern: {
                         value: /^[0-9]*$/,
                         message: "Please enter a valid contact number!",

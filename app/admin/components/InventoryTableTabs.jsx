@@ -131,6 +131,8 @@ const InventoryTableTabs = () => {
       );
       const stockResponse = await stockRes.json();
       getAllIngredientStocks();
+
+      return stockResponse;
     } catch (error) {
       console.log(error);
     }
@@ -545,9 +547,12 @@ const InventoryTableTabs = () => {
         <IngredientsList
           closeIngredientList={closeIngredientList}
           ingredientListOpen={ingredientListOpen}
+          ingredientStocks={ingredientStocks}
+          setIngredientList={setIngredientList}
           setIngredientListOpen={setIngredientListOpen}
           refreshTable={getAllIngredient}
           data={ingredientList}
+          ingredientList={ingredientList}
         />
       ) : null}
 

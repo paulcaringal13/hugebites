@@ -62,6 +62,7 @@ const PackagingWasteTable = ({
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [columnSelected, setColumnSelected] = useState("");
+  const [search, setSearch] = useState("");
 
   const columns = [
     {
@@ -74,7 +75,8 @@ const PackagingWasteTable = ({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Packaging Name
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -89,7 +91,8 @@ const PackagingWasteTable = ({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Quantity
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -104,7 +107,8 @@ const PackagingWasteTable = ({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Waste Date
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -175,9 +179,11 @@ const PackagingWasteTable = ({
     onColumnVisibilityChange: setColumnVisibility,
     state: {
       sorting,
+      globalFilter: search,
       columnFilters,
       columnVisibility,
     },
+    onGlobalFilterChange: setSearch,
   });
   return (
     <>
@@ -203,6 +209,13 @@ const PackagingWasteTable = ({
           </div>
           <div className="w-full mt-0">
             <div className="flex items-center py-4">
+              <Input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search"
+                className="w-2/6"
+              />
               {!columnSelected && (
                 <Input
                   placeholder="Select column to filter"
@@ -214,7 +227,7 @@ const PackagingWasteTable = ({
                       .getColumn("packagingName")
                       ?.setFilterValue(event.target.value)
                   }
-                  className="max-w-sm"
+                  className="max-w-sm w-1/6 ml-4"
                 />
               )}
               {columnSelected == "packagingName" ? (
@@ -228,7 +241,7 @@ const PackagingWasteTable = ({
                       .getColumn("packagingName")
                       ?.setFilterValue(event.target.value)
                   }
-                  className="max-w-sm"
+                  className="max-w-sm w-1/6 ml-4"
                 />
               ) : null}
               {columnSelected == "quantity" ? (
@@ -240,7 +253,7 @@ const PackagingWasteTable = ({
                       .getColumn("quantity")
                       ?.setFilterValue(event.target.value)
                   }
-                  className="max-w-sm"
+                  className="max-w-sm w-1/6 ml-4"
                 />
               ) : null}
               {columnSelected == "wasteDate" ? (
@@ -252,7 +265,7 @@ const PackagingWasteTable = ({
                       .getColumn("wasteDate")
                       ?.setFilterValue(event.target.value)
                   }
-                  className="max-w-sm"
+                  className="max-w-sm w-1/6 ml-4"
                 />
               ) : null}
               <DropdownMenu>

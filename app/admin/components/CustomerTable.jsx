@@ -336,7 +336,7 @@ const CustomerTable = ({ data }) => {
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="text-center ">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -349,9 +349,10 @@ const CustomerTable = ({ data }) => {
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center relative overflow-hidden text-stone-600"
                 >
-                  No results.
+                  <ReloadIcon className="mx-auto my-5 h-3/6 w-3/6 animate-spin" />
+                  <Label> Loading Data</Label>
                 </TableCell>
               </TableRow>
             )}

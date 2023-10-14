@@ -54,6 +54,8 @@ const IngredientsList = ({
   closeIngredientList,
   ingredientListOpen,
   setIngredientListOpen,
+  setIngredientList,
+  ingredientStocks,
   data,
   refreshTable,
 }) => {
@@ -65,12 +67,32 @@ const IngredientsList = ({
 
   const closeAddIngredient = () => {
     setAddIngredientOpen(false);
+
+    const x = data.map((i) => {
+      const { ingredientId, unit } = i;
+
+      // get stocks of ingredient
+      const stocks = ingredientStocks.filter(
+        (j) => ingredientId === j.ingredientId && unit === j.unit
+      );
+
+      // get total quantity
+      const totalQuantity = stocks.reduce(
+        (acc, curr) => acc + Number(curr.quantity),
+        0 // inital value
+      );
+
+      return { ...i, totalQuantity };
+    });
+
+    setIngredientList(x);
   };
 
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [columnSelected, setColumnSelected] = useState("");
+  const [search, setSearch] = useState("");
 
   const columns = [
     {
@@ -83,7 +105,8 @@ const IngredientsList = ({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Ingredient Id
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -98,7 +121,8 @@ const IngredientsList = ({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Ingredient Name
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -113,7 +137,8 @@ const IngredientsList = ({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Unit
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -128,7 +153,8 @@ const IngredientsList = ({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Total Quantity
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -209,9 +235,11 @@ const IngredientsList = ({
     onColumnVisibilityChange: setColumnVisibility,
     state: {
       sorting,
+      globalFilter: search,
       columnFilters,
       columnVisibility,
     },
+    onGlobalFilterChange: setSearch,
   });
   return (
     <>
@@ -237,6 +265,13 @@ const IngredientsList = ({
           </div>
           <div className="w-full mt-0">
             <div className="flex items-center py-4">
+              <Input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search"
+                className="w-2/6"
+              />
               {!columnSelected && (
                 <Input
                   placeholder="Select column to filter"
@@ -248,7 +283,7 @@ const IngredientsList = ({
                       .getColumn("ingredientId")
                       ?.setFilterValue(event.target.value)
                   }
-                  className="max-w-sm"
+                  className="max-w-sm w-1/6 ml-4"
                 />
               )}
               {columnSelected == "ingredientId" ? (
@@ -262,7 +297,7 @@ const IngredientsList = ({
                       .getColumn("ingredientId")
                       ?.setFilterValue(event.target.value)
                   }
-                  className="max-w-sm"
+                  className="max-w-sm w-1/6 ml-4"
                 />
               ) : null}
               {columnSelected == "ingredientName" ? (
@@ -276,7 +311,7 @@ const IngredientsList = ({
                       .getColumn("ingredientName")
                       ?.setFilterValue(event.target.value)
                   }
-                  className="max-w-sm"
+                  className="max-w-sm w-1/6 ml-4"
                 />
               ) : null}
               {columnSelected == "unit" ? (
@@ -286,7 +321,7 @@ const IngredientsList = ({
                   onChange={(event) =>
                     table.getColumn("unit")?.setFilterValue(event.target.value)
                   }
-                  className="max-w-sm"
+                  className="max-w-sm w-1/6 ml-4"
                 />
               ) : null}
               <DropdownMenu>
@@ -388,34 +423,66 @@ const IngredientsList = ({
                     </TableRow>
                   ))}
                 </TableHeader>
-                <TableBody>
-                  {table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map((row) => (
-                      <TableRow
-                        key={row.id}
-                        data-state={row.getIsSelected() && "selected"}
-                      >
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </TableCell>
-                        ))}
+                {!search ? (
+                  <TableBody>
+                    {table.getRowModel().rows?.length ? (
+                      table.getRowModel().rows.map((row) => (
+                        <TableRow
+                          key={row.id}
+                          data-state={row.getIsSelected() && "selected"}
+                        >
+                          {row.getVisibleCells().map((cell) => (
+                            <TableCell key={cell.id} className="text-center ">
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell
+                          colSpan={columns.length}
+                          className="h-24 text-center relative overflow-hidden text-stone-600"
+                        >
+                          <ReloadIcon className="mx-auto my-5 h-3/6 w-3/6 animate-spin" />
+                          <Label> Loading Data</Label>
+                        </TableCell>
                       </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell
-                        colSpan={columns.length}
-                        className="h-24 text-center"
-                      >
-                        No results.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
+                    )}
+                  </TableBody>
+                ) : (
+                  <TableBody>
+                    {table.getRowModel().rows?.length ? (
+                      table.getRowModel().rows.map((row) => (
+                        <TableRow
+                          key={row.id}
+                          data-state={row.getIsSelected() && "selected"}
+                        >
+                          {row.getVisibleCells().map((cell) => (
+                            <TableCell key={cell.id} className="text-center ">
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell
+                          colSpan={columns.length}
+                          className="h-24 text-center"
+                        >
+                          No results.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                )}
               </Table>
               <div className="flex items-center justify-end space-x-2 py-4">
                 <Button
@@ -446,6 +513,10 @@ const IngredientsList = ({
           closeAddIngredient={closeAddIngredient}
           getAllIngredient={refreshTable}
           setAddIngredientOpen={setAddIngredientOpen}
+          closeIngredientList={closeIngredientList}
+          setIngredientList={setIngredientList}
+          ingredientList={data}
+          ingredientStocks={ingredientStocks}
         />
       ) : null}
     </>

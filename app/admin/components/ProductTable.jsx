@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import {
   DropdownMenu,
@@ -27,14 +27,30 @@ import {
   TableHeader,
   TableRow,
 } from "../../../components/ui/table";
-import { BiChevronDown } from "react-icons/bi";
+import {
+  BiChevronDown,
+  BiEditAlt,
+  BiSolidUserCheck,
+  BiSolidUserX,
+} from "react-icons/bi";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 
-const ProductMenu = ({ data }) => {
+const ProductTable = ({
+  data,
+  openEditProduct,
+  relaunchProductOpen,
+  openRelaunchProduct,
+  removeProductOpen,
+  openRemoveProduct,
+  setRemoveProductOpen,
+  setRelaunchProductOpen,
+}) => {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [columnSelected, setColumnSelected] = useState("");
+  const [search, setSearch] = useState("");
 
   const columns = [
     {
@@ -52,6 +68,22 @@ const ProductMenu = ({ data }) => {
       },
     },
     {
+      accessorKey: "productId",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            className="mx-auto my-auto"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Product Id
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
+          </Button>
+        );
+      },
+    },
+    {
       accessorKey: "productName",
       header: ({ column }) => {
         return (
@@ -61,7 +93,8 @@ const ProductMenu = ({ data }) => {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Product Name
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -76,7 +109,8 @@ const ProductMenu = ({ data }) => {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Category Name
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -91,7 +125,8 @@ const ProductMenu = ({ data }) => {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Menu
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -106,8 +141,66 @@ const ProductMenu = ({ data }) => {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Status
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
+        );
+      },
+    },
+    {
+      header: "Action",
+      id: "actions",
+      cell: ({ row }) => {
+        const rowData = row.original;
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="p-0">
+              <DropdownMenuItem className="p-0">
+                <Button
+                  className="bg-transparent text-black m-0 w-full h-full rounded-none hover:bg-emerald-400 hover:text-emerald-50"
+                  onClick={() => {
+                    openEditProduct(rowData);
+                  }}
+                >
+                  <BiEditAlt className="text-lg me-1" />
+                  Edit
+                </Button>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="m-0" />
+              {rowData.isRemoved == 0 ? (
+                <DropdownMenuItem className="p-0">
+                  <Button
+                    className="bg-transparent text-black m-0 w-full h-full rounded-none hover:bg-rose-600 hover:text-rose-50"
+                    onClick={() => {
+                      openRemoveProduct(rowData);
+                    }}
+                  >
+                    <BiSolidUserX className="text-lg me-1" />
+                    Remove to menu
+                  </Button>
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem className="p-0">
+                  <Button
+                    className="bg-transparent text-black m-0 w-full h-full rounded-none hover:bg-blue-400 hover:text-blue-50"
+                    onClick={() => {
+                      openRelaunchProduct(rowData);
+                    }}
+                  >
+                    <BiSolidUserCheck className="text-lg me-1" />
+                    Relaunch Product
+                  </Button>
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         );
       },
     },
@@ -125,26 +218,46 @@ const ProductMenu = ({ data }) => {
     onColumnVisibilityChange: setColumnVisibility,
     state: {
       sorting,
+      globalFilter: search,
       columnFilters,
       columnVisibility,
     },
+    onGlobalFilterChange: setSearch,
   });
 
   return (
     <div className="w-full mt-0">
       <div className="flex items-center py-4">
+        <Input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search"
+          className="w-2/6"
+        />
         {/* filter specific column */}
         {/* if nothing is selected */}
         {!columnSelected && (
           <Input
             placeholder="Select column to filter"
-            value={table.getColumn("productName")?.getFilterValue() ?? ""}
+            value={table.getColumn("productId")?.getFilterValue() ?? ""}
             onChange={(event) =>
-              table.getColumn("productName")?.setFilterValue(event.target.value)
+              table.getColumn("productId")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         )}
+        {/* if EMPLOYEE ID is selected */}
+        {columnSelected == "productId" ? (
+          <Input
+            placeholder="Filter product id..."
+            value={table.getColumn("productId")?.getFilterValue() ?? ""}
+            onChange={(event) =>
+              table.getColumn("productId")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm w-1/6 ml-4"
+          />
+        ) : null}{" "}
         {/* if EMPLOYEE ID is selected */}
         {columnSelected == "productName" ? (
           <Input
@@ -153,7 +266,7 @@ const ProductMenu = ({ data }) => {
             onChange={(event) =>
               table.getColumn("productName")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         ) : null}{" "}
         {/* if userRole is selected */}
@@ -166,18 +279,18 @@ const ProductMenu = ({ data }) => {
                 .getColumn("categoryName")
                 ?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         ) : null}
         {/* if name is selected */}
-        {columnSelected == "menu" ? (
+        {columnSelected == "menuName" ? (
           <Input
-            placeholder="Filter menu..."
-            value={table.getColumn("menu")?.getFilterValue() ?? ""}
+            placeholder="Filter menu name..."
+            value={table.getColumn("menuName")?.getFilterValue() ?? ""}
             onChange={(event) =>
-              table.getColumn("menu")?.setFilterValue(event.target.value)
+              table.getColumn("menuName")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         ) : null}
         {/* if time in is selected */}
@@ -188,7 +301,7 @@ const ProductMenu = ({ data }) => {
             onChange={(event) =>
               table.getColumn("status")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         ) : null}
         <DropdownMenu>
@@ -198,6 +311,14 @@ const ProductMenu = ({ data }) => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              id="productId"
+              onClick={(e) => {
+                setColumnSelected(e.target.id);
+              }}
+            >
+              Product Id
+            </DropdownMenuItem>
             <DropdownMenuItem
               id="productName"
               onClick={(e) => {
@@ -215,7 +336,7 @@ const ProductMenu = ({ data }) => {
               Category
             </DropdownMenuItem>
             <DropdownMenuItem
-              id="menu"
+              id="menuName"
               onClick={(e) => {
                 setColumnSelected(e.target.id);
               }}
@@ -230,7 +351,7 @@ const ProductMenu = ({ data }) => {
                 console.log(columnSelected);
               }}
             >
-              TStatus
+              Status
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -340,4 +461,4 @@ const ProductMenu = ({ data }) => {
   );
 };
 
-export default ProductMenu;
+export default ProductTable;

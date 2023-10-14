@@ -40,6 +40,7 @@ const AddPackagingForm = ({
   closeAddPackaging,
   setAddPackagingOpen,
   getAllPackaging,
+  closePackagingList,
 }) => {
   const [valPackaging, setValPackaging] = useState("");
   const [packaging, setPackaging] = useState([]);
@@ -78,6 +79,7 @@ const AddPackagingForm = ({
       const response = await res.json();
       getAllPackaging();
       closeAddPackaging();
+      closePackagingList();
     } catch (error) {
       console.log(error);
     }
@@ -138,7 +140,7 @@ const AddPackagingForm = ({
               </Button>
             </DialogTitle>
             <DialogDescription>
-              Fill up all the fields to enable the 'Add' button.
+              Fill out all the fields to enable the 'Add' button.
             </DialogDescription>
           </DialogHeader>
 
@@ -154,7 +156,7 @@ const AddPackagingForm = ({
                 type="text"
                 placeholder="Packaging Name"
                 {...register("packagingName", {
-                  required: "Please fill up the field!",
+                  required: "Please fill out the field!",
                   maxLength: {
                     value: 50,
                     message: "Please enter a valid name!",
@@ -177,7 +179,7 @@ const AddPackagingForm = ({
                 type="text"
                 placeholder="Size"
                 {...register("size", {
-                  required: "Please fill up the field",
+                  required: "Please fill out the field",
                   minLength: {
                     value: 2,
                     message: "Please enter a valid size",

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as React from "react";
 import {
   flexRender,
@@ -27,20 +27,33 @@ import {
   TableHeader,
   TableRow,
 } from "../../../components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { BiChevronDown } from "react-icons/bi";
-import { ReloadIcon } from "@radix-ui/react-icons";
-import { Label } from "@/components/ui/label";
+import {
+  MdOutlineDeleteOutline,
+  MdOutlineModeEditOutline,
+} from "react-icons/md";
 
-const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
+const MenuTable = ({ data, openEditMenu, categoryTable, updateMenuTable }) => {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
-  const [columnSelected, setColumnSelected] = useState("");
   const [search, setSearch] = useState("");
+  const [columnSelected, setColumnSelected] = useState("");
 
   const columns = [
     {
-      accessorKey: "employeeId",
+      accessorKey: "menuId",
       header: ({ column }) => {
         return (
           <Button
@@ -48,7 +61,7 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
             className="mx-auto my-auto"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Employee Id
+            Menu Id
             <span className="text-xs ml-2">Sort</span>
             <ArrowUpDown className="h-3 w-3" />
           </Button>
@@ -56,7 +69,7 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
       },
     },
     {
-      accessorKey: "name",
+      accessorKey: "menuName",
       header: ({ column }) => {
         return (
           <Button
@@ -64,7 +77,7 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
             className="mx-auto my-auto"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Employee Name
+            Menu
             <span className="text-xs ml-2">Sort</span>
             <ArrowUpDown className="h-3 w-3" />
           </Button>
@@ -72,50 +85,102 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
       },
     },
     {
-      accessorKey: "userRole",
-      header: ({ column }) => {
+      header: "Edit",
+      id: "edit",
+      cell: ({ row }) => {
+        const rowData = row.original;
+
         return (
           <Button
             variant="ghost"
-            className="mx-auto my-auto"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="h-8 w-8 p-0 hover:bg-primary hover:text-white"
+            // PASS ROW DATA TO GET SELECTED ROW ID
+            onClick={() => openEditMenu(rowData)}
           >
-            Position
-            <span className="text-xs ml-2">Sort</span>
-            <ArrowUpDown className="h-3 w-3" />
+            <MdOutlineModeEditOutline className="text-lg font-light" />
           </Button>
         );
       },
     },
     {
-      accessorKey: "timeIn",
-      header: ({ column }) => {
+      header: "Delete",
+      id: "remove",
+      cell: ({ row }) => {
+        const rowData = row.original;
+
+        // FIND IF THE MENU TABLE CONTAINS A CATEGORY
+        const isDeletable = categoryTable.find((category) => {
+          let isEmpty;
+          {
+            category.menuId == rowData.menuId
+              ? (isEmpty = true)
+              : (isEmpty = false);
+          }
+
+          return isEmpty;
+        });
+
         return (
-          <Button
-            className="mx-auto my-auto"
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Time In
-            <span className="text-xs ml-2">Sort</span>
-            <ArrowUpDown className="h-3 w-3" />
-          </Button>
-        );
-      },
-    },
-    {
-      accessorKey: "timeOut",
-      header: ({ column }) => {
-        return (
-          <Button
-            className="mx-auto my-auto"
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Time Out
-            <span className="text-xs ml-2">Sort</span>
-            <ArrowUpDown className="h-3 w-3" />
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              {!isDeletable ? (
+                <Button className="bg-transparent text-black hover:bg-primary hover:text-white">
+                  <MdOutlineDeleteOutline className="text-xl font-light" />
+                </Button>
+              ) : (
+                <Button
+                  disabled
+                  className="bg-transparent text-black hover:bg-primary hover:text-white"
+                >
+                  <MdOutlineDeleteOutline className="text-xl font-light" />
+                </Button>
+              )}
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Are you sure you want to
+                  <span className="text-primary"> delete</span> this menu?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete the
+                  selected data and remove it from the server.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="hover:bg-ring"
+                  onClick={async () => {
+                    // EDIT TABLE SA UI
+                    const updatedMenu = data.filter(
+                      (row) => row.menuId != rowData.menuId
+                    );
+
+                    // UPDATE IN THE UI
+                    updateMenuTable(updatedMenu, "edit");
+
+                    // DELETE SA DATABASE
+                    const deleteData = {
+                      method: "DELETE",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                        menuId: rowData.menuId,
+                      }),
+                    };
+                    const res = await fetch(
+                      `http://localhost:3000/api/admin/menu/menu`,
+                      deleteData
+                    );
+                  }}
+                >
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         );
       },
     },
@@ -155,64 +220,31 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
         {!columnSelected && (
           <Input
             placeholder="Select column to filter"
-            value={table.getColumn("employeeId")?.getFilterValue() ?? ""}
+            value={table.getColumn("menuId")?.getFilterValue() ?? ""}
             onChange={(event) =>
-              table.getColumn("employeeId")?.setFilterValue(event.target.value)
+              table.getColumn("menuId")?.setFilterValue(event.target.value)
             }
             className="max-w-sm w-1/6 ml-4"
           />
         )}
         {/* if EMPLOYEE ID is selected */}
-        {columnSelected == "employeeId" ? (
+        {columnSelected == "menuId" ? (
           <Input
-            placeholder="Filter employee id..."
-            value={table.getColumn("employeeId")?.getFilterValue() ?? ""}
+            placeholder="Filter menu id..."
+            value={table.getColumn("menuId")?.getFilterValue() ?? ""}
             onChange={(event) =>
-              table.getColumn("employeeId")?.setFilterValue(event.target.value)
+              table.getColumn("menuId")?.setFilterValue(event.target.value)
             }
             className="max-w-sm w-1/6 ml-4"
           />
         ) : null}{" "}
-        {/* if userRole is selected */}
-        {columnSelected == "userRole" ? (
-          <Input
-            placeholder="Filter position..."
-            value={table.getColumn("userRole")?.getFilterValue() ?? ""}
-            onChange={(event) =>
-              table.getColumn("userRole")?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm w-1/6 ml-4"
-          />
-        ) : null}
         {/* if name is selected */}
-        {columnSelected == "name" ? (
+        {columnSelected == "menuName" ? (
           <Input
-            placeholder="Filter name..."
-            value={table.getColumn("name")?.getFilterValue() ?? ""}
+            placeholder="Filter menu name..."
+            value={table.getColumn("menuName")?.getFilterValue() ?? ""}
             onChange={(event) =>
-              table.getColumn("name")?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm w-1/6 ml-4"
-          />
-        ) : null}
-        {/* if time in is selected */}
-        {columnSelected == "timeIn" ? (
-          <Input
-            placeholder="Filter time in..."
-            value={table.getColumn("timeIn")?.getFilterValue() ?? ""}
-            onChange={(event) =>
-              table.getColumn("timeIn")?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm w-1/6 ml-4"
-          />
-        ) : null}
-        {/* if time out is selected */}
-        {columnSelected == "timeOut" ? (
-          <Input
-            placeholder="Filter time out..."
-            value={table.getColumn("timeOut")?.getFilterValue() ?? ""}
-            onChange={(event) =>
-              table.getColumn("timeOut")?.setFilterValue(event.target.value)
+              table.getColumn("menuName")?.setFilterValue(event.target.value)
             }
             className="max-w-sm w-1/6 ml-4"
           />
@@ -225,46 +257,20 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem
-              id="employeeId"
+              id="menuId"
               onClick={(e) => {
                 setColumnSelected(e.target.id);
               }}
             >
-              Employee Id
+              Menu Id
             </DropdownMenuItem>
             <DropdownMenuItem
-              id="name"
+              id="menuName"
               onClick={(e) => {
                 setColumnSelected(e.target.id);
               }}
             >
-              Employee Name
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              id="userRole"
-              onClick={(e) => {
-                setColumnSelected(e.target.id);
-              }}
-            >
-              Position
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              id="timeIn"
-              onClick={(e) => {
-                setColumnSelected(e.target.id);
-
-                console.log(columnSelected);
-              }}
-            >
-              Time in
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              id="Time out"
-              onClick={(e) => {
-                setColumnSelected(e.target.id);
-              }}
-            >
-              Time out
+              Menu
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -406,4 +412,4 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
   );
 };
 
-export default AdminTable;
+export default MenuTable;

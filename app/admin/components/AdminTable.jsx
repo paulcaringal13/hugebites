@@ -49,6 +49,7 @@ import {
   TableRow,
 } from "../../../components/ui/table";
 import { BiChevronDown } from "react-icons/bi";
+import { ReloadIcon } from "@radix-ui/react-icons";
 // import { adminColumns as columns } from "../components/adminTableColumn";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -61,6 +62,7 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
   const [columnVisibility, setColumnVisibility] = useState({});
   const [columnSelected, setColumnSelected] = useState("");
   const [openCreate, setOpenCreate] = useState(false);
+  const [search, setSearch] = useState("");
 
   const openCreateDialog = () => {
     setOpenCreate(true);
@@ -81,7 +83,8 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Employee Id
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -96,7 +99,8 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             First Name
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -111,7 +115,8 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Last Name
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -121,12 +126,13 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
       header: ({ column }) => {
         return (
           <Button
-            className="mx-auto my-auto"
+            className="my-auto mx-auto"
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Email
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -141,7 +147,8 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Username
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -239,14 +246,23 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
     onColumnVisibilityChange: setColumnVisibility,
     state: {
       sorting,
+      globalFilter: search,
       columnFilters,
       columnVisibility,
     },
+    onGlobalFilterChange: setSearch,
   });
 
   return (
     <div className="w-full mt-0">
       <div className="flex items-center py-4">
+        <Input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search"
+          className="w-2/6"
+        />
         {/* filter specific column */}
         {/* if nothing is selected */}
         {!columnSelected && (
@@ -256,7 +272,7 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
             onChange={(event) =>
               table.getColumn("employeeId")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         )}
         {/* if first name is selected */}
@@ -267,7 +283,7 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
             onChange={(event) =>
               table.getColumn("firstName")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         ) : null}
         {/* if employeeid is selected */}
@@ -278,7 +294,7 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
             onChange={(event) =>
               table.getColumn("employeeId")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         ) : null}
         {/* if last name is selected */}
@@ -289,7 +305,7 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
             onChange={(event) =>
               table.getColumn("lastName")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         ) : null}
         {/* if email is selected */}
@@ -300,7 +316,7 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
             onChange={(event) =>
               table.getColumn("email")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         ) : null}
         {/* if contact is selected */}
@@ -311,7 +327,7 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
             onChange={(event) =>
               table.getColumn("contact")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         ) : null}
         {/* if username is selected */}
@@ -322,7 +338,7 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
             onChange={(event) =>
               table.getColumn("username")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         ) : null}
         {/* if user role is selected */}
@@ -333,7 +349,7 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
             onChange={(event) =>
               table.getColumn("userRole")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         ) : null}
         {/* if account status is selected */}
@@ -344,7 +360,7 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
             onChange={(event) =>
               table.getColumn("accStatus")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         ) : null}
         <DropdownMenu>
@@ -473,34 +489,66 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+          {!search ? (
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id} className="text-center ">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center relative overflow-hidden text-stone-600"
+                  >
+                    <ReloadIcon className="mx-auto my-5 h-3/6 w-3/6 animate-spin" />
+                    <Label> Loading Data</Label>
+                  </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+              )}
+            </TableBody>
+          ) : (
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id} className="text-center ">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          )}
         </Table>
         {/* pagination */}
         <div className="flex items-center justify-end space-x-2 py-4 me-5 ">

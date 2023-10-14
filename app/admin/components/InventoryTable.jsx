@@ -51,10 +51,9 @@ import { AiOutlineMinusCircle } from "react-icons/ai";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { MdOutlineModeEditOutline } from "react-icons/md";
 import EditStockForm from "./EditStockForm";
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+import { ButtonLoading } from "./ButtonLoading";
+import { LoadingData } from "./LoadingData";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 const InventoryTable = ({
   data,
@@ -68,6 +67,8 @@ const InventoryTable = ({
   refreshStocksTable,
 }) => {
   const [sorting, setSorting] = useState([]);
+  const [search, setSearch] = useState("");
+
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [columnSelected, setColumnSelected] = useState("");
@@ -83,7 +84,8 @@ const InventoryTable = ({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Purchase Date
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -98,7 +100,8 @@ const InventoryTable = ({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Ingredient Name
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -113,7 +116,8 @@ const InventoryTable = ({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Unit
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -128,7 +132,8 @@ const InventoryTable = ({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Quantity
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -144,7 +149,8 @@ const InventoryTable = ({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Expiration Date
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -159,9 +165,18 @@ const InventoryTable = ({
           <Button
             variant="ghost"
             className="h-8 w-8 p-0 hover:bg-primary hover:text-white"
-            onClick={() => {
+            onClick={async () => {
               const quantity = new Number(-1);
-              updateStocks(rowData.ingredientId, quantity, rowData);
+
+              const data = await updateStocks(
+                rowData.ingredientId,
+                quantity,
+                rowData
+              );
+              console.log(data);
+              {
+                !data ? <ButtonLoading /> : null;
+              }
             }}
           >
             <AiOutlineMinusCircle type="button" className="text-xl mx-auto " />
@@ -221,14 +236,23 @@ const InventoryTable = ({
     onColumnVisibilityChange: setColumnVisibility,
     state: {
       sorting,
+      globalFilter: search,
       columnFilters,
       columnVisibility,
     },
+    onGlobalFilterChange: setSearch,
   });
 
   return (
     <div className="w-full mt-0">
       <div className="flex items-center py-4">
+        <Input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search"
+          className="w-2/6"
+        />
         {/* filter specific column */}
         {/* if nothing is selected */}
         {!columnSelected && (
@@ -240,12 +264,13 @@ const InventoryTable = ({
                 .getColumn("purchaseDate")
                 ?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         )}
         {/* if first name is selected */}
         {columnSelected == "ingredientName" ? (
           <Input
+            type="text"
             placeholder="Filter first name..."
             value={table.getColumn("ingredientName")?.getFilterValue() ?? ""}
             onChange={(event) =>
@@ -253,7 +278,7 @@ const InventoryTable = ({
                 .getColumn("ingredientName")
                 ?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         ) : null}
         {/* if last name is selected */}
@@ -264,20 +289,31 @@ const InventoryTable = ({
             onChange={(event) =>
               table.getColumn("unit")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
+          />
+        ) : null}
+        {/* if quantity is selected */}
+        {columnSelected == "quantity" ? (
+          <Input
+            placeholder="Filter quantity..."
+            value={table.getColumn("quantity")?.getFilterValue() ?? ""}
+            onChange={(event) =>
+              table.getColumn("quantity")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm w-1/6 ml-4"
           />
         ) : null}
         {/* if contact is selected */}
         {columnSelected == "purchaseDate" ? (
           <Input
             placeholder="Filter purchase date..."
-            value={table.getColumn("purhcaseDate")?.getFilterValue() ?? ""}
+            value={table.getColumn("purchaseDate")?.getFilterValue() ?? ""}
             onChange={(event) =>
               table
                 .getColumn("purchaseDate")
                 ?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         ) : null}
         {/* if username is selected */}
@@ -290,7 +326,7 @@ const InventoryTable = ({
                 .getColumn("expirationDate")
                 ?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         ) : null}
 
@@ -345,6 +381,7 @@ const InventoryTable = ({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+
         {/* hide columns */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -396,34 +433,66 @@ const InventoryTable = ({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+          {!search ? (
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id} className="text-center ">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center relative overflow-hidden text-stone-600"
+                  >
+                    <ReloadIcon className="mx-auto my-5 h-3/6 w-3/6 animate-spin" />
+                    <Label> Loading Data</Label>
+                  </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+              )}
+            </TableBody>
+          ) : (
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id} className="text-center ">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          )}
         </Table>
         {/* pagination */}
         <div className="flex items-center justify-end space-x-2 py-4">

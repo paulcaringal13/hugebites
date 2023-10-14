@@ -52,52 +52,52 @@ const MiniAdminSidebar = ({ props }) => {
   const routes = [
     {
       id: 1,
-      name: "Account",
-      icon: <FiUsers className="text-lg font-extrabold mx-auto" />,
-      route: "accounts",
-    },
-    {
-      id: 2,
       name: "Menu",
       icon: <RiCakeLine className="text-xl mx-auto" />,
       route: "menu",
     },
 
     {
-      id: 3,
+      id: 2,
       name: "Orders",
       icon: <LuShoppingBasket className="text-xl mx-auto" />,
       route: "orders",
     },
     {
-      id: 4,
+      id: 3,
       name: "Customization",
       icon: <BiBookAdd className="text-xl mx-auto" />,
       route: "customization",
     },
     {
-      id: 5,
+      id: 4,
       name: "Audit",
       icon: <AiOutlineAudit className="text-xl mx-auto" />,
       route: "audit",
     },
     {
-      id: 6,
+      id: 5,
       name: "Inventory",
       icon: <MdOutlineInventory className="text-xl mx-auto" />,
       route: "inventory ",
     },
     {
-      id: 7,
+      id: 6,
       name: "Reports",
       icon: <GrNotes className="text-lg mx-auto" />,
       route: "reports",
     },
     {
-      id: 8,
+      id: 7,
       name: "Request",
       icon: <AiOutlineUserSwitch className="text-xl mx-auto" />,
       route: "request",
+    },
+    {
+      id: 8,
+      name: "Account",
+      icon: <FiUsers className="text-lg font-extrabold mx-auto" />,
+      route: "accounts",
     },
   ];
 

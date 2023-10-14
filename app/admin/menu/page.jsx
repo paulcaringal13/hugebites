@@ -25,27 +25,43 @@ const getAllCategories = async () => {
   const ctg = categories.map((category) => {
     let cakeType;
     {
-      categories.isSpecial == 0
+      category.isSpecial == 0
         ? (cakeType = "Common Cake")
         : (cakeType = "Special Cake");
     }
-
     return { ...category, cakeType };
   });
 
   return ctg;
 };
 
+const getAllMenu = async () => {
+  const res = await fetch(`http://localhost:3000/api/admin/menu/menu`);
+
+  const data = await res.json();
+
+  const { results } = data;
+
+  const menu = results[0];
+
+  return menu;
+};
+
 const AdminMenu = async () => {
   const productList = await getAllProducts();
   const categoryList = await getAllCategories();
+  const menuList = await getAllMenu();
 
   return (
     <div className="flex flex-row">
       <div className="w-fit" style={{ zIndex: "1" }}>
         <MiniAdminSidebar />
       </div>
-      <MenuTableTabs productList={productList} categoryList={categoryList} />
+      <MenuTableTabs
+        productList={productList}
+        categoryList={categoryList}
+        menuList={menuList}
+      />
     </div>
   );
 };

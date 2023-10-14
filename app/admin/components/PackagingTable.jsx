@@ -71,7 +71,8 @@ const PackagingTable = ({
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [columnSelected, setColumnSelected] = useState("");
-  console.log(data);
+  const [search, setSearch] = useState("");
+
   const columns = [
     {
       accessorKey: "packagingName",
@@ -83,7 +84,8 @@ const PackagingTable = ({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Packaging Name
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -98,7 +100,8 @@ const PackagingTable = ({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Size
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -113,7 +116,8 @@ const PackagingTable = ({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Quantity
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -189,14 +193,24 @@ const PackagingTable = ({
     onColumnVisibilityChange: setColumnVisibility,
     state: {
       sorting,
+      globalFilter: search,
       columnFilters,
       columnVisibility,
     },
+    onGlobalFilterChange: setSearch,
   });
 
   return (
     <div className="w-full mt-0">
       <div className="flex items-center py-4">
+        <Input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search"
+          className="w-2/6"
+        />
+
         {/* filter specific column */}
         {/* if nothing is selected */}
         {!columnSelected && (
@@ -208,7 +222,7 @@ const PackagingTable = ({
                 .getColumn("packagingName")
                 ?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         )}
         {/* if first name is selected */}
@@ -221,7 +235,7 @@ const PackagingTable = ({
                 .getColumn("packagingName")
                 ?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         ) : null}
         {/* if last name is selected */}
@@ -232,7 +246,7 @@ const PackagingTable = ({
             onChange={(event) =>
               table.getColumn("size")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         ) : null}
         {/* if contact is selected */}
@@ -243,7 +257,7 @@ const PackagingTable = ({
             onChange={(event) =>
               table.getColumn("quantity")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         ) : null}
 

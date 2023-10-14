@@ -112,7 +112,7 @@ const AdminSignIn = () => {
       account.userRole == "Super Admin" && adminButtonRef.current.click();
     }
     {
-      account.userRole == "Sub Admin" && adminButtonRef.current.click();
+      account.userRole == "Sub Admin" && employeeButtonRef.current.click();
     }
 
     {

@@ -15,24 +15,38 @@ import {
 } from "../../../components/ui/dialog";
 import { Input } from "../../../components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Toaster } from "@/components/ui/toaster";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { X } from "lucide-react";
+import {
+  Toast,
+  ToastClose,
+  ToastDescription,
+  ToastProvider,
+  ToastTitle,
+  ToastViewport,
+} from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
 
-const AddIngredientForm = ({
-  addIngredientOpen,
-  closeAddIngredient,
-  getAllIngredient,
-  setAddIngredientOpen,
+const AddMenuForm = ({
+  addMenuOpen,
+  closeAddMenu,
+  setAddMenuOpen,
+  updateMenuTable,
+  menuTable,
 }) => {
-  const [valIngredient, setValIngredient] = useState("");
-  const [ingredients, setIngredients] = useState([]);
-
-  const [createSuccess, setCreateSuccess] = useState(false);
-  const [createFail, setCreateFail] = useState(false);
+  const [validationMessage, setValidationMessage] = useState();
 
   const form = useForm({
     defaultValues: {
-      ingredientName: "",
-      unit: "",
+      menuName: "",
     },
     mode: "onTouched",
   });
@@ -40,146 +54,99 @@ const AddIngredientForm = ({
   const { register, handleSubmit, formState, reset, getValues } = form;
   const { errors, isDirty, isValid } = formState;
 
-  const addIngredient = async (data) => {
-    const { ingredientName, unit } = data;
-    const ingredientPost = {
+  // VALIDATE IF THE MENU IS EXISTING
+  const onSubmit = async (data) => {
+    const { menuName } = data;
+
+    const checkVal = menuTable.find(
+      (i) => i.menuName.toLowerCase() == menuName.toLowerCase()
+    );
+
+    {
+      checkVal ? setValidationMessage("Menu already exist.") : addMenu(data);
+    }
+  };
+
+  // ADD MENU TO DATABASE AND UPDATE UI
+  const addMenu = async (data) => {
+    const menuPost = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        ingredientName: ingredientName,
-        unit: unit,
-        totalCount: 0,
+        menuName: data.menuName,
       }),
     };
     try {
       const res = await fetch(
-        `http://localhost:3000/api/admin/ingredient`,
-        ingredientPost
+        `http://localhost:3000/api/admin/menu/menu`,
+        menuPost
       );
       const response = await res.json();
-      getAllIngredient();
-      closeAddIngredient();
+
+      const { insertId } = response[0];
+      const updatedTable = {
+        menuId: insertId,
+        menuName: data.menuName,
+      };
+
+      updateMenuTable(updatedTable, "add");
+      closeAddMenu();
     } catch (error) {
       console.log(error);
     }
   };
 
-  const validateInput = (data) => {
-    const checkVal = ingredients.find(
-      (item) =>
-        item.ingredientName.toLowerCase() ==
-          data.ingredientName.toLowerCase() &&
-        item.unit.toLowerCase() == data.unit.toLowerCase()
-    );
-
-    {
-      checkVal
-        ? setValIngredient("Ingredient already existing.")
-        : addIngredient(data);
-    }
-  };
-
-  const onSubmit = (data) => {
-    validateInput(data);
-  };
-
-  const getAllIngredients = async () => {
-    const x = await getAllIngredient();
-
-    const formattedIngredients = x.map((ingredient) => {
-      const name = `${ingredient.ingredientName}`;
-      const unit = `${ingredient.unit}`;
-
-      return {
-        ingredientName: name.toLowerCase(),
-        unit: unit.toLowerCase(),
-      };
-    });
-
-    setIngredients(formattedIngredients);
-  };
-
-  useEffect(() => {
-    getAllIngredients();
-  }, []);
-
   return (
     <>
-      <Dialog open={addIngredientOpen} onOpenChange={setAddIngredientOpen}>
+      <Dialog open={addMenuOpen} onOpenChange={setAddMenuOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex flex-row justify-between">
               <Label className="my-auto text-lg font-semibold leading-none tracking-tight">
-                Add Ingredient
+                Add Menu
               </Label>
               <Button
                 className="bg-transparent text-gray-400"
-                onClick={() => closeAddIngredient()}
+                onClick={() => closeAddMenu()}
               >
                 <X className="h-4 w-4" />
               </Button>
             </DialogTitle>
             <DialogDescription>
-              Fill out all the fields to enable the 'Add' button.
+              Put the Menu name then press the 'Add' button.
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <div className="flex flex-col">
-              <Label htmlFor="ingredientName" className="text-left mb-2">
-                Ingredient Name:
+              <Label htmlFor="menuName" className="text-left mb-2">
+                Menu:
               </Label>
               <Input
-                id="ingredientName"
+                id="menuName"
                 className="form-control w-full"
-                name="ingredientName"
+                name="menuName"
                 type="text"
-                placeholder="Ingredient Name"
-                {...register("ingredientName", {
+                placeholder="Menu Name"
+                {...register("menuName", {
                   required: "Please fill out the field!",
                   maxLength: {
-                    value: 25,
+                    value: 40,
                     message: "Please enter a valid name!",
                   },
                   minLength: {
-                    value: 2,
+                    value: 3,
                     message: "Please enter a valid name!",
                   },
                 })}
               />
-              <Label htmlFor="ingredientNameErr" className="errorMessage mb-2">
-                {errors.ingredientName?.message}
+              <Label htmlFor="menuNameErr" className="errorMessage mb-2">
+                {errors.menuName?.message}
               </Label>
-              <Label htmlFor="unit" className="text-left mb-2">
-                Unit:
-              </Label>
-              <Input
-                className="form-control w-full"
-                name="unit"
-                type="text"
-                placeholder="Unit"
-                {...register("unit", {
-                  required: "Please fill out the field",
-                  minLength: {
-                    value: 2,
-                    message: "Please enter a valid unit",
-                  },
-                  maxLength: {
-                    value: 15,
-                    message: "Please enter a valid unit",
-                  },
-                })}
-              />
-              <Label htmlFor="unitErr" className="errorMessage mb-2">
-                {errors.unit?.message}
-              </Label>
-              {/* for validation */}
-              {!valIngredient ? null : (
-                <Label htmlFor="unitErr" className="errorMessage mb-2">
-                  {valIngredient}
-                </Label>
+              {!validationMessage ? null : (
+                <Label className="errorMessage mb-2">{validationMessage}</Label>
               )}
             </div>
             <DialogFooter>
@@ -229,4 +196,4 @@ const AddIngredientForm = ({
   );
 };
 
-export default AddIngredientForm;
+export default AddMenuForm;

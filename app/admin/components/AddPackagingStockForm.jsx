@@ -137,7 +137,7 @@ const AddPackagingStockForm = ({
               </Button>
             </DialogTitle>
             <DialogDescription>
-              Fill up all the fields to enable the 'Add' button.
+              Fill out all the fields to enable the 'Add' button.
             </DialogDescription>
           </DialogHeader>
 
@@ -170,7 +170,7 @@ const AddPackagingStockForm = ({
                   type="number"
                   placeholder="Quantity"
                   {...register("quantity", {
-                    required: "Please fill up the field",
+                    required: "Please fill out the field",
                     maxLength: {
                       value: 3,
                       message: "Please enter a real quantity",

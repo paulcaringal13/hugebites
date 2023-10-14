@@ -27,16 +27,51 @@ import {
   TableHeader,
   TableRow,
 } from "../../../components/ui/table";
-import { BiChevronDown } from "react-icons/bi";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { MdOutlineModeEditOutline } from "react-icons/md";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { BiChevronDown } from "react-icons/bi";
+import { MdOutlineDeleteOutline } from "react-icons/md";
 
-const CategoryTable = ({ data }) => {
+const CategoryTable = ({
+  data,
+  openEditCategory,
+  productTable,
+  updateCategoryTable,
+}) => {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [columnSelected, setColumnSelected] = useState("");
+  const [search, setSearch] = useState("");
 
   const columns = [
+    {
+      accessorKey: "categoryId",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            className="mx-auto my-auto"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Category Id
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
+          </Button>
+        );
+      },
+    },
     {
       accessorKey: "categoryName",
       header: ({ column }) => {
@@ -47,7 +82,8 @@ const CategoryTable = ({ data }) => {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Category Name
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -62,8 +98,125 @@ const CategoryTable = ({ data }) => {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Menu
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
+        );
+      },
+    },
+    {
+      accessorKey: "cakeType",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            className="mx-auto my-auto"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Cake Type
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
+          </Button>
+        );
+      },
+    },
+    {
+      header: "Edit",
+      id: "edit",
+      cell: ({ row }) => {
+        const rowData = row.original;
+
+        return (
+          <Button
+            variant="ghost"
+            className="h-8 w-8 p-0 hover:bg-primary hover:text-white"
+            // PASS ROW DATA TO GET SELECTED ROW ID
+            onClick={() => openEditCategory(rowData)}
+          >
+            <MdOutlineModeEditOutline className="text-lg font-light" />
+          </Button>
+        );
+      },
+    },
+    {
+      header: "Delete",
+      id: "remove",
+      cell: ({ row }) => {
+        const rowData = row.original;
+
+        // FIND IF THE MENU TABLE CONTAINS A CATEGORY
+        const isDeletable = productTable.find((product) => {
+          let isEmpty;
+          {
+            product.categoryId == rowData.categoryId
+              ? (isEmpty = true)
+              : (isEmpty = false);
+          }
+
+          return isEmpty;
+        });
+
+        return (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              {!isDeletable ? (
+                <Button className="bg-transparent text-black hover:bg-primary hover:text-white">
+                  <MdOutlineDeleteOutline className="text-xl font-light" />
+                </Button>
+              ) : (
+                <Button
+                  disabled
+                  className="bg-transparent text-black hover:bg-primary hover:text-white"
+                >
+                  <MdOutlineDeleteOutline className="text-xl font-light" />
+                </Button>
+              )}
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Are you sure you want to
+                  <span className="text-primary"> delete</span> this menu?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete the
+                  selected data and remove it from the server.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="hover:bg-ring"
+                  onClick={async () => {
+                    // EDIT TABLE SA UI
+                    const updatedMenu = data.filter(
+                      (row) => row.categoryId != rowData.categoryId
+                    );
+
+                    // UPDATE IN THE UI
+                    updateCategoryTable(updatedMenu, "edit");
+
+                    // DELETE SA DATABASE
+                    const deleteData = {
+                      method: "DELETE",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                        categoryId: rowData.categoryId,
+                      }),
+                    };
+                    const res = await fetch(
+                      `http://localhost:3000/api/admin/menu/categories`,
+                      deleteData
+                    );
+                  }}
+                >
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         );
       },
     },
@@ -81,35 +234,44 @@ const CategoryTable = ({ data }) => {
     onColumnVisibilityChange: setColumnVisibility,
     state: {
       sorting,
+      globalFilter: search,
       columnFilters,
       columnVisibility,
     },
+    onGlobalFilterChange: setSearch,
   });
 
   return (
     <div className="w-full mt-0">
       <div className="flex items-center py-4">
+        <Input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search"
+          className="w-2/6"
+        />
         {/* filter specific column */}
         {/* if nothing is selected */}
         {!columnSelected && (
           <Input
             placeholder="Select column to filter"
-            value={table.getColumn("productName")?.getFilterValue() ?? ""}
+            value={table.getColumn("categoryId")?.getFilterValue() ?? ""}
             onChange={(event) =>
-              table.getColumn("productName")?.setFilterValue(event.target.value)
+              table.getColumn("categoryId")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         )}
         {/* if EMPLOYEE ID is selected */}
-        {columnSelected == "productName" ? (
+        {columnSelected == "categoryId" ? (
           <Input
-            placeholder="Filter product name..."
-            value={table.getColumn("productName")?.getFilterValue() ?? ""}
+            placeholder="Filter category id..."
+            value={table.getColumn("categoryId")?.getFilterValue() ?? ""}
             onChange={(event) =>
-              table.getColumn("productName")?.setFilterValue(event.target.value)
+              table.getColumn("categoryId")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         ) : null}{" "}
         {/* if userRole is selected */}
@@ -122,29 +284,18 @@ const CategoryTable = ({ data }) => {
                 .getColumn("categoryName")
                 ?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         ) : null}
         {/* if name is selected */}
-        {columnSelected == "menu" ? (
+        {columnSelected == "menuName" ? (
           <Input
-            placeholder="Filter menu..."
-            value={table.getColumn("menu")?.getFilterValue() ?? ""}
+            placeholder="Filter menu name..."
+            value={table.getColumn("menuName")?.getFilterValue() ?? ""}
             onChange={(event) =>
-              table.getColumn("menu")?.setFilterValue(event.target.value)
+              table.getColumn("menuName")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
-          />
-        ) : null}
-        {/* if time in is selected */}
-        {columnSelected == "status" ? (
-          <Input
-            placeholder="Filter status..."
-            value={table.getColumn("status")?.getFilterValue() ?? ""}
-            onChange={(event) =>
-              table.getColumn("status")?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm"
+            className="max-w-sm w-1/6 ml-4"
           />
         ) : null}
         <DropdownMenu>
@@ -171,22 +322,12 @@ const CategoryTable = ({ data }) => {
               Category
             </DropdownMenuItem>
             <DropdownMenuItem
-              id="menu"
+              id="menuName"
               onClick={(e) => {
                 setColumnSelected(e.target.id);
               }}
             >
               Menu
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              id="status"
-              onClick={(e) => {
-                setColumnSelected(e.target.id);
-
-                console.log(columnSelected);
-              }}
-            >
-              TStatus
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -262,9 +403,10 @@ const CategoryTable = ({ data }) => {
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center relative overflow-hidden text-stone-600"
                 >
-                  No results.
+                  <ReloadIcon className="mx-auto my-5 h-3/6 w-3/6 animate-spin" />
+                  <Label> Loading Data</Label>
                 </TableCell>
               </TableRow>
             )}

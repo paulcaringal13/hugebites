@@ -1,6 +1,6 @@
 "use client";
 import "../../styles/globals.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../../../components/ui/button";
 import {
@@ -45,16 +45,17 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import dayjs from "dayjs";
+import { ButtonLoading } from "./ButtonLoading";
 
 const AddStockForm = ({
   closeAddStock,
   addStockOpen,
   setAddStockOpen,
   refreshTable,
-  refreshIngredientListTable,
   ingredientList,
-  updateQuantity,
+  closeIngredientList,
 }) => {
+  const buttonRef = useRef();
   const [purchaseDate, setPurchaseDate] = useState();
   const [expirationDate, setExpirationDate] = useState();
   const [ingredient, setIngredient] = useState("");
@@ -122,11 +123,13 @@ const AddStockForm = ({
         ingredientPost
       );
       const response = await res.json();
-      const updatedIngredientStocks = await refreshTable();
+      closeAddStock();
+      closeIngredientList();
+
+      return response;
     } catch (error) {
       console.log(error);
     }
-    closeAddStock();
   };
 
   const onSubmit = (data) => {
@@ -162,12 +165,13 @@ const AddStockForm = ({
               <Button
                 className="bg-transparent text-gray-400"
                 onClick={() => closeAddStock()}
+                ref={buttonRef}
               >
                 <X className="h-4 w-4" />
               </Button>
             </DialogTitle>
             <DialogDescription>
-              Fill up all the fields to enable the 'Add' button.
+              Fill out all the fields to enable the 'Add' button.
             </DialogDescription>
           </DialogHeader>
 
@@ -202,9 +206,10 @@ const AddStockForm = ({
                   className="form-control w-full mt-1"
                   name="quantity"
                   type="number"
+                  min={1}
                   placeholder="Quantity"
                   {...register("quantity", {
-                    required: "Please fill up the field",
+                    required: "Please fill out the field",
                     maxLength: {
                       value: 3,
                       message: "Please enter a real quantity",
@@ -294,11 +299,7 @@ const AddStockForm = ({
                 </Label>
               )} */}
             <DialogFooter>
-              <Button
-                disabled={!isDirty || !isValid}
-                type="submit"
-                className="mt-3 hover:bg-ring"
-              >
+              <Button disabled={!isDirty || !isValid} type="submit">
                 Add
               </Button>
             </DialogFooter>

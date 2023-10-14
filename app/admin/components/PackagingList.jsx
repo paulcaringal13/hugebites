@@ -70,6 +70,7 @@ const PackagingList = ({
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [columnSelected, setColumnSelected] = useState("");
+  const [search, setSearch] = useState("");
 
   const columns = [
     {
@@ -82,7 +83,8 @@ const PackagingList = ({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Packaging Id
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -97,7 +99,8 @@ const PackagingList = ({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Packaging Name
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -112,7 +115,8 @@ const PackagingList = ({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Size
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -127,7 +131,8 @@ const PackagingList = ({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Total Quantity
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
@@ -183,6 +188,7 @@ const PackagingList = ({
                       `http://localhost:3000/api/admin/packaging`,
                       deleteData
                     );
+                    getAllPackaging();
                   }}
                 >
                   Continue
@@ -207,9 +213,11 @@ const PackagingList = ({
     onColumnVisibilityChange: setColumnVisibility,
     state: {
       sorting,
+      globalFilter: search,
       columnFilters,
       columnVisibility,
     },
+    onGlobalFilterChange: setSearch,
   });
   return (
     <>
@@ -235,6 +243,13 @@ const PackagingList = ({
           </div>
           <div className="w-full mt-0">
             <div className="flex items-center py-4">
+              <Input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search"
+                className="w-2/6"
+              />
               {!columnSelected && (
                 <Input
                   placeholder="Select column to filter"
@@ -244,7 +259,7 @@ const PackagingList = ({
                       .getColumn("packagingId")
                       ?.setFilterValue(event.target.value)
                   }
-                  className="max-w-sm"
+                  className="max-w-sm w-1/6 ml-4"
                 />
               )}
               {columnSelected == "packagingId" ? (
@@ -256,7 +271,7 @@ const PackagingList = ({
                       .getColumn("packagingId")
                       ?.setFilterValue(event.target.value)
                   }
-                  className="max-w-sm"
+                  className="max-w-sm w-1/6 ml-4"
                 />
               ) : null}
               {columnSelected == "packagingName" ? (
@@ -270,7 +285,7 @@ const PackagingList = ({
                       .getColumn("packagingName")
                       ?.setFilterValue(event.target.value)
                   }
-                  className="max-w-sm"
+                  className="max-w-sm w-1/6 ml-4"
                 />
               ) : null}
               {columnSelected == "size" ? (
@@ -280,7 +295,7 @@ const PackagingList = ({
                   onChange={(event) =>
                     table.getColumn("size")?.setFilterValue(event.target.value)
                   }
-                  className="max-w-sm"
+                  className="max-w-sm w-1/6 ml-4"
                 />
               ) : null}
               <DropdownMenu>
@@ -440,6 +455,7 @@ const PackagingList = ({
           closeAddPackaging={closeAddPackaging}
           setAddPackagingOpen={setAddPackagingOpen}
           getAllPackaging={getAllPackaging}
+          closePackagingList={closePackagingList}
         />
       ) : null}
     </>
