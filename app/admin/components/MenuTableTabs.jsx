@@ -267,9 +267,6 @@ const MenuTableTabs = ({ productList, categoryList, menuList }) => {
           <TabsTrigger value="category" className="w-3/6 me-auto ">
             Categories
           </TabsTrigger>
-          <TabsTrigger value="menu" className="w-3/6 me-auto ">
-            Menu
-          </TabsTrigger>
         </TabsList>
         <TabsContent value="product">
           <Card className="w-full">

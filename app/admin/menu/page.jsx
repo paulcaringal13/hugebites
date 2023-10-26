@@ -1,8 +1,13 @@
+// "use client";
+
+// import React, { useState, useEffect } from "react";
 import MiniAdminSidebar from "../components/MiniAdminSidebar";
 import MenuTableTabs from "../components/MenuTableTabs";
 
-const getAllProducts = async () => {
-  const res = await fetch(`http://localhost:3000/api/admin/menu/product`);
+async function getAllProducts() {
+  const res = await fetch(`http://localhost:3000/api/admin/menu/product`, {
+    cache: "no-store",
+  });
 
   const data = await res.json();
 
@@ -10,47 +15,111 @@ const getAllProducts = async () => {
 
   const products = results[0];
 
-  return products;
-};
+  const prod = products.map((product) => {
+    let cakeType;
+    {
+      product.isSpecial == 0
+        ? (cakeType = "Common Cake")
+        : (cakeType = "Special Cake");
+    }
+    return { ...product, cakeType };
+  });
+
+  return prod;
+}
 
 const getAllCategories = async () => {
-  const res = await fetch(`http://localhost:3000/api/admin/menu/categories`);
+  const res = await fetch(`http://localhost:3000/api/admin/menu/categories`, {
+    cache: "no-store",
+  });
 
   const data = await res.json();
 
   const { results } = data;
 
   const categories = results[0];
-
-  const ctg = categories.map((category) => {
-    let cakeType;
-    {
-      category.isSpecial == 0
-        ? (cakeType = "Common Cake")
-        : (cakeType = "Special Cake");
-    }
-    return { ...category, cakeType };
-  });
-
-  return ctg;
+  return categories;
 };
 
-const getAllMenu = async () => {
-  const res = await fetch(`http://localhost:3000/api/admin/menu/menu`);
+// const getAllMenu = async () => {
+//   const res = await fetch(`http://localhost:3000/api/admin/menu/menu`, {
+//     cache: "no-store",
+//   });
 
-  const data = await res.json();
+//   const data = await res.json();
 
-  const { results } = data;
+//   const { results } = data;
 
-  const menu = results[0];
+//   const menu = results[0];
 
-  return menu;
-};
+//   return menu;
+// };
 
 const AdminMenu = async () => {
   const productList = await getAllProducts();
   const categoryList = await getAllCategories();
-  const menuList = await getAllMenu();
+  // const menuList = await getAllMenu();
+
+  // const [productList, setproductList] = useState([]);
+  // const [categoryList, setcategoryList] = useState([]);
+  // const [menuList, setmenuList] = useState([]);
+
+  // useEffect(() => {
+  //   const getAllProducts = async () => {
+  //     const res = await fetch(`http://localhost:3000/api/admin/menu/product`);
+
+  //     const data = await res.json();
+
+  //     const { results } = data;
+
+  //     const products = results[0];
+
+  //     setproductList(products);
+  //     // return products;
+  //   };
+
+  //   const getAllCategories = async () => {
+  //     const res = await fetch(
+  //       `http://localhost:3000/api/admin/menu/categories`
+  //     );
+
+  //     const data = await res.json();
+
+  //     const { results } = data;
+
+  //     const categories = results[0];
+
+  //     const ctg = categories.map((category) => {
+  //       let cakeType;
+  //       {
+  //         category.isSpecial == 0
+  //           ? (cakeType = "Common Cake")
+  //           : (cakeType = "Special Cake");
+  //       }
+  //       return { ...category, cakeType };
+  //     });
+
+  //     setcategoryList(ctg);
+  //     // return ctg;
+  //   };
+
+  //   const getAllMenu = async () => {
+  //     const res = await fetch(`http://localhost:3000/api/admin/menu/menu`);
+
+  //     const data = await res.json();
+
+  //     const { results } = data;
+
+  //     const menu = results[0];
+
+  //     setmenuList(menu);
+  //     // return menu;
+  //   };
+
+  //   getAllProducts();
+  //   getAllCategories();
+  //   getAllMenu();
+  // }, []);
 
   return (
     <div className="flex flex-row">
@@ -60,7 +129,7 @@ const AdminMenu = async () => {
       <MenuTableTabs
         productList={productList}
         categoryList={categoryList}
-        menuList={menuList}
+        // menuList={menuList}
       />
     </div>
   );

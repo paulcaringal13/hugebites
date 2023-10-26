@@ -51,7 +51,6 @@ const ProductTable = ({
   const [columnVisibility, setColumnVisibility] = useState({});
   const [columnSelected, setColumnSelected] = useState("");
   const [search, setSearch] = useState("");
-
   const columns = [
     {
       header: "Image",
@@ -116,7 +115,7 @@ const ProductTable = ({
       },
     },
     {
-      accessorKey: "menuName",
+      accessorKey: "cakeType",
       header: ({ column }) => {
         return (
           <Button
@@ -124,7 +123,7 @@ const ProductTable = ({
             className="mx-auto my-auto"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Menu
+            Cake Type
             <span className="text-xs ml-2">Sort</span>
             <ArrowUpDown className="h-3 w-3" />
           </Button>

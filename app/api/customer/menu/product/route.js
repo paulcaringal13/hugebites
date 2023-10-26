@@ -18,31 +18,33 @@ export async function GET(request, path) {
   const results = await connection.execute(query);
   connection.end();
 
-  return NextResponse.json({ results: results });
+  const data = results[0];
+
+  return NextResponse.json(data);
 }
 
-export async function POST(req, res) {
-  try {
-    const connection = await con();
+// export async function POST(req, res) {
+//   try {
+//     const connection = await con();
 
-    const reqBody = await req.json();
-    const {
-      totalPrice,
-      flavor,
-      packaging,
-      dragees,
-      shape,
-      darkColoredBase,
-      freshFlowers,
-      quantity,
-    } = reqBody;
+//     const reqBody = await req.json();
+//     const {
+//       totalPrice,
+//       flavor,
+//       packaging,
+//       dragees,
+//       shape,
+//       darkColoredBase,
+//       freshFlowers,
+//       quantity,
+//     } = reqBody;
 
-    const query = `INSERT INTO test_table (totalPrice, flavor, packaging, dragees, shape, darkColoredBase, freshFlowers, quantity) VALUES ('${totalPrice}', '${flavor}' '${packaging}', '${dragees}' '${shape}', '${darkColoredBase}' '${freshFlowers}', '${quantity}')`;
-    const results = await connection.execute(query);
-    connection.end();
+//     const query = `INSERT INTO test_table (totalPrice, flavor, packaging, dragees, shape, darkColoredBase, freshFlowers, quantity) VALUES ('${totalPrice}', '${flavor}' '${packaging}', '${dragees}' '${shape}', '${darkColoredBase}' '${freshFlowers}', '${quantity}')`;
+//     const results = await connection.execute(query);
+//     connection.end();
 
-    return NextResponse.json({ reqBody });
-  } catch (error) {
-    console.log(error);
-  }
-}
+//     return NextResponse.json({ reqBody });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }

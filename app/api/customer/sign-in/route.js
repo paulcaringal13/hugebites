@@ -13,19 +13,15 @@ async function con() {
   return connection;
 }
 
+// GET ALL CUSTOMER ACCOUNTS FROM ACCOUNTS TABLE FOR SIGN IN PURPOSES REFERENCE
 export async function GET(request) {
   const connection = await con();
 
-  const { searchParams } = new URL(request.url);
-  const email = searchParams.get("email");
-  const password = searchParams.get("password");
-
-  const query = `SELECT * FROM accounts WHERE email = '${email}' AND password = '${password}'`; // change accountID
+  const query = `SELECT * FROM accounts WHERE userRole = 'Customer'`;
   const res = await connection.execute(query);
   connection.end();
 
   const results = res[0];
-  console.log(results);
 
   return NextResponse.json(results);
 }

@@ -53,6 +53,7 @@ const CustomerMenu = () => {
     const prod = results[0].filter((product) => product.isRemoved === 0);
 
     setProducts(prod);
+    console.log(prod);
   };
 
   // PASS PARAMETER ID INTO GET PRODUCT ID FUNCTION

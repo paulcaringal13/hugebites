@@ -2,9 +2,6 @@
 
 import AdminNavbar from "./components/Navbar";
 import { useEffect, useState } from "react";
-import { Lexend } from "next/font/google";
-
-const lexend = Lexend({ subsets: ["latin"], weight: "400" });
 
 export default function AdminLayout({ children }) {
   const [loggedInUserName, setLoggedInUserName] = useState("");

@@ -16,6 +16,7 @@ import Image from "next/image";
 const AdminSignIn = () => {
   const adminButtonRef = useRef(null);
   const employeeButtonRef = useRef(null);
+  const subAdminButtonRef = useRef(null);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -76,6 +77,14 @@ const AdminSignIn = () => {
       }
 
       {
+        loggedInUser.username &&
+        loggedInUser.password &&
+        loggedInUser.isDeactivated != 1
+          ? localStorage.setItem("userRole", loggedInUser.userRole)
+          : null;
+      }
+
+      {
         loggedInUser.userRole &&
         loggedInUser.userRole != "Customer" &&
         loggedInUser.userRole != "Super Admin" &&
@@ -112,7 +121,7 @@ const AdminSignIn = () => {
       account.userRole == "Super Admin" && adminButtonRef.current.click();
     }
     {
-      account.userRole == "Sub Admin" && employeeButtonRef.current.click();
+      account.userRole == "Sub Admin" && subAdminButtonRef.current.click();
     }
 
     {
@@ -150,7 +159,7 @@ const AdminSignIn = () => {
   return (
     <div className="flex flex-row w-screen">
       <div className="h-screen w-full border-slate-900 relative">
-        <Image src="/initial-images/cake shop-amico.svg" alt="bg" fill={true} />
+        <Image src="/images/cake shop-amico.svg" alt="bg" fill={true} />
       </div>
       <div className="w-5/6  my-auto mx-auto">
         <Card className="border-zinc-400 w-5/6">
@@ -162,7 +171,7 @@ const AdminSignIn = () => {
               id="username"
               type="text"
               required
-              placeholder="User Id / Email / Username"
+              placeholder="Email / Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
@@ -193,7 +202,16 @@ const AdminSignIn = () => {
               className="hidden"
               ref={adminButtonRef}
             />
-            <a href={"/employee"} className="hidden" ref={employeeButtonRef} />
+            <a
+              href={"/employees/sub-admin/dashboard"}
+              className="hidden"
+              ref={subAdminButtonRef}
+            />
+            <a
+              href={"/employees/employee/dashboard"}
+              className="hidden"
+              ref={employeeButtonRef}
+            />
           </CardContent>
         </Card>
       </div>

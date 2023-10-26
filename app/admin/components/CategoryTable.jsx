@@ -89,38 +89,6 @@ const CategoryTable = ({
       },
     },
     {
-      accessorKey: "menuName",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            className="mx-auto my-auto"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Menu
-            <span className="text-xs ml-2">Sort</span>
-            <ArrowUpDown className="h-3 w-3" />
-          </Button>
-        );
-      },
-    },
-    {
-      accessorKey: "cakeType",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            className="mx-auto my-auto"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Cake Type
-            <span className="text-xs ml-2">Sort</span>
-            <ArrowUpDown className="h-3 w-3" />
-          </Button>
-        );
-      },
-    },
-    {
       header: "Edit",
       id: "edit",
       cell: ({ row }) => {

@@ -92,7 +92,7 @@ const CreateAccountForm = ({ refreshTable }) => {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/api/admin/account/create-account/accounts`,
+        `http://localhost:3000/api/admin/account/employee/create-account/accounts`,
         accountRow
       );
       const response = await res.json();

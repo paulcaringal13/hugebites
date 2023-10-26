@@ -56,7 +56,6 @@ const MiniAdminSidebar = ({ props }) => {
       icon: <RiCakeLine className="text-xl mx-auto" />,
       route: "menu",
     },
-
     {
       id: 2,
       name: "Orders",
@@ -93,6 +92,7 @@ const MiniAdminSidebar = ({ props }) => {
       icon: <AiOutlineUserSwitch className="text-xl mx-auto" />,
       route: "request",
     },
+
     {
       id: 8,
       name: "Account",
