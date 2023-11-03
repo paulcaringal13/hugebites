@@ -38,24 +38,7 @@ export default async function Home(path) {
   return (
     <main className="Home flex flex-row h-screen">
       <div className="z-10">
-        <CustomerSidebar account={userData}>
-          <SidebarItem
-            icon={<LayoutDashboardIcon size={20} />}
-            text="Dashboard"
-            alert
-          />
-          <SidebarItem icon={<RiCakeLine size={20} />} text="Menu" />
-          <SidebarItem
-            icon={<LuShoppingBasket size={20} />}
-            text="Orders"
-            alert
-          />
-          <SidebarItem
-            icon={<AiOutlineUserSwitch size={20} />}
-            text="Request"
-          />
-          <SidebarItem icon={<UserCircle size={20} />} text="Edit profile" />
-        </CustomerSidebar>
+        <CustomerSidebar account={userData} />
       </div>
       <div className="flex flex-col w-full">
         <HomePageNavbar />

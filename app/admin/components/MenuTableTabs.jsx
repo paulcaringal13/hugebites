@@ -38,7 +38,6 @@ import {
 const MenuTableTabs = ({ productList, categoryList, menuList }) => {
   // STORAGE FOR ID OF SELECTED ROW
   const [selectedRow, setSelectedRow] = useState(0);
-
   // PRODUCT
   const [addProductOpen, setAddProductOpen] = useState(false);
   const [editProductOpen, setEditProductOpen] = useState(false);
@@ -128,8 +127,6 @@ const MenuTableTabs = ({ productList, categoryList, menuList }) => {
 
         return { ...product };
       });
-
-      console.log(updatedTable);
 
       setProductTable(updatedTable);
       closeRemoveProduct();
@@ -329,36 +326,13 @@ const MenuTableTabs = ({ productList, categoryList, menuList }) => {
                 openEditCategory={openEditCategory}
                 // TO LOOK IF THE CATEGORY CONTAINS A PRODUCT
                 productTable={productTable}
+                //FOR UI UPDATE
+                categoryTable={categoryTable}
+                setCategoryTable={setCategoryTable}
+                // FOR REMOVING THE PRODUCT TO MENU IF THE CATEGORY IS REMOVED
+                setProductTable={setProductTable}
                 // FOR UPDATING TABLE IN FRONT END
                 updateCategoryTable={updateCategoryTable}
-              />
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="menu">
-          <Card className="w-full">
-            <CardHeader className="m-0 p-4 flex flex-row justify-between">
-              <CardTitle className="text-2xl my-2 ms-2 ">Menu Table</CardTitle>
-              <div>
-                <Button
-                  className="mx-1 bg-transparent text-black border hover:border-ring hover:text-white hover:bg-primary"
-                  onClick={() => {
-                    openAddMenu();
-                  }}
-                >
-                  Add Menu
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="px-6">
-              <MenuTable
-                // TABLE DATA FOR FRONT END
-                data={menuTable}
-                openEditMenu={openEditMenu}
-                // TO LOOK IF THE MENU CONTAINS A CATEGORY
-                categoryTable={categoryTable}
-                // FOR UPDATING TABLE IN FRONT END
-                updateMenuTable={updateMenuTable}
               />
             </CardContent>
           </Card>

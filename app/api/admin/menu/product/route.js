@@ -41,9 +41,9 @@ export async function PUT(req) {
     const connection = await con();
 
     const reqBody = await req.json();
-    const { productId, productName, categoryId, image } = reqBody;
+    const { productId, productName, categoryId, image, isSpecial } = reqBody;
 
-    const query = `UPDATE products SET productName ='${productName}', categoryId ='${categoryId}', image='${image}' WHERE productId = ${productId}`;
+    const query = `UPDATE products SET productName ='${productName}', categoryId ='${categoryId}', image='${image}', isSpecial='${isSpecial}' WHERE productId = ${productId}`;
     const results = await connection.execute(query);
     connection.end();
 

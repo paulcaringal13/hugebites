@@ -92,3 +92,7 @@ a:hover {
 div[data-radix-popper-content-wrapper] {
   z-index: 999 !important;
 }
+
+.rdp-day_selected {
+  background-color: red !important;
+}

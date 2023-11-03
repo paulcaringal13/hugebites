@@ -15,9 +15,9 @@ export async function GET(request) {
   const connection = await con();
 
   const { searchParams } = new URL(request.url);
-  const accountId = searchParams.get("accountId");
+  const customerId = searchParams.get("customerId");
 
-  const query = `SELECT cartId, quantity, subTotal, shapeName, productName, packagingName, flavorName, drageesName, darkColoredBaseName, freshFlowerName, image FROM cart LEFT JOIN customization_shape ON cart.shapeId = customization_shape.shapeId LEFT JOIN products ON cart.productId = products.productId LEFT JOIN customization_packaging ON cart.packagingId = customization_packaging.packagingId LEFT JOIN customization_flavor ON cart.flavorId = customization_flavor.flavorId LEFT JOIN customization_dragees ON cart.drageesId = customization_dragees.drageesId LEFT JOIN customization_flowers ON cart.freshFlowerId = customization_flowers.freshFlowerId LEFT JOIN customization_base ON cart.darkColoredBaseId = customization_base.darkColoredBaseId WHERE cart.accountId = ${accountId}`; // change accountID
+  const query = `SELECT cartId, customerId, cart.productId, quantity, subTotal, cart.shapeId, cart.flavorId, cart.colorId, cart.packagingId, shapeName, productName, size, flavorName, colorName,  packagingPrice, shapePrice, colorPrice, image, message FROM cart LEFT JOIN customization_shape ON cart.shapeId = customization_shape.shapeId LEFT JOIN products ON cart.productId = products.productId LEFT JOIN customization_packaging ON cart.packagingId = customization_packaging.packagingId LEFT JOIN customization_flavor ON cart.flavorId = customization_flavor.flavorId LEFT JOIN customization_color ON cart.colorId = customization_color.colorId WHERE cart.customerId = ${customerId}`;
   const res = await connection.execute(query);
   connection.end();
 
@@ -31,20 +31,23 @@ export async function POST(req, res) {
     const connection = await con();
 
     const reqBody = await req.json();
-
     const {
-      accountId,
+      customerId,
       productId,
       packagingId,
       flavorId,
-      drageesId,
       shapeId,
       quantity,
-      darkColoredBaseId,
-      freshFlowerId,
+      colorId,
       subTotal,
+      message,
     } = reqBody;
-    const query = `INSERT INTO cart (accountId, productId, packagingId, flavorId, drageesId, shapeId, quantity, darkColoredBaseId, freshFlowerId, subTotal) VALUES ('${accountId}', '${productId}','${packagingId}','${flavorId}','${drageesId}','${shapeId}','${quantity}','${darkColoredBaseId}','${freshFlowerId}','${subTotal}')`;
+
+    const query = `INSERT INTO cart (customerId, productId, packagingId, flavorId, quantity ${
+      !shapeId ? "," : ",shapeId,"
+    } colorId, subTotal, message) VALUES ('${customerId}', '${productId}','${packagingId}','${flavorId}','${quantity}' ${
+      !shapeId ? "," : `,'${shapeId}',`
+    } '${colorId}','${subTotal}', '${message}')`;
     const results = await connection.execute(query);
     connection.end();
 
@@ -60,9 +63,9 @@ export async function DELETE(req) {
 
     const reqBody = await req.json();
 
-    const { accountId } = reqBody;
+    const { customerId } = reqBody;
 
-    const query = `DELETE FROM cart WHERE accountId = ${accountId}`;
+    const query = `DELETE FROM cart WHERE customerId = ${customerId}`;
     const results = await connection.execute(query);
     connection.end();
 
@@ -71,3 +74,49 @@ export async function DELETE(req) {
     console.log(error);
   }
 }
+
+export async function PUT(request) {
+  try {
+    const connection = await con();
+
+    const reqBody = await request.json();
+    const {
+      cartId,
+      packagingId,
+      shapeId,
+      colorId,
+      quantity,
+      subTotal,
+      message,
+      flavorId,
+    } = reqBody;
+
+    const query = `UPDATE cart SET flavorId ='${flavorId}', quantity ='${quantity}' ${
+      !shapeId ? `,shapeId=NULL,` : `,shapeId='${shapeId}',`
+    } subTotal='${subTotal}', packagingId='${packagingId}', colorId='${colorId}', message='${message}' WHERE cartId = ${cartId}`;
+
+    const results = await connection.execute(query);
+    connection.end();
+    console.log(query);
+    return NextResponse.json(results);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// export async function DELETE(request) {
+//   try {
+//     const connection = await con();
+
+//     const reqBody = await request.json();
+//     const { cartId } = reqBody;
+//     const query = `DELETE FROM cart WHERE cartId = ${cartId}`;
+
+//     const results = await connection.execute(query);
+//     connection.end();
+//     console.log(query);
+//     return NextResponse.json(results);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }

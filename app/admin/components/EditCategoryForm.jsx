@@ -44,6 +44,31 @@ const EditCategoryForm = ({
 }) => {
   const [validationMessage, setValidationMessage] = useState();
 
+  const [file, setFile] = useState();
+  const [image, setImage] = useState("");
+
+  const uploadImage = async (e) => {
+    e.preventDefault();
+    if (!file) return;
+
+    console.log(file);
+    try {
+      const data = new FormData();
+      data.set("file", file);
+
+      const res = await fetch("/api/upload/categories", {
+        method: "POST",
+        body: data,
+      });
+      const results = await res.json();
+
+      setImage(`/images/categories/${results}`);
+      if (!res.ok) throw new Error(await res.text());
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   // STORAGE FOR SELECT VALUE
   const [cakeType, setCakeType] = useState("");
   const [menu, setMenu] = useState("");
@@ -63,63 +88,25 @@ const EditCategoryForm = ({
   const { errors, isDirty, isValid } = formState;
 
   const onSubmit = async (data) => {
-    // VARIABLE PARA MAVALIDATE SA FUNCTION NARIN NA TO MISMO KUNG MAY ERRORS BA.
-    let isMenuError = false;
-    let isCakeTypeError = false;
-
-    // FIND THE SELECTED MENU ID (SELECT COMPONENT FROM SHAD CANT DISPLAY THE NAME OF THE SELECTION IF THE VALUE IT PASSES IS THE ID)
-    const menuSelected = menuTable.find((i) => i.menuName == menu);
-
-    // TO STORE VALUE REALTIME
-    {
-      !menuSelected ? (isMenuError = true) : (isMenuError = false);
-    }
-    {
-      !isMenuError ? setErrorMenuSelection(false) : setErrorMenuSelection(true);
-    }
-
-    // FOR THE CAKE TYPE SELECTION
-    let isSpecial;
-    {
-      cakeType === "Special Cake" ? (isSpecial = 1) : (isSpecial = 0);
-    }
-
-    // TO STORE VALUE REALTIME
-
-    {
-      !cakeType ? (isCakeTypeError = true) : (isCakeTypeError = false);
-    }
-    {
-      !isCakeTypeError
-        ? setErrorCakeTypeSelection(false)
-        : setErrorCakeTypeSelection(true);
-    }
-
-    // UPDATE IN THE UI
-    {
-      !cakeType && !menuSelected
-        ? null
-        : validateInput(data, isSpecial, menuSelected);
-    }
-  };
-
-  const validateInput = (data, isSpecial, menuSelected) => {
     const checkVal = categoryTable.find(
       (i) => i.categoryName.toLowerCase() == data.categoryName.toLowerCase()
     );
 
+    let newImage;
+
+    {
+      !image ? (newImage = selectedRow.categoryImage) : (newImage = image);
+    }
     {
       checkVal
         ? setValidationMessage("Category already exist.")
-        : editCategory(data, isSpecial, menuSelected);
+        : editCategory(data, newImage);
     }
   };
 
-  const editCategory = async (data, isSpecial, menuSelected) => {
+  const editCategory = async (data, newImage) => {
     // SELECT WHICH ROW IS TO BE EDITED AND RETURN THE NEW TABLE WITH THE EDITED ROW
     const editedCategory = categoryTable.map((row) => {
-      const menuSelected = menuTable.find((i) => i.menuName == menu);
-
       {
         row.categoryId == selectedRow.categoryId
           ? (row.categoryName = data.categoryName)
@@ -127,20 +114,11 @@ const EditCategoryForm = ({
       }
 
       {
-        row.categoryId == selectedRow.categoryId ? (row.menuName = menu) : null;
-      }
-
-      {
         row.categoryId == selectedRow.categoryId
-          ? (row.menuId = menuSelected.menuId)
+          ? (row.categoryImage = newImage)
           : null;
       }
 
-      {
-        row.categoryId == selectedRow.categoryId
-          ? (row.cakeType = cakeType)
-          : null;
-      }
       return { ...row };
     });
 
@@ -154,8 +132,7 @@ const EditCategoryForm = ({
         body: JSON.stringify({
           categoryId: selectedRow.categoryId,
           categoryName: data.categoryName,
-          isSpecial: isSpecial,
-          menuId: menuSelected.menuId,
+          categoryImage: newImage,
         }),
       };
 
@@ -173,16 +150,6 @@ const EditCategoryForm = ({
     }
   };
 
-  const cakeTypes = [
-    {
-      id: 1,
-      value: "Common Cake",
-    },
-    {
-      id: 2,
-      value: "Special Cake",
-    },
-  ];
   return (
     <>
       <Dialog open={editCategoryOpen} onOpenChange={setEditCategoryOpen}>
@@ -240,47 +207,28 @@ const EditCategoryForm = ({
               )}
               <div>
                 <Label htmlFor="accountType" className="text-right mb-1">
-                  Cake Type: {selectedRow.cakeType}
+                  Category Image:
                 </Label>
-                <Select asChild value={cakeType} onValueChange={setCakeType}>
-                  <SelectTrigger className="w-full mt-1">
-                    <SelectValue placeholder="Select Cake Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {cakeTypes.map((i) => (
-                      <SelectItem key={i.id} value={i.value}>
-                        {i.value}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {!errorCakeTypeSelection ? null : (
-                  <Label className="errorMessage mb-1">
-                    Error! Please select a cake type.
-                  </Label>
-                )}
-              </div>
-              <div>
-                <Label htmlFor="accountType" className="text-right mb-1">
-                  Menu: {selectedRow.menuName}
-                </Label>
-                <Select asChild value={menu} onValueChange={setMenu}>
-                  <SelectTrigger className="w-full mt-1">
-                    <SelectValue placeholder="Select Menu" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {menuTable.map((i) => (
-                      <SelectItem key={i.menuId} value={i.menuName}>
-                        {i.menuName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {!errorMenuSelection ? null : (
-                  <Label className="errorMessage mb-1">
-                    Error! Please select a menu.
-                  </Label>
-                )}
+                <Input
+                  id="image"
+                  type="file"
+                  onChange={(e) => setFile(e.target.files?.[0])}
+                />
+                <div className="flex flex-col">
+                  {image && (
+                    <div className="items-center relative inline-block overflow-hidden m-0 w-44 h-fit max-h-56 mx-auto my-2 rounded-lg">
+                      <img src={image} alt="bg" />
+                    </div>
+                  )}
+                  {file ? (
+                    <Button
+                      onClick={uploadImage}
+                      className="hover:bg-ring mt-2 w-2/6"
+                    >
+                      Upload
+                    </Button>
+                  ) : null}
+                </div>
               </div>
             </div>
 

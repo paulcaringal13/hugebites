@@ -20,3 +20,36 @@ export async function GET() {
 
   return NextResponse.json(results[0]);
 }
+
+export async function POST(req, res) {
+  const connection = await con();
+
+  const reqBody = await req.json();
+  const { shapeName, shapePrice, shapeStatus } = reqBody;
+  try {
+    const query = `INSERT INTO customization_shape (shapeName, shapePrice, shapeStatus ) VALUES ('${shapeName}', '${shapePrice}', '${shapeStatus}')`;
+    const results = await connection.execute(query);
+    connection.end();
+
+    return NextResponse.json(results);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function PUT(request) {
+  try {
+    const connection = await con();
+
+    const reqBody = await request.json();
+    const { shapeId, shapeName, shapePrice } = reqBody;
+
+    const query = `UPDATE customization_shape SET shapeName='${shapeName}', shapePrice='${shapePrice}' WHERE shapeId = ${shapeId}`;
+
+    const results = await connection.execute(query);
+    connection.end();
+    return NextResponse.json(results);
+  } catch (error) {
+    console.log(error);
+  }
+}

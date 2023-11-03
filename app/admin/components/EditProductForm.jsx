@@ -46,7 +46,6 @@ const EditProductForm = ({
 
   // STORAGE FOR SELECT VALUE
   const [cakeType, setCakeType] = useState("");
-  const [menu, setMenu] = useState("");
   const [category, setCategory] = useState("");
 
   const [file, setFile] = useState();
@@ -75,6 +74,7 @@ const EditProductForm = ({
 
   // FOR VALIDATION
   const [errorCategorySelection, setErrorCategorySelection] = useState(false);
+  const [errorCakeTypeSelection, setErrorCakeTypeSelection] = useState(false);
 
   const form = useForm({
     defaultValues: {
@@ -82,28 +82,37 @@ const EditProductForm = ({
     },
     mode: "onTouched",
   });
-
   const { register, handleSubmit, formState, reset, getValues } = form;
   const { errors, isDirty, isValid } = formState;
 
   const onSubmit = async (data) => {
-    // VARIABLE PARA MAVALIDATE SA FUNCTION NARIN NA TO MISMO KUNG MAY ERRORS BA.
-    let isCategoryError = false;
-    let isImageEmpty = false;
-
-    // FIND THE SELECTED MENU ID (SELECT COMPONENT FROM SHAD CANT DISPLAY THE NAME OF THE SELECTION IF THE VALUE IT PASSES IS THE ID)
-    const categorySelected = categoryTable.find(
-      (i) => i.categoryName == category
+    const checkVal = productTable.find(
+      (i) => i.productName.toLowerCase() == data.productName.toLowerCase()
     );
 
-    // TO STORE VALUE REALTIME
+    let newCakeType;
     {
-      !categorySelected ? (isCategoryError = true) : (isCategoryError = false);
+      !cakeType
+        ? (newCakeType = selectedRow.cakeType)
+        : (newCakeType = cakeType);
     }
+
+    let newCategoryName;
+
     {
-      !isCategoryError
-        ? setErrorCategorySelection(false)
-        : setErrorCategorySelection(true);
+      !category
+        ? (newCategoryName = selectedRow.categoryName)
+        : (newCategoryName = category);
+    }
+
+    const categorySelected = categoryTable.find(
+      (i) => i.categoryName == newCategoryName
+    );
+    let newCategory;
+    {
+      !categorySelected
+        ? (newCategory = selectedRow.categoryId)
+        : (newCategory = categorySelected.categoryId);
     }
 
     let newImage;
@@ -112,35 +121,28 @@ const EditProductForm = ({
       !image ? (newImage = selectedRow.image) : (newImage = image);
     }
 
-    // UPDATE IN THE UI
-    {
-      isCategoryError ? null : validateInput(data, newImage);
-    }
-  };
-
-  const validateInput = (data, newImage) => {
-    const checkVal = productTable.find(
-      (i) => i.productName.toLowerCase() == data.productName.toLowerCase()
-    );
-
     {
       checkVal
         ? setValidationMessage("Product already exist.")
-        : editProduct(data, newImage);
+        : editProduct(
+            data,
+            newImage,
+            newCakeType,
+            newCategory,
+            newCategoryName
+          );
     }
   };
 
-  const editProduct = async (data, newImage) => {
+  const editProduct = async (
+    data,
+    newImage,
+    newCakeType,
+    newCategory,
+    newCategoryName
+  ) => {
     // SELECT WHICH ROW IS TO BE EDITED AND RETURN THE NEW TABLE WITH THE EDITED ROW
     const editedProduct = productTable.map((row) => {
-      const categorySelected = categoryTable.find(
-        (i) => i.categoryName == category
-      );
-
-      console.log("categorySelected", categorySelected);
-
-      // FOR SETTING UI
-
       // SET PRODUCT NAME
       {
         row.productId == selectedRow.productId
@@ -151,18 +153,18 @@ const EditProductForm = ({
       // SET CTG NAME
       {
         row.productId == selectedRow.productId
-          ? (row.categoryName = category)
+          ? (row.categoryName = newCategoryName)
           : null;
       }
 
-      // SET MENU NAME
+      // SET CAKE TYPE
       {
         row.productId == selectedRow.productId
-          ? (row.menuName = categorySelected.menuName)
+          ? (row.cakeType = newCakeType)
           : null;
       }
 
-      // SET MENU NAME
+      // SET IMAGE
       {
         row.productId == selectedRow.productId ? (row.image = newImage) : null;
       }
@@ -170,10 +172,13 @@ const EditProductForm = ({
       return { ...row };
     });
 
+    let isSpecial;
+    // FOR IS SPECIAL COLUMN
+    newCakeType == "Common Cake" ? (isSpecial = 0) : (isSpecial = 1);
+
     // FOR UPDATING DATABASE
 
     // FIND THE SELECTED CATEGORY ID (SELECT COMPONENT FROM SHAD CANT DISPLAY THE NAME OF THE SELECTION IF THE VALUE IT PASSES IS THE ID)
-    const ctgSelected = categoryTable.find((i) => i.categoryName == category);
 
     // UPDATE TO DATABASE
     try {
@@ -185,7 +190,8 @@ const EditProductForm = ({
         body: JSON.stringify({
           productId: selectedRow.productId,
           productName: data.productName,
-          categoryId: ctgSelected.categoryId,
+          categoryId: newCategory,
+          isSpecial: isSpecial,
           image: newImage,
         }),
       };
@@ -203,7 +209,16 @@ const EditProductForm = ({
       console.log(e);
     }
   };
-  console.log(selectedRow);
+  const cakeTypes = [
+    {
+      id: 1,
+      value: "Common Cake",
+    },
+    {
+      id: 2,
+      value: "Special Cake",
+    },
+  ];
   return (
     <>
       <Dialog open={editProductOpen} onOpenChange={setEditProductOpen}>
@@ -282,7 +297,28 @@ const EditProductForm = ({
                 )}
               </div>
             </div>
-
+            <div>
+              <Label htmlFor="accountType" className="text-right mb-1">
+                Cake Type: {selectedRow.cakeType}
+              </Label>
+              <Select asChild value={cakeType} onValueChange={setCakeType}>
+                <SelectTrigger className="w-full mt-1">
+                  <SelectValue placeholder="Select Cake Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {cakeTypes.map((i) => (
+                    <SelectItem key={i.id} value={i.value}>
+                      {i.value}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {!errorCakeTypeSelection ? null : (
+                <Label className="errorMessage mb-1">
+                  Error! Please select a cake type.
+                </Label>
+              )}
+            </div>
             <div className="mt-2">
               <Label htmlFor="picture" className="text-right mb-1">
                 Product Image:

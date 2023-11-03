@@ -1,0 +1,25 @@
+// .include
+const categories = ["1", "2", "4"]; // tanggal
+
+const products = [
+  { name: "p1", categoryId: "1" },
+  { name: "p2", categoryId: "2" },
+  { name: "p3", categoryId: "3" },
+];
+// true false
+// true false
+// false true
+
+console.log(products.filter((p) => !categories.includes(p.categoryId)));
+
+//   const categories = [{ categoryname: '1', catid: 1, isremoved: 1}]; // galing db get all category where  removed = 1
+//  const category_ids =  categories.map(c => c.id) // -> [123, 456, 789] catids
+
+//   // 2 loop
+//   // get prod na hndi removed
+//   const productsWithAvailableCategories = productsData.filter((prod) => {
+//     return  category_ids.includes(prod.categoryId);
+//     // return prod.isRemoved === 0;
+//   });
+
+// get prod na hndi removed, at category is hndi removed

@@ -45,6 +45,30 @@ const AddCategoryForm = ({
 }) => {
   const [validationMessage, setValidationMessage] = useState();
 
+  const [file, setFile] = useState();
+  const [image, setImage] = useState("");
+
+  const uploadImage = async (e) => {
+    e.preventDefault();
+    if (!file) return;
+
+    try {
+      const data = new FormData();
+      data.set("file", file);
+
+      const res = await fetch("/api/upload/categories", {
+        method: "POST",
+        body: data,
+      });
+      const results = await res.json();
+
+      setImage(`/images/categories/${results}`);
+      if (!res.ok) throw new Error(await res.text());
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   // STORAGE FOR SELECT VALUE
   const [cakeType, setCakeType] = useState("");
   const [menu, setMenu] = useState("");
@@ -59,28 +83,11 @@ const AddCategoryForm = ({
     },
     mode: "onTouched",
   });
-  console.log(categoryTable);
+
   const { register, handleSubmit, formState, reset, getValues } = form;
   const { errors, isDirty, isValid } = formState;
 
   const onSubmit = async (data) => {
-    // SHOW ERROR MESSAGE IF SELECT IS EMPTY
-    {
-      !cakeType
-        ? setErrorCakeTypeSelection(true)
-        : setErrorCakeTypeSelection(false);
-    }
-    {
-      !menu ? setErrorMenuSelection(true) : setErrorMenuSelection(false);
-    }
-
-    // IF MENU OR CAKE TYPE IS EMPTY DONT ADD THE CATEGORY
-    {
-      !menu || !cakeType ? null : validateCtgName(data);
-    }
-  };
-
-  const validateCtgName = (data) => {
     const { categoryName } = data;
 
     const checkVal = categoryTable.find(
@@ -98,13 +105,9 @@ const AddCategoryForm = ({
     const { categoryName } = data;
 
     // FIND THE SELECTED MENU ID (SELECT COMPONENT FROM SHAD CANT DISPLAY THE NAME OF THE SELECTION IF THE VALUE IT PASSES IS THE ID)
-    const menuSelected = menuTable.find((i) => i.menuName == menu);
+    // const menuSelected = menuTable.find((i) => i.menuName == menu);
 
     // FOR THE CAKE TYPE SELECTION
-    let isSpecial;
-    {
-      cakeType === "Special Cake" ? (isSpecial = 1) : (isSpecial = 0);
-    }
 
     const categoryPost = {
       method: "POST",
@@ -113,8 +116,7 @@ const AddCategoryForm = ({
       },
       body: JSON.stringify({
         categoryName: categoryName,
-        menuId: menuSelected.menuId,
-        isSpecial: isSpecial,
+        categoryImage: image,
       }),
     };
 
@@ -128,10 +130,7 @@ const AddCategoryForm = ({
       const updatedTable = {
         categoryId: insertId,
         categoryName: categoryName,
-        menuName: menu,
-        cakeType: cakeType,
-        // MENU ID, IF THE CATEGORY ADDED OCCUPIES AN EMPTY MENU THE DELETE BUTTON ON MENU TABLE WILL BE DISABLED
-        menuId: menuSelected.menuId,
+        categoryImage: image,
       };
       updateCategoryTable(updatedTable, "add");
       closeAddCategory();
@@ -202,9 +201,31 @@ const AddCategoryForm = ({
               )}
               <div>
                 <Label htmlFor="accountType" className="text-right mb-1">
-                  Cake Type:
+                  Category Image:
                 </Label>
-                <Select asChild value={cakeType} onValueChange={setCakeType}>
+                <Input
+                  id="image"
+                  type="file"
+                  onChange={(e) => setFile(e.target.files?.[0])}
+                />
+                <div className="flex flex-col">
+                  {image && (
+                    <div className="items-center relative inline-block overflow-hidden m-0 w-44 h-fit max-h-56 mx-auto my-2 rounded-lg">
+                      <img src={image} alt="bg" />
+                    </div>
+                  )}
+                  {file ? (
+                    <Button
+                      onClick={uploadImage}
+                      className="hover:bg-ring mt-2 w-2/6"
+                    >
+                      Upload
+                    </Button>
+                  ) : null}
+                </div>
+              </div>
+
+              {/* <Select asChild value={cakeType} onValueChange={setCakeType}>
                   <SelectTrigger className="w-full mt-1">
                     <SelectValue placeholder="Select Cake Type" />
                   </SelectTrigger>
@@ -220,9 +241,8 @@ const AddCategoryForm = ({
                   <Label className="errorMessage mb-1">
                     Error! Please select a cake type.
                   </Label>
-                )}
-              </div>
-              <div>
+                )} */}
+              {/* <div>
                 <Label htmlFor="accountType" className="text-right mb-1">
                   Menu:
                 </Label>
@@ -243,7 +263,7 @@ const AddCategoryForm = ({
                     Error! Please select a menu.
                   </Label>
                 )}
-              </div>
+              </div> */}
             </div>
             {!validationMessage ? null : (
               <Label className="errorMessage mb-2">{validationMessage}</Label>

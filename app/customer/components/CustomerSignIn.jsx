@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from "../../../components/ui/card";
 
-const CustomerSignIn = ({ customerAccounts }) => {
+const CustomerSignIn = ({ customerAccounts, tableCustomerAccounts }) => {
   // ROUTER
   const router = useRouter();
 
@@ -36,15 +36,19 @@ const CustomerSignIn = ({ customerAccounts }) => {
           acc.isDeactivated == 0)
     );
 
+    const customerAcc = tableCustomerAccounts.find(
+      (i) => account.accountId == i.accountId
+    );
+
     // IF NOTHING IS FOUND, SET ERROR MESSAGE TO TRUE
     {
-      !account ? setIsNotExisting(true) : redirectPage(account);
+      !account ? setIsNotExisting(true) : redirectPage(customerAcc);
     }
   };
 
   const redirectPage = (account) => {
     // REDIRECT TO HOMEPAGE WITH THE USER ID
-    router.replace(`home/${account.accountId}`);
+    router.replace(`home/${account.customerId}`);
   };
 
   return (

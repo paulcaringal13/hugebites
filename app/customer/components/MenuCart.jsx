@@ -1,59 +1,52 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Item } from "@radix-ui/react-dropdown-menu";
 import Image from "next/image";
-import { useState } from "react";
-import { HiOutlineLocationMarker } from "react-icons/hi";
+import { useState, useEffect } from "react";
+import { MdAlternateEmail } from "react-icons/md";
+import { MdModeEditOutline } from "react-icons/md";
+import { MdOutlineDeleteOutline } from "react-icons/md";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
 import SmallCardImg from "../../../public/images/SmallCardImg.jpg";
+import MenuCheckOutForm from "./MenuCheckOutForm";
 
-const MenuCart = () => {
-  const [cart, setCart] = useState([]);
+const MenuCart = ({
+  user,
+  cart,
+  minusQuantityToList,
+  addQuantityToList,
+  deductQuantity,
+  addQuantity,
+  handleCartEditProduct,
+  handleCartRemoveProduct,
+  findSpecificProductSizes,
+  getAddOnsPrices,
+  totalPrice,
+  setOpenMenuCheckOut,
+}) => {
+  const [total, setTotal] = useState();
+  // const [openMenuCheckOut, setOpenMenuCheckOut] = useState(false);
 
-  const cartArray = [
-    {
-      id: 1,
-      name: "Bordered",
-      category: "Human Cake",
-      image: "/images/Bordered.JPG",
-      subTotal: "300.00",
-    },
-    {
-      id: 2,
-      name: "Smudges",
-      category: "Human Cake",
-      image: "/images/Smudges.JPG",
-      subTotal: "250.00",
-    },
-    {
-      id: 3,
-      name: "Minimalist",
-      category: "Human Cake",
-      image: "/images/Minimalist.JPG",
-      subTotal: "625.00",
-    },
-  ];
+  useEffect(() => {
+    setTotal(totalPrice);
+  }, [totalPrice]);
+
+  // CHECK OUT CHANGES
+
+  // totalPrice = total price ng lahat lahat, pati add ons at quantity
+  // cart = lahat ng laman ni cart and values nila
 
   return (
     <>
-      <div className="h-fit w-full ml-4">
+      <div className="h-fit w-full">
         <Card className="w-auto h-full bg-primary-foreground/25 border-2 border-primary">
           <CardHeader>
             <CardTitle className="text-lg">Total Spent</CardTitle>
@@ -70,14 +63,16 @@ const MenuCart = () => {
                 Your total spent
               </CardTitle>
               <CardContent>
-                <Label className="text-4xl font-medium">₱12,070.00</Label>
+                <Label className="text-4xl font-medium">
+                  ₱{user.totalSpent}.00
+                </Label>
               </CardContent>
             </Card>
           </CardHeader>
           <Separator className="bg-primary" />
           <CardContent>
             <div className="flex flex-row my-3 justify-between">
-              <h1 className="text-ring font-bold my-auto">Your Address</h1>
+              <h1 className="text-ring font-bold my-auto">Your Email</h1>
               <Button
                 variant="ghost"
                 className="my-auto h-8 w-fit text-ring border-solid border-2 border-primary hover:bg-primary hover:text-white"
@@ -87,8 +82,8 @@ const MenuCart = () => {
             </div>
 
             <h2 className="text-stone-600 text-sm flex flex-row">
-              <HiOutlineLocationMarker className="text-ring text-3xl my-auto mr-2" />
-              Blk 12 Lot 19 Don Onofre Banay-Banay Cabuyao Laguna
+              <MdAlternateEmail className="text-ring text-3xl my-auto mr-2" />
+              {user.email}
             </h2>
             {/* <h3> Blk 12 Lot 19 Don Onofre Banay-Banay Cabuyao Laguna</h3> */}
           </CardContent>
@@ -103,9 +98,9 @@ const MenuCart = () => {
                 <Label>Cart is empty</Label>
               </div>
             ) : (
-              cartArray.map((item) => (
+              cart.map((item) => (
                 <div
-                  key={item.id}
+                  key={item.cartId}
                   className="flex flex-row w-full h-fit mx-2 my-2 rounded-md"
                 >
                   <Image
@@ -116,26 +111,64 @@ const MenuCart = () => {
                     className="rounded-md shadow-md drop-shadow-md mb-2"
                   />
                   <div className="ml-3 w-full">
-                    <div className="text-sm font-bold mb-2  flex flex-row justify-between">
-                      <h1>{item.name}</h1>
-                      <span className="ml-auto text-primary">
-                        ₱{item.subTotal}
-                      </span>
-                      <br />
+                    <div className="text-sm font-bold mb-2 w-full flex flex-row gap-2 justify-between">
+                      <h1>{item.productName}</h1>
+
+                      <button className="h-fit w-fit my-auto ml-auto">
+                        <MdModeEditOutline
+                          className="text-black text-md hover:text-primary"
+                          onClick={() => {
+                            handleCartEditProduct(item);
+                            findSpecificProductSizes(item);
+                            // getCartProductPrices(item);
+                            getAddOnsPrices(item);
+                          }}
+                        />
+                      </button>
+                      <button className="h-fit w-fit my-auto">
+                        <MdOutlineDeleteOutline
+                          className="text-black text-md  hover:text-primary"
+                          onClick={() => handleCartRemoveProduct(item)}
+                        />
+                      </button>
                     </div>
                     <div className="text-sm font-bold mb-2  flex flex-row justify-between">
-                      <h3 className="text-xs font-medium">{item.category}</h3>
+                      {/* <h3 className="text-xs font-medium"></h3> */}
                       <div className="grid grid-cols-3 h-6 w-20">
-                        <button className="col-span-1 bg-transparent text-black border-solid border-primary border-2 rounded-s-md cursor-pointer hover:bg-primary hover:text-white">
+                        <button
+                          onClick={() => {
+                            deductQuantity(
+                              item.cartId,
+                              item.quantity,
+                              item.subTotal
+                            );
+                            minusQuantityToList(item.cartId);
+                          }}
+                          className="col-span-1 bg-transparent text-black border-solid border-primary border-2 rounded-s-md cursor-pointer hover:bg-primary hover:text-white"
+                        >
                           -
                         </button>
                         <div className="h-6 col-span-1 text-xs text-center pt-1 border-solid border-y-2 border-x-0 border-primary">
-                          01
+                          {item.quantity}
                         </div>
-                        <button className="col-span-1 bg-transparent text-black text-xs border-solid border-primary border-2 rounded-e-md cursor-pointer hover:bg-primary hover:text-white">
+                        <button
+                          onClick={() => {
+                            addQuantity(
+                              item.cartId,
+                              item.quantity,
+                              item.subTotal
+                            );
+                            addQuantityToList(item.cartId);
+                          }}
+                          className="col-span-1 bg-transparent text-black border-solid border-primary border-2 rounded-r-md cursor-pointer hover:bg-primary hover:text-white"
+                        >
                           +
                         </button>
                       </div>
+
+                      <span className="ml-auto text-primary text-lg">
+                        ₱{item.totalPrice}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -145,24 +178,32 @@ const MenuCart = () => {
             <div className="mt-4">
               <div className="flex flex-row justify-between text-sm">
                 <h4 className="text-stone-600 font-extralight">Discount</h4>
-                <span className="font-light">-5%</span>
+                {/* <span className="font-light">-5%</span> */}
               </div>
               <div className="flex flex-row justify-between text-md mt-6 mb-4">
                 <h1 className="text-lg">Total</h1>
                 <span className="font-extrabold text-2xl text-ring">
-                  ₱4,350.00
+                  ₱{total}.00
                 </span>
               </div>
 
-              <Button className="w-full hover:bg-ring ">Checkout</Button>
+              <Button
+                className="w-full hover:bg-ring"
+                onClick={() => setOpenMenuCheckOut(true)}
+              >
+                Checkout
+              </Button>
             </div>
           </CardContent>
-          {/* <CardFooter className="flex justify-between">
-            <Button variant="outline">Cancel</Button>
-            <Button>Deploy</Button>
-          </CardFooter> */}
         </Card>
       </div>
+      {/* {!openMenuCheckOut ? null : (
+        <MenuCheckOutForm
+          cart={cart}
+          openMenuCheckOut={openMenuCheckOut}
+          setOpenMenuCheckOut={setOpenMenuCheckOut}
+        />
+      )} */}
     </>
   );
 };

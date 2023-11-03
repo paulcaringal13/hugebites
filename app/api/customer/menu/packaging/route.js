@@ -14,7 +14,7 @@ async function con() {
 export async function GET(request, path) {
   const connection = await con();
 
-  const query = `SELECT * FROM customization_packaging`;
+  const query = `SELECT * FROM customization_packaging WHERE isSizeRemoved = 0`;
   const results = await connection.execute(query);
   connection.end();
 

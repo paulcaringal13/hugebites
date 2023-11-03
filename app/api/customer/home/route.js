@@ -18,7 +18,7 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const accountId = searchParams.get("accountId");
 
-  const query = `SELECT accounts.accountId, tbl_customer.customerId, accounts.email,accounts.username, accounts.contact, accounts.userRole, tbl_customer.customerId, tbl_customer.firstName, tbl_customer.lastName, tbl_customer.address FROM accounts LEFT JOIN tbl_customer ON tbl_customer.accountId = accounts.accountId WHERE accounts.accountId = ${accountId}`;
+  const query = `SELECT accounts.accountId, tbl_customer.customerId, accounts.email,accounts.username, accounts.contact, accounts.userRole, tbl_customer.customerId, tbl_customer.firstName, tbl_customer.lastName, tbl_customer.address, tbl_customer.totalSpent FROM tbl_customer LEFT JOIN accounts ON accounts.accountId = tbl_customer.accountId WHERE tbl_customer.customerId = ${accountId}`;
   const res = await connection.execute(query);
   connection.end();
 

@@ -16,9 +16,9 @@ export async function GET(request) {
     const connection = await con();
 
     const { searchParams } = new URL(request.url);
-    const accountId = searchParams.get("accountId");
+    const customerId = searchParams.get("customerId");
 
-    const query = `SELECT * FROM cart WHERE accountId = ${accountId}`;
+    const query = `SELECT * FROM ordered_products WHERE customerId = ${customerId}`;
     const res = await connection.execute(query);
     connection.end();
 
@@ -39,19 +39,18 @@ export async function POST(req, res) {
     const reqBody = await req.json();
 
     const {
-      accountId,
+      customerId,
       orderId,
       productId,
       packagingId,
       flavorId,
-      drageesId,
       shapeId,
       quantity,
-      darkColoredBaseId,
-      freshFlowerId,
+      colorId,
       subTotal,
+      message,
     } = reqBody;
-    const query = `INSERT INTO ordered_products (accountId, orderId, productId, packagingId, flavorId, drageesId, shapeId, quantity, darkColoredBaseId, freshFlowerId, subTotal) VALUES ('${accountId}', '${orderId}', '${productId}','${packagingId}','${flavorId}','${drageesId}','${shapeId}','${quantity}','${darkColoredBaseId}','${freshFlowerId}','${subTotal}')`;
+    const query = `INSERT INTO ordered_products (customerId, orderId, productId, packagingId, flavorId, shapeId, quantity, colorId,subTotal, message) VALUES ('${customerId}', '${orderId}', '${productId}','${packagingId}','${flavorId}','${shapeId}','${quantity}','${colorId}','${subTotal}','${message}')`;
     const results = await connection.execute(query);
     connection.end();
 

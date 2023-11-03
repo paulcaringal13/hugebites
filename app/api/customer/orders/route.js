@@ -25,34 +25,3 @@ export async function GET(request) {
 
   return NextResponse.json(results);
 }
-
-export async function POST(req, res) {
-  try {
-    const connection = await con();
-
-    const reqBody = await req.json();
-
-    const {
-      totalPrice,
-      accountId,
-      dateOrdered,
-      datePickUp,
-      paymentDeadline,
-      refundDeadline,
-      status,
-      paymentMethod,
-      proofOfPaymentImage,
-      hasRequest,
-      isPaid,
-      isCancelled,
-    } = reqBody;
-    console.log(proofOfPaymentImage);
-    const query = `INSERT INTO orders (totalPrice, accountId, dateOrdered, datePickUp, paymentDeadline, refundDeadline, status, paymentMethod, proofOfPaymentImage, hasRequest, isPaid, isCancelled) VALUES ('${totalPrice}', '${accountId}', '${dateOrdered}', '${datePickUp}', '${paymentDeadline}', '${refundDeadline}', '${status}', '${paymentMethod}', '${proofOfPaymentImage}', '${hasRequest}', '${isPaid}', '${isCancelled}')`;
-    const results = await connection.execute(query);
-    connection.end();
-
-    return NextResponse.json(results);
-  } catch (error) {
-    console.log(error);
-  }
-}

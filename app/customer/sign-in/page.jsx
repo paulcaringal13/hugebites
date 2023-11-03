@@ -14,8 +14,23 @@ const SignInPage = async () => {
     return data;
   }
 
+  async function getTableCustomerData() {
+    // GET ALL CUSTOMER ACCOUNTS FROM THE ACCOUNTS TABLE IN THE DATABASE
+    const res = await fetch(
+      `http://localhost:3000/api/customer/sign-in/tbl_customer`,
+      {
+        cache: "no-store",
+      }
+    );
+
+    const data = await res.json();
+
+    return data;
+  }
+
   // STORE THE RESPONSE TO THIS VARIABLE
   const customerAccounts = await getAllCustomerAccounts();
+  const tableCustomerAccounts = await getTableCustomerData();
 
   return (
     <div
@@ -34,7 +49,10 @@ const SignInPage = async () => {
       </div>
       <div className="relative" style={{ paddingTop: "250px", height: "90vh" }}>
         {/* PASS THE ARRAY OF EXISTING CUSTOMER ACCOUNTS INTO COMPONENT */}
-        <CustomerSignIn customerAccounts={customerAccounts} />
+        <CustomerSignIn
+          customerAccounts={customerAccounts}
+          tableCustomerAccounts={tableCustomerAccounts}
+        />
       </div>
       <div style={{ height: "50vh", width: "100vw", position: "relative" }}>
         <Footer />

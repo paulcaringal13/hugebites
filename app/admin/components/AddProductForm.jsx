@@ -47,6 +47,10 @@ const AddProductForm = ({
 }) => {
   const [validationMessage, setValidationMessage] = useState();
 
+  const [cakeType, setCakeType] = useState("");
+
+  const [errorCakeTypeSelection, setErrorCakeTypeSelection] = useState(false);
+
   const [file, setFile] = useState();
   const [image, setImage] = useState("");
 
@@ -88,7 +92,12 @@ const AddProductForm = ({
   const { errors, isDirty, isValid } = formState;
 
   const onSubmit = async (data) => {
-    console.log(image);
+    // SHOW ERROR MESSAGE IF SELECT IS EMPTY
+    {
+      !cakeType
+        ? setErrorCakeTypeSelection(true)
+        : setErrorCakeTypeSelection(false);
+    }
     // SHOW ERROR MESSAGE IF SELECT IS EMPTY
     {
       !category
@@ -97,7 +106,7 @@ const AddProductForm = ({
     }
     // IF CTG IS EMPTY DONT ADD THE PRODUCT
     {
-      !category ? null : validateProductName(data);
+      !category || !cakeType ? null : validateProductName(data);
     }
   };
 
@@ -125,6 +134,10 @@ const AddProductForm = ({
     );
 
     // FOR THE CAKE TYPE SELECTION
+    let isSpecial;
+    {
+      cakeType === "Special Cake" ? (isSpecial = 1) : (isSpecial = 0);
+    }
 
     const productPost = {
       method: "POST",
@@ -135,6 +148,7 @@ const AddProductForm = ({
         productName: productName,
         categoryId: categorySelected.categoryId,
         image: image,
+        isSpecial: isSpecial,
         isRemoved: 0,
         status: "Available",
       }),
@@ -145,14 +159,16 @@ const AddProductForm = ({
         `http://localhost:3000/api/admin/menu/product`,
         productPost
       );
+      console.log(image);
       const response = await res.json();
       const { insertId } = response[0];
       const updatedTable = {
         productId: insertId,
         productName: productName,
         image: image,
+        cakeType: cakeType,
+        isRemoved: 0,
         categoryName: categorySelected.categoryName,
-        menuName: categorySelected.menuName,
         status: "Available",
       };
       updateProductTable(updatedTable, "add");
@@ -161,6 +177,17 @@ const AddProductForm = ({
       console.log(error);
     }
   };
+
+  const cakeTypes = [
+    {
+      id: 1,
+      value: "Common Cake",
+    },
+    {
+      id: 2,
+      value: "Special Cake",
+    },
+  ];
 
   return (
     <>
@@ -184,7 +211,7 @@ const AddProductForm = ({
           </DialogHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
-            <div className="flex flex-col">
+            <div className="flex flex-col gap-1">
               <Label className="text-left mb-1">Product Name:</Label>
               <Input
                 id="productName"
@@ -213,7 +240,7 @@ const AddProductForm = ({
                 <Label className="text-right mb-1">Category:</Label>
                 <Select asChild value={category} onValueChange={setCategory}>
                   <SelectTrigger className="w-full mt-1">
-                    <SelectValue placeholder="Select Menu" />
+                    <SelectValue placeholder="Select Category" />
                   </SelectTrigger>
                   <SelectContent>
                     {categoryTable.map((i) => (
@@ -226,6 +253,28 @@ const AddProductForm = ({
                 {!errorCategorySelection ? null : (
                   <Label className="errorMessage mb-1">
                     Error! Please select a category.
+                  </Label>
+                )}
+              </div>
+              <div>
+                <Label htmlFor="accountType" className="text-right mb-1">
+                  Cake Type:
+                </Label>
+                <Select asChild value={cakeType} onValueChange={setCakeType}>
+                  <SelectTrigger className="w-full mt-1">
+                    <SelectValue placeholder="Select Cake Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {cakeTypes.map((i) => (
+                      <SelectItem key={i.id} value={i.value}>
+                        {i.value}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {!errorCakeTypeSelection ? null : (
+                  <Label className="errorMessage mb-1">
+                    Error! Please select a cake type.
                   </Label>
                 )}
               </div>

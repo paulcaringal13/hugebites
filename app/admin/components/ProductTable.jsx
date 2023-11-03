@@ -59,7 +59,7 @@ const ProductTable = ({
         const rowData = row.original;
 
         return (
-          <Avatar>
+          <Avatar className="mx-auto">
             <AvatarImage src={rowData.image} alt="product-image" />
             <AvatarFallback>UNK</AvatarFallback>
           </Avatar>
@@ -335,12 +335,12 @@ const ProductTable = ({
               Category
             </DropdownMenuItem>
             <DropdownMenuItem
-              id="menuName"
+              id="cakeType"
               onClick={(e) => {
                 setColumnSelected(e.target.id);
               }}
             >
-              Menu
+              Cake Type
             </DropdownMenuItem>
             <DropdownMenuItem
               id="status"
@@ -393,12 +393,14 @@ const ProductTable = ({
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                      <h1 className="text-center">
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </h1>
                     </TableHead>
                   );
                 })}
@@ -414,10 +416,12 @@ const ProductTable = ({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      <div className="text-center">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </div>
                     </TableCell>
                   ))}
                 </TableRow>

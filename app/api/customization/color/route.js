@@ -20,3 +20,36 @@ export async function GET() {
 
   return NextResponse.json(results[0]);
 }
+
+export async function POST(req, res) {
+  const connection = await con();
+
+  const reqBody = await req.json();
+  const { colorName, colorPrice, colorStatus } = reqBody;
+  try {
+    const query = `INSERT INTO customization_color (colorName, colorPrice, colorStatus) VALUES ('${colorName}', '${colorPrice}',  '${colorStatus}')`;
+    const results = await connection.execute(query);
+    connection.end();
+
+    return NextResponse.json(results);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function PUT(request) {
+  try {
+    const connection = await con();
+
+    const reqBody = await request.json();
+    const { colorId, colorPrice, colorStatus, colorName } = reqBody;
+
+    const query = `UPDATE customization_color SET colorStatus ='${colorStatus}', colorPrice='${colorPrice}', colorName='${colorName}' WHERE colorId = ${colorId}`;
+
+    const results = await connection.execute(query);
+    connection.end();
+    return NextResponse.json(results);
+  } catch (error) {
+    console.log(error);
+  }
+}

@@ -15,7 +15,7 @@ export async function GET() {
   const connection = await con();
 
   const query =
-    "SELECT accounts.accountId, tbl_customer.customerId, tbl_customer.firstName, tbl_customer.lastName, accounts.email, accounts.username, accounts.contact, tbl_customer.address, accounts.accountType, accounts.userRole, tbl_customer.accStatus FROM tbl_customer LEFT JOIN accounts ON tbl_customer.accountId = accounts.accountId";
+    "SELECT accounts.accountId, tbl_customer.customerId, tbl_customer.firstName, tbl_customer.lastName, accounts.email, accounts.username, accounts.contact, tbl_customer.address, accounts.accountType, accounts.userRole FROM tbl_customer LEFT JOIN accounts ON tbl_customer.accountId = accounts.accountId";
   const results = await connection.execute(query, []);
   connection.end();
 

@@ -46,7 +46,6 @@ export default function CustomerSidebar({ children, account }) {
   const router = useRouter();
 
   const [expanded, setExpanded] = useState(true);
-  console.log(expanded);
 
   const handleClick = () => {
     location.href = `www.test.com/?a=${queryA}&b=${queryB}`;
@@ -83,7 +82,7 @@ export default function CustomerSidebar({ children, account }) {
                     expanded ? "flex flex-row" : ""
                   }`}
                   onClick={() =>
-                    router.push(`/customer/menu/${account.accountId}`)
+                    router.push(`/customer/menu/${account.customerId}`)
                   }
                   // ${
                   //   active
@@ -93,7 +92,7 @@ export default function CustomerSidebar({ children, account }) {
                 >
                   <RiCakeLine className="me-2 text-xl" />
                   <span
-                    className={`overflow-hidden transition-all ${
+                    className={`overflow-hidden transition-all duration-0 ${
                       expanded ? "w-11" : "hidden"
                     }`}
                   >
@@ -123,7 +122,7 @@ export default function CustomerSidebar({ children, account }) {
                 >
                   <LuShoppingBasket size={20} className="me-2" />{" "}
                   <span
-                    className={`overflow-hidden transition-all ${
+                    className={`overflow-hidden transition-all duration-0  ${
                       expanded ? "w-11" : "hidden"
                     }`}
                   >
@@ -153,7 +152,7 @@ export default function CustomerSidebar({ children, account }) {
                 >
                   <AiOutlineUserSwitch size={20} className="me-2" />
                   <span
-                    className={`overflow-hidden transition-all ${
+                    className={`overflow-hidden transition-all duration-0  ${
                       expanded ? "w-fit" : "hidden"
                     }`}
                   >
@@ -169,78 +168,7 @@ export default function CustomerSidebar({ children, account }) {
             </Tooltip>
           </TooltipProvider>
         </ul>
-
-        {/* <div className=" flex p-3 bg-primary text-white">
-          <img src="/images/Bordered.JPG" className="w-10 h-10 rounded-full" />
-          <div className={`flex justify-between items-center w-52 ml-3`}>
-            <div className="leading-4">
-              <h4 className="font-semibold">Paul Caringal</h4>
-              <span className="text-xs text-primary"></span>
-            </div>
-            <MoreVertical size={20} />
-          </div>
-        </div> */}
       </nav>
     </aside>
   );
-}
-
-export function SidebarItem({ icon, text, active, alert }) {
-  return (
-    <li>
-      {icon}
-      <span>{text}</span>
-    </li>
-  );
-}
-
-{
-  /* <Box
-sx={{
-  overflowY: "auto",
-  height: "calc(100vh - 88px)",
-  marginTop: "16px",
-  width: "271.2px",
-  position: "fixed",
-  top: 72,
-  bgcolor: "#EE7376",
-}}
->
-<List>
-  {routes.map((items) => (
-    <ListItem
-      key={items.id}
-      sx={{
-        "&:hover": {
-          backgroundColor: "#ea5054",
-          transitionDuration: "0.8s",
-          boxShadow: "3",
-        },
-      }}
-    >
-      <ListItemButton
-        sx={{
-          "&:hover": {
-            background: "transparent",
-          },
-        }}
-      >
-        <Link
-          sx={{ color: "white", textDecoration: "none" }}
-          href={`/${items.route}`}
-        >
-          <ListItemText
-            primary={items.name}
-            sx={{
-              "& span": {
-                fontSize: "20px",
-              },
-            }}
-          />
-        </Link>
-      </ListItemButton>
-    </ListItem>
-  ))}
-</List>
-</Box> */
 }

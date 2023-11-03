@@ -8,14 +8,14 @@ export const getFlavor = async () => {
   return flavors;
 };
 
-export const getSprinkle = async () => {
-  const res = await fetch(`http://localhost:3000/api/customization/dragees`, {
+export const getAddOns = async () => {
+  const res = await fetch(`http://localhost:3000/api/customization/addOns`, {
     cache: "no-store",
   });
 
-  const dragees = await res.json();
+  const addOns = await res.json();
 
-  return dragees;
+  return addOns;
 };
 
 export const getShape = async () => {
@@ -26,16 +26,6 @@ export const getShape = async () => {
   const shape = await res.json();
 
   return shape;
-};
-
-export const getFlower = async () => {
-  const res = await fetch(`http://localhost:3000/api/customization/flower`, {
-    cache: "no-store",
-  });
-
-  const flower = await res.json();
-
-  return flower;
 };
 
 export const getColor = async () => {
