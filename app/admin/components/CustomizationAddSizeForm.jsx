@@ -126,7 +126,7 @@ const CustomizationAddSizeForm = ({
               </Button>
             </DialogTitle>
             <DialogDescription>
-              Fill out the fields then press the 'Add' button.
+              Fill out the fields then press the Add button.
             </DialogDescription>
           </DialogHeader>
 
@@ -216,13 +216,17 @@ const CustomizationAddSizeForm = ({
                     : product.productName}
                 </div>
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="overflow-y-scroll h-[125px]">
                 <SelectGroup>
                   {productTable.map((i) => {
                     return (
-                      <SelectItem key={i.productId} value={i}>
-                        {i.productName}
-                      </SelectItem>
+                      <>
+                        {i.productId == "7000" ? null : (
+                          <SelectItem key={i.productId} value={i}>
+                            {i.productName}
+                          </SelectItem>
+                        )}
+                      </>
                     );
                   })}
                 </SelectGroup>

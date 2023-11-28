@@ -45,52 +45,17 @@ const MenuCheckOutForm = ({
   const [checkOutSuccess, setCheckOutSuccess] = useState();
   const [orderFinished, setOrderFinished] = useState(false);
 
-  const [customerTotalSpent, setCustomerTotalSpent] = useState(0);
-
   const [methodOfPayment, setMethodOfPayment] = useState("");
   const [dateToday, setDateToday] = useState(dayjs());
-  const [datePickUp, setDatePickUp] = useState(dayjs().add(2, "day"));
-  const [paymentDeadline, setPaymentDeadline] = useState(dayjs().add(1, "day"));
+  const [datePickUp, setDatePickUp] = useState(dayjs().add(3, "day"));
+  const [paymentDeadline, setPaymentDeadline] = useState(dayjs().add(2, "day"));
   const [refundDeadline, setRefundDeadline] = useState(
     dayjs(dayjs().add(2, "day")).add(3, "day")
   );
-
   const fromYear = dayjs().year();
   const toYear = dayjs().year() + 1;
 
-  const getTotalSpent = async () => {
-    const res = await fetch(
-      `http://localhost:3000/api/customer/order/totalSpent?` +
-        new URLSearchParams({
-          customerId: params.userId,
-        }),
-      { cache: "no-store" }
-    );
-
-    const data = await res.json();
-
-    setCustomerTotalSpent(data[0].totalSpent);
-  };
-
-  const addToTotalSpent = async (orderPrice) => {
-    const newTotalSpent = customerTotalSpent + Number(orderPrice);
-
-    const totalSpentPost = {
-      method: "PUT",
-      header: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        customerId: params.userId,
-        totalSpent: newTotalSpent,
-      }),
-    };
-
-    const res = await fetch(
-      `http://localhost:3000/api/customer/order/totalSpent`,
-      totalSpentPost
-    );
-
+  const deleteCart = async (orderPrice) => {
     const cartDelete = {
       method: "DELETE",
       header: {
@@ -106,10 +71,63 @@ const MenuCheckOutForm = ({
         `http://localhost:3000/api/customer/cart`,
         cartDelete
       );
-      // setTimeout(() => {
-      //   setOpenMenuCheckOut(false);
-      // }, 4000);
-      window.location.href = pathname;
+      setOpenConfirmCheckOut(false);
+      window.location.reload(true);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const insertNormalAddOns = async (item, orderId, orderedProductId) => {
+    const addOnsPost = {
+      method: "POST",
+      header: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        orderedProductId: orderedProductId,
+        addOnsId: item.addOnsId,
+        specialPropertyId: 0,
+        orderId: orderId,
+        addOnsQuantity: item.addOnsQuantity,
+        addOnsTotal: item.addOnsTotal,
+      }),
+    };
+    try {
+      const opRes = await fetch(
+        `http://localhost:3000/api/customer/ordered_products/addOns`,
+        addOnsPost
+      );
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const insertSpecialAddOns = async (
+    item,
+    orderId,
+    specialPropertyId,
+    orderedProductId
+  ) => {
+    const addOnsPost = {
+      method: "POST",
+      header: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        orderedProductId: orderedProductId,
+        addOnsId: item.addOnsId,
+        specialPropertyId: specialPropertyId,
+        orderId: orderId,
+        addOnsQuantity: item.addOnsQuantity,
+        addOnsTotal: item.addOnsTotal,
+      }),
+    };
+    try {
+      const opRes = await fetch(
+        `http://localhost:3000/api/customer/ordered_products/addOns`,
+        addOnsPost
+      );
     } catch (e) {
       console.log(e);
     }
@@ -127,9 +145,9 @@ const MenuCheckOutForm = ({
         dateOrdered: dayjs(),
         orderStatus: "Not Paid",
         methodOfPayment: methodOfPayment,
-        datePickUp: dayjs(datePickUp).add(1, "day"),
+        datePickUp: dayjs(datePickUp),
         paymentDeadline: dayjs(paymentDeadline),
-        refundDeadline: dayjs(refundDeadline).add(1, "day"),
+        refundDeadline: dayjs(refundDeadline),
       }),
     };
     try {
@@ -145,6 +163,8 @@ const MenuCheckOutForm = ({
       const orderId = insertId;
       cart.forEach(async (i) => {
         const addOns = [...i.addOns];
+        const specialProperty = [...i.specialProperty];
+
         const orderedProductPost = {
           method: "POST",
           header: {
@@ -161,6 +181,8 @@ const MenuCheckOutForm = ({
             quantity: i.quantity,
             subTotal: i.subTotal,
             message: i.message,
+            isCakeCustomized: i.isCakeCustomized,
+            imageReference: i.imageReference,
           }),
         };
         try {
@@ -171,31 +193,53 @@ const MenuCheckOutForm = ({
           const response = await opRes.json();
           const { insertId } = response[0];
           const orderedProductId = insertId;
-          addOns.forEach(async (item) => {
-            const addOnsPost = {
+
+          specialProperty.forEach(async (item, index) => {
+            const specialProp = {
               method: "POST",
               header: {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
+                customerId: i.customerId,
                 orderedProductId: orderedProductId,
-                addOnsId: item.addOnsId,
                 orderId: orderId,
-                addOnsQuantity: item.addOnsQuantity,
-                addOnsTotal: item.addOnsTotal,
+                specialPropertyName: item.cartSpecialPropertyName,
+                specialPropertyValue: item.cartSpecialPropertyValue,
               }),
             };
             try {
-              const opRes = await fetch(
-                `http://localhost:3000/api/customer/ordered_products/addOns`,
-                addOnsPost
+              const specialPropertyRes = await fetch(
+                `http://localhost:3000/api/customer/ordered_products/specialProperty`,
+                specialProp
               );
+              const response = await specialPropertyRes.json();
+              const { insertId } = response[0];
+              const specialPropertyId = insertId;
 
-              addToTotalSpent(orderPrice);
+              addOns.forEach(async (j) => {
+                item.cartSpecialPropertyId == j.cartSpecialPropertyId &&
+                !!j.cartSpecialPropertyId
+                  ? insertSpecialAddOns(
+                      j,
+                      orderId,
+                      specialPropertyId,
+                      orderedProductId
+                    )
+                  : null;
+              });
             } catch (e) {
               console.log(e);
             }
           });
+
+          addOns.forEach(async (item) => {
+            !item.cartSpecialPropertyId
+              ? insertNormalAddOns(item, orderId, orderedProductId)
+              : null;
+          });
+
+          deleteCart(orderPrice);
         } catch (e) {
           console.log(e);
         }
@@ -208,16 +252,12 @@ const MenuCheckOutForm = ({
   useEffect(() => {
     const pickUpDate = dayjs(datePickUp);
 
-    const paymentDate = dayjs(dateToday.add(1, "day"));
+    const paymentDate = dayjs(dateToday.add(2, "day"));
     const refundDate = dayjs(pickUpDate.add(3, "day"));
 
     setPaymentDeadline(paymentDate);
     setRefundDeadline(refundDate);
   }, [datePickUp]);
-
-  useEffect(() => {
-    getTotalSpent();
-  }, []);
 
   return (
     <div className="h-screen w-[1000px] absolute top-0">
@@ -248,27 +288,15 @@ const MenuCheckOutForm = ({
                     //   fromMonth={dayjs().month()}
                     fromYear={fromYear}
                     toYear={toYear}
-                    // showOutsideDays
-                    //   min={dayjs()}
                     selected={datePickUp}
                     onSelect={setDatePickUp}
-                    // isDateBefore
                     className="rounded-md border shadow w-fit p-5"
-                    // disabledDays={{ before: new Date() }}
-                    //   styles={{
-                    //     button_selected: { color: "red" },
-                    //   }}
-                    // fromDate={new Date()}
-                    // toDate={new Date()}
-                    // disabledDays={{ after: new Date() }}
-                    // disabledDays={day => day > (new Date())}
-
                     disabled={[
                       // {
                       //   from: new Date(2023, 11, 3),
                       //   to: new Date(2023, 11, 10),
                       // },
-                      { before: new Date() },
+                      { before: new Date(dayjs().add(3, "day")) },
                     ]}
                   />
                 </div>
@@ -350,7 +378,7 @@ const MenuCheckOutForm = ({
                   className="w-[55%] border-solid border-muted border-2  px-5 py-2 text-sm font-bold"
                   style={{ borderBottomLeftRadius: "5px" }}
                 >
-                  Order Total
+                  Estimated total price
                 </h1>
                 <h1
                   className="w-[45%] border-solid border-muted border-2  px-5 py-2 text-sm font-bold text-ring"

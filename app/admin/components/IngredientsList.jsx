@@ -49,6 +49,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { MdOutlineDeleteOutline } from "react-icons/md";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 const IngredientsList = ({
   closeIngredientList,

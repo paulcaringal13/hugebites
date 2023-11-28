@@ -171,7 +171,7 @@ const AddStockForm = ({
               </Button>
             </DialogTitle>
             <DialogDescription>
-              Fill out all the fields to enable the 'Add' button.
+              Fill out all the fields to enable the Add button.
             </DialogDescription>
           </DialogHeader>
 

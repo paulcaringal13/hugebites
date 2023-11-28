@@ -88,6 +88,9 @@ a:hover {
 // secondary=#EE7376 hover=#ea5054
 // tertiary=#7C5F35
  */
+div.addons-box::-webkit-scrollbar {
+  display: none;
+}
 
 div[data-radix-popper-content-wrapper] {
   z-index: 999 !important;

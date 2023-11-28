@@ -1,18 +1,11 @@
 import React from "react";
 import HomePageNavbar from "../../components/HomePageNavbar";
 import CustomerSidebar from "../../components/CustomerSidebar";
-import SidebarItem from "../../components/CustomerSidebar";
-import { RiCakeLine } from "react-icons/ri";
-import { LuShoppingBasket } from "react-icons/lu";
-import { AiOutlineUserSwitch } from "react-icons/ai";
-import { LayoutDashboardIcon, UserCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default async function Home(path) {
   const { params } = path;
   const { id } = params;
-  // const router = useRouter();
 
   // GET ALL USER DATA NEEDED
   async function getUserData() {

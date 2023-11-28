@@ -41,10 +41,12 @@ const EditProductForm = ({
   productTable,
   selectedRow,
   categoryTable,
+  cakeTypes,
 }) => {
   const [validationMessage, setValidationMessage] = useState();
-
+  console.log(cakeTypes);
   // STORAGE FOR SELECT VALUE
+  // const [cakeTypesArray, setCakeTypesArray] = useState(cakeTypes);
   const [cakeType, setCakeType] = useState("");
   const [category, setCategory] = useState("");
 
@@ -53,23 +55,6 @@ const EditProductForm = ({
 
   const uploadImage = async (e) => {
     e.preventDefault();
-    if (!file) return;
-
-    try {
-      const data = new FormData();
-      data.set("file", file);
-
-      const res = await fetch("/api/upload/products", {
-        method: "POST",
-        body: data,
-      });
-      const results = await res.json();
-
-      setImage(`/products/${results}`);
-      if (!res.ok) throw new Error(await res.text());
-    } catch (e) {
-      console.error(e);
-    }
   };
 
   // FOR VALIDATION
@@ -84,17 +69,25 @@ const EditProductForm = ({
   });
   const { register, handleSubmit, formState, reset, getValues } = form;
   const { errors, isDirty, isValid } = formState;
-
   const onSubmit = async (data) => {
     const checkVal = productTable.find(
       (i) => i.productName.toLowerCase() == data.productName.toLowerCase()
     );
 
+    const cakeTypeSelected = cakeTypes.find((i) => i.cakeTypeName == cakeType);
+
+    let newCakeTypeId;
+    {
+      !cakeTypeSelected
+        ? (newCakeTypeId = selectedRow.cakeTypeId)
+        : (newCakeTypeId = cakeTypeSelected.cakeTypeId);
+    }
+
     let newCakeType;
     {
       !cakeType
-        ? (newCakeType = selectedRow.cakeType)
-        : (newCakeType = cakeType);
+        ? (newCakeType = selectedRow.cakeTypeName)
+        : (newCakeType = cakeTypeSelected.cakeTypeName);
     }
 
     let newCategoryName;
@@ -115,110 +108,135 @@ const EditProductForm = ({
         : (newCategory = categorySelected.categoryId);
     }
 
-    let newImage;
-
     {
-      !image ? (newImage = selectedRow.image) : (newImage = image);
-    }
-
-    {
-      checkVal
+      checkVal && selectedRow.productName != checkVal.productName
         ? setValidationMessage("Product already exist.")
         : editProduct(
-            data,
-            newImage,
+            data.productName,
             newCakeType,
             newCategory,
-            newCategoryName
+            newCategoryName,
+            newCakeTypeId
           );
     }
   };
 
   const editProduct = async (
-    data,
-    newImage,
+    productName,
     newCakeType,
     newCategory,
-    newCategoryName
+    newCategoryName,
+    newCakeTypeId
   ) => {
-    // SELECT WHICH ROW IS TO BE EDITED AND RETURN THE NEW TABLE WITH THE EDITED ROW
-    const editedProduct = productTable.map((row) => {
-      // SET PRODUCT NAME
-      {
-        row.productId == selectedRow.productId
-          ? (row.productName = data.productName)
-          : null;
-      }
-
-      // SET CTG NAME
-      {
-        row.productId == selectedRow.productId
-          ? (row.categoryName = newCategoryName)
-          : null;
-      }
-
-      // SET CAKE TYPE
-      {
-        row.productId == selectedRow.productId
-          ? (row.cakeType = newCakeType)
-          : null;
-      }
-
-      // SET IMAGE
-      {
-        row.productId == selectedRow.productId ? (row.image = newImage) : null;
-      }
-
-      return { ...row };
-    });
-
-    let isSpecial;
-    // FOR IS SPECIAL COLUMN
-    newCakeType == "Common Cake" ? (isSpecial = 0) : (isSpecial = 1);
-
-    // FOR UPDATING DATABASE
-
-    // FIND THE SELECTED CATEGORY ID (SELECT COMPONENT FROM SHAD CANT DISPLAY THE NAME OF THE SELECTION IF THE VALUE IT PASSES IS THE ID)
-
-    // UPDATE TO DATABASE
     try {
-      const editProduct = {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          productId: selectedRow.productId,
-          productName: data.productName,
-          categoryId: newCategory,
-          isSpecial: isSpecial,
-          image: newImage,
-        }),
-      };
+      const data = new FormData();
+      let result;
 
-      const updateSelectedStockRes = await fetch(
-        `http://localhost:3000/api/admin/menu/product`,
-        editProduct
-      );
+      {
+        !file ? null : data.set("file", file);
 
-      // UPDATE IN THE UI
-      updateProductTable(editedProduct, "edit");
-      // CLOSE MODAL
-      closeEditProduct();
+        const res = await fetch("/api/upload/products", {
+          method: "POST",
+          body: data,
+        });
+        result = await res.json();
+      }
+      console.log(image);
+      {
+        !result ? null : setImage(`/images/products/${result}`);
+      }
+
+      // FOR THE CAKE TYPE SELECTION
+      let isSpecial;
+      {
+        cakeType != "Common Cake" ? (isSpecial = 1) : (isSpecial = 0);
+      }
+
+      let newImage;
+
+      {
+        !image
+          ? (newImage = selectedRow.image)
+          : (newImage = `/images/products/${result}`);
+      }
+
+      // SELECT WHICH ROW IS TO BE EDITED AND RETURN THE NEW TABLE WITH THE EDITED ROW
+      const editedProduct = productTable.map((row) => {
+        // SET PRODUCT NAME
+        {
+          row.productId == selectedRow.productId
+            ? (row.productName = productName)
+            : null;
+        }
+
+        // SET CTG NAME
+        {
+          row.productId == selectedRow.productId
+            ? (row.categoryName = newCategoryName)
+            : null;
+        }
+
+        // SET CAKE TYPE
+        {
+          row.productId == selectedRow.productId
+            ? (row.cakeTypeName = newCakeType)
+            : null;
+        }
+
+        {
+          row.productId == selectedRow.productId
+            ? (row.isSpecial = isSpecial)
+            : null;
+        }
+
+        // SET IMAGE
+        {
+          row.productId == selectedRow.productId
+            ? (row.image = newImage)
+            : null;
+        }
+
+        return { ...row };
+      });
+
+      // FOR UPDATING DATABASE
+
+      // FIND THE SELECTED CATEGORY ID (SELECT COMPONENT FROM SHAD CANT DISPLAY THE NAME OF THE SELECTION IF THE VALUE IT PASSES IS THE ID)
+
+      // UPDATE TO DATABASE
+      try {
+        const editProduct = {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            productId: selectedRow.productId,
+            productName: productName,
+            cakeTypeId: newCakeTypeId,
+            categoryId: newCategory,
+            isSpecial: isSpecial,
+            image: newImage,
+          }),
+        };
+
+        const updateSelectedStockRes = await fetch(
+          `http://localhost:3000/api/admin/menu/product`,
+          editProduct
+        );
+
+        // UPDATE IN THE UI
+        updateProductTable(editedProduct, "edit");
+        // CLOSE MODAL
+        closeEditProduct();
+      } catch (e) {
+        console.log(e);
+      }
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
-  const cakeTypes = [
-    {
-      id: 1,
-      value: "Common Cake",
-    },
-    {
-      id: 2,
-      value: "Special Cake",
-    },
-  ];
+
   return (
     <>
       <Dialog open={editProductOpen} onOpenChange={setEditProductOpen}>
@@ -239,7 +257,7 @@ const EditProductForm = ({
               </Button>
             </DialogTitle>
             <DialogDescription>
-              Press the 'Save' button to save changes.
+              Press the Save button to save changes.
             </DialogDescription>
           </DialogHeader>
 
@@ -303,12 +321,12 @@ const EditProductForm = ({
               </Label>
               <Select asChild value={cakeType} onValueChange={setCakeType}>
                 <SelectTrigger className="w-full mt-1">
-                  <SelectValue placeholder="Select Cake Type" />
+                  <h1>{!cakeType ? "Select Cake Type" : `${cakeType}`}</h1>
                 </SelectTrigger>
                 <SelectContent>
                   {cakeTypes.map((i) => (
-                    <SelectItem key={i.id} value={i.value}>
-                      {i.value}
+                    <SelectItem key={i.cakeTypeId} value={i.cakeTypeName}>
+                      {i.cakeTypeName}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -326,7 +344,15 @@ const EditProductForm = ({
               <Input
                 id="image"
                 type="file"
-                onChange={(e) => setFile(e.target.files?.[0])}
+                onChange={(e) => {
+                  setFile(e.target.files?.[0]);
+
+                  const reader = new FileReader();
+                  reader.readAsDataURL(e.target.files?.[0]);
+                  reader.onload = () => {
+                    setImage(reader.result);
+                  };
+                }}
               />
               <div className="flex flex-col">
                 {!image ? (
@@ -343,7 +369,7 @@ const EditProductForm = ({
                     <img src={image} alt="bg" />
                   </div>
                 )} */}
-                {file ? (
+                {/* {file ? (
                   <Button
                     onClick={uploadImage}
                     className="hover:bg-ring mt-2 w-2/6"
@@ -354,7 +380,7 @@ const EditProductForm = ({
                   <Button disabled className="hover:bg-ring mt-2 w-2/6">
                     Upload
                   </Button>
-                )}
+                )} */}
               </div>
             </div>
             <DialogFooter>

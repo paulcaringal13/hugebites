@@ -1,21 +1,91 @@
+"use client";
+import { useState, useEffect } from "react";
 import MiniAdminSidebar from "../components/MiniAdminSidebar";
 import CustomizationTableTabs from "../components/CustomizationTableTabs";
-import {
-  getSizes,
-  getShape,
-  getColor,
-  getFlavor,
-  getAddOns,
-} from "@/app/admin/utils/getCustomization";
-import { getProducts } from "@/app/admin/utils/getAllProductsDetails";
 
-const AdminCustomization = async () => {
-  const sizesData = await getSizes();
-  const colorsData = await getColor();
-  const flavorsData = await getFlavor();
-  const addOnsData = await getAddOns();
-  const shapesData = await getShape();
-  const productsData = await getProducts();
+const AdminCustomization = () => {
+  const [sizesData, setSizesData] = useState([]);
+  const [colorsData, setColorsData] = useState([]);
+  const [flavorsData, setFlavorsData] = useState([]);
+  const [addOnsData, setAddOnsData] = useState([]);
+  const [shapesData, setShapesData] = useState([]);
+  const [productsData, setProductsData] = useState([]);
+
+  // HINDI FILTERED YUNG DATA (FOR SIZE ADD AND UPDATE PURPOSES)
+  const getProducts = async () => {
+    const res = await fetch(
+      `http://localhost:3000/api/customization/packaging/product`,
+      {
+        cache: "no-store",
+      }
+    );
+
+    const data = await res.json();
+
+    setProductsData(data);
+  };
+
+  const getFlavor = async () => {
+    const res = await fetch(`http://localhost:3000/api/customization/flavor`, {
+      cache: "no-store",
+    });
+
+    const flavors = await res.json();
+
+    setFlavorsData(flavors);
+  };
+
+  const getAddOns = async () => {
+    const res = await fetch(`http://localhost:3000/api/customization/addOns`, {
+      cache: "no-store",
+    });
+
+    const addOns = await res.json();
+
+    setAddOnsData(addOns);
+  };
+
+  const getShape = async () => {
+    const res = await fetch(`http://localhost:3000/api/customization/shape`, {
+      cache: "no-store",
+    });
+
+    const shape = await res.json();
+
+    setShapesData(shape);
+  };
+
+  const getColor = async () => {
+    const res = await fetch(`http://localhost:3000/api/customization/color`, {
+      cache: "no-store",
+    });
+
+    const color = await res.json();
+
+    setColorsData(color);
+  };
+
+  const getSizes = async () => {
+    const res = await fetch(
+      `http://localhost:3000/api/customization/packaging`,
+      {
+        cache: "no-store",
+      }
+    );
+
+    const sizes = await res.json();
+
+    setSizesData(sizes);
+  };
+
+  useEffect(() => {
+    getProducts();
+    getSizes();
+    getShape();
+    getFlavor();
+    getColor();
+    getAddOns();
+  }, []);
 
   return (
     <div className="flex flex-row">

@@ -36,9 +36,14 @@ const CustomerSignIn = ({ customerAccounts, tableCustomerAccounts }) => {
           acc.isDeactivated == 0)
     );
 
-    const customerAcc = tableCustomerAccounts.find(
-      (i) => account.accountId == i.accountId
-    );
+    let customerAcc;
+    !account
+      ? null
+      : (customerAcc = tableCustomerAccounts.find(
+          (i) => account.accountId == i.accountId
+        ));
+
+    console.log(customerAcc);
 
     // IF NOTHING IS FOUND, SET ERROR MESSAGE TO TRUE
     {

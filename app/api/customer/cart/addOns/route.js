@@ -32,13 +32,25 @@ export async function POST(req, res) {
   const connection = await con();
 
   const reqBody = await req.json();
-  const { cartId, addOnsId, addOnsQuantity, addOnsTotal, customerId } = reqBody;
-  try {
-    const query = `INSERT INTO cart_addons (cartId, addOnsId, customerId, addOnsQuantity, addOnsTotal ) VALUES ('${cartId}', '${addOnsId}', '${customerId}', '${addOnsQuantity}', '${addOnsTotal}')`;
-    const results = await connection.execute(query);
-    connection.end();
+  const {
+    cartId,
+    cartSpecialPropertyId,
+    addOnsId,
+    addOnsQuantity,
+    addOnsTotal,
+    customerId,
+  } = reqBody;
 
-    console.log(results);
+  try {
+    let query;
+
+    cartSpecialPropertyId == 0
+      ? (query = `INSERT INTO cart_addons (cartId, addOnsId, customerId, addOnsQuantity, addOnsTotal ) VALUES ('${cartId}', '${addOnsId}',  '${customerId}', '${addOnsQuantity}', '${addOnsTotal}')`)
+      : (query = `INSERT INTO cart_addons (cartId, addOnsId, cartSpecialPropertyId, customerId, addOnsQuantity, addOnsTotal ) VALUES ('${cartId}', '${addOnsId}', '${cartSpecialPropertyId}', '${customerId}', '${addOnsQuantity}', '${addOnsTotal}')`);
+
+    const results = await connection.execute(query);
+    console.log(query);
+    connection.end();
 
     return NextResponse.json(results);
   } catch (error) {

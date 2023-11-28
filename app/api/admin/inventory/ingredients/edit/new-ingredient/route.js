@@ -23,7 +23,5 @@ export async function PUT(request) {
   const results = await connection.execute(query);
   connection.end();
 
-  console.log(query);
-
   return NextResponse.json(results);
 }

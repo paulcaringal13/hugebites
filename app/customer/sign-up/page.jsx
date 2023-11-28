@@ -25,9 +25,6 @@ const SignUpPage = async () => {
       >
         <CustomerSignUp />
       </div>
-      <div style={{ height: "50vh", width: "100vw" }}>
-        <Footer />
-      </div>
     </div>
   );
 };

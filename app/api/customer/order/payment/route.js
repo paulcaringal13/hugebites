@@ -15,15 +15,10 @@ async function con() {
 export async function PUT(request) {
   const connection = await con();
 
-  const { searchParams } = new URL(request.url);
-  const orderId = searchParams.get("orderId");
-
   const reqBody = await request.json();
-  const { proofOfPaymentImage, isPaid } = reqBody;
+  const { proofOfPaymentImage, orderId, orderStatus } = reqBody;
 
-  console.log(proofOfPaymentImage);
-
-  const query = `UPDATE orders SET proofOfPaymentImage ='${proofOfPaymentImage}', isPaid ='${isPaid}' WHERE orderId = ${orderId}`;
+  const query = `UPDATE orders SET proofOfPaymentImage ='${proofOfPaymentImage}', orderStatus ='${orderStatus}' WHERE orderId = ${orderId}`;
   const results = await connection.execute(query);
   connection.end();
 

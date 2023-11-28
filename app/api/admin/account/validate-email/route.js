@@ -21,14 +21,12 @@ export async function GET(request) {
   const query = `SELECT email FROM accounts WHERE email = '${emailAdd}'`;
   const results = await connection.execute(query);
 
-  console.log(results);
   let data = results[0][0];
 
   {
     !data ? (data = "Success") : (data = results[0][0].email);
   }
 
-  console.log(data);
   connection.end();
 
   return NextResponse.json(data);

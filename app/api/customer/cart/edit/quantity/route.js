@@ -38,7 +38,6 @@ export async function DELETE(request) {
 
     const results = await connection.execute(query);
     connection.end();
-    console.log(query);
     return NextResponse.json(results);
   } catch (error) {
     console.log(error);

@@ -67,11 +67,11 @@ const CustomizationTableTabs = ({
   addOnsData,
   productsData,
 }) => {
-  const [sizesTable, setSizesTable] = useState(sizesData);
-  const [shapesTable, setShapesTable] = useState(shapesData);
-  const [colorsTable, setColorsTable] = useState(colorsData);
-  const [flavorsTable, setFlavorsTable] = useState(flavorsData);
-  const [addOnsTable, setAddOnsTable] = useState(addOnsData);
+  const [sizesTable, setSizesTable] = useState([]);
+  const [shapesTable, setShapesTable] = useState([]);
+  const [colorsTable, setColorsTable] = useState([]);
+  const [flavorsTable, setFlavorsTable] = useState([]);
+  const [addOnsTable, setAddOnsTable] = useState([]);
 
   const [selectedRow, setSelectedRow] = useState({});
 
@@ -242,6 +242,26 @@ const CustomizationTableTabs = ({
   const closeRelaunchAddOns = () => {
     setRelaunchAddOnsOpen(false);
   };
+
+  useEffect(() => {
+    setSizesTable(sizesData);
+  }, [sizesData]);
+
+  useEffect(() => {
+    setShapesTable(shapesData);
+  }, [shapesData]);
+
+  useEffect(() => {
+    setColorsTable(colorsData);
+  }, [colorsData]);
+
+  useEffect(() => {
+    setFlavorsTable(flavorsData);
+  }, [flavorsData]);
+
+  useEffect(() => {
+    setAddOnsTable(addOnsData);
+  }, [addOnsData]);
 
   return (
     <div className="w-full mx-10 my-5">

@@ -1,9 +1,14 @@
+"use client";
+import { useState, useEffect } from "react";
 import LandingPageNavbar from "../components/LandingPageNavbar";
 import CustomerSignIn from "../components/CustomerSignIn";
 import Footer from "../components/Footer";
 
-const SignInPage = async () => {
-  async function getAllCustomerAccounts() {
+const SignInPage = () => {
+  const [customerAccounts, setCustomerAccounts] = useState([]);
+  const [tableCustomerAccounts, setTableCustomerAccounts] = useState([]);
+
+  const getAllCustomerAccounts = async () => {
     // GET ALL CUSTOMER ACCOUNTS FROM THE ACCOUNTS TABLE IN THE DATABASE
     const res = await fetch(`http://localhost:3000/api/customer/sign-in`, {
       cache: "no-store",
@@ -11,10 +16,10 @@ const SignInPage = async () => {
 
     const data = await res.json();
 
-    return data;
-  }
+    setCustomerAccounts(data);
+  };
 
-  async function getTableCustomerData() {
+  const getTableCustomerData = async () => {
     // GET ALL CUSTOMER ACCOUNTS FROM THE ACCOUNTS TABLE IN THE DATABASE
     const res = await fetch(
       `http://localhost:3000/api/customer/sign-in/tbl_customer`,
@@ -25,12 +30,15 @@ const SignInPage = async () => {
 
     const data = await res.json();
 
-    return data;
-  }
+    setTableCustomerAccounts(data);
+  };
 
   // STORE THE RESPONSE TO THIS VARIABLE
-  const customerAccounts = await getAllCustomerAccounts();
-  const tableCustomerAccounts = await getTableCustomerData();
+
+  useEffect(() => {
+    getAllCustomerAccounts();
+    getTableCustomerData();
+  }, []);
 
   return (
     <div
@@ -53,9 +61,6 @@ const SignInPage = async () => {
           customerAccounts={customerAccounts}
           tableCustomerAccounts={tableCustomerAccounts}
         />
-      </div>
-      <div style={{ height: "50vh", width: "100vw", position: "relative" }}>
-        <Footer />
       </div>
     </div>
   );

@@ -27,7 +27,6 @@ export async function GET(request) {
     !data ? (data = "Success") : (data = results[0][0].username);
   }
 
-  console.log(data);
   connection.end();
 
   return NextResponse.json(data);

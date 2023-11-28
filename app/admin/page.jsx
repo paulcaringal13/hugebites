@@ -3,9 +3,9 @@ import AdminSignIn from "./components/AdminSignIn";
 
 const page = () => {
   return (
-    <Box>
+    <div>
       <AdminSignIn />
-    </Box>
+    </div>
   );
 };
 

@@ -20,15 +20,6 @@ export async function GET() {
 
   return NextResponse.json({ results: results });
 }
-// export async function GET() {
-//   const connection = await con();
-
-//   const query = `SELECT product_categories.categoryId, product_categories.categoryName, product_categories.isSpecial, product_categories.menuId, menu.menuName FROM product_categories LEFT JOIN menu ON product_categories.menuId = menu.menuId`;
-//   const results = await connection.execute(query);
-//   connection.end();
-
-//   return NextResponse.json({ results: results });
-// }
 
 export async function POST(request) {
   const connection = await con();

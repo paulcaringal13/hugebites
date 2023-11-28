@@ -135,7 +135,7 @@ const EditAccountForm = ({
               </Button>
             </DialogTitle>
             <DialogDescription>
-              Press the 'Save' button to save changes.
+              Press the Save button to save changes.
             </DialogDescription>
           </DialogHeader>
 

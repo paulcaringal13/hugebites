@@ -21,7 +21,6 @@ export async function GET(request) {
   const query = `SELECT contact FROM accounts WHERE contact = '${contact}'`;
   const results = await connection.execute(query);
 
-  console.log(results);
   let data = results[0][0];
 
   {

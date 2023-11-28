@@ -11,6 +11,7 @@ import {
 } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "../../../components/ui/button";
+import { Label } from "../../../components/ui/label";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -43,17 +44,33 @@ import {
   MdOutlineDeleteOutline,
   MdOutlineModeEditOutline,
 } from "react-icons/md";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
-const MenuTable = ({ data, openEditMenu, categoryTable, updateMenuTable }) => {
+const MenuTable = ({ data, openEditMenu, updateMenuTable }) => {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [search, setSearch] = useState("");
   const [columnSelected, setColumnSelected] = useState("");
-
+  console.log(data);
   const columns = [
     {
-      accessorKey: "menuId",
+      header: "Image",
+      id: "image",
+      cell: ({ row }) => {
+        const rowData = row.original;
+
+        return (
+          <Avatar className="mx-auto">
+            <AvatarImage src={rowData.image} alt="product-image" />
+            <AvatarFallback>UNK</AvatarFallback>
+          </Avatar>
+        );
+      },
+    },
+    {
+      accessorKey: "productName",
       header: ({ column }) => {
         return (
           <Button
@@ -61,7 +78,7 @@ const MenuTable = ({ data, openEditMenu, categoryTable, updateMenuTable }) => {
             className="mx-auto my-auto"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Menu Id
+            Product Name
             <span className="text-xs ml-2">Sort</span>
             <ArrowUpDown className="h-3 w-3" />
           </Button>
@@ -69,7 +86,7 @@ const MenuTable = ({ data, openEditMenu, categoryTable, updateMenuTable }) => {
       },
     },
     {
-      accessorKey: "menuName",
+      accessorKey: "categoryName",
       header: ({ column }) => {
         return (
           <Button
@@ -77,7 +94,7 @@ const MenuTable = ({ data, openEditMenu, categoryTable, updateMenuTable }) => {
             className="mx-auto my-auto"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Menu
+            Category Name
             <span className="text-xs ml-2">Sort</span>
             <ArrowUpDown className="h-3 w-3" />
           </Button>
@@ -85,105 +102,169 @@ const MenuTable = ({ data, openEditMenu, categoryTable, updateMenuTable }) => {
       },
     },
     {
-      header: "Edit",
-      id: "edit",
-      cell: ({ row }) => {
-        const rowData = row.original;
-
+      accessorKey: "cakeTypeName",
+      header: ({ column }) => {
         return (
           <Button
             variant="ghost"
-            className="h-8 w-8 p-0 hover:bg-primary hover:text-white"
-            // PASS ROW DATA TO GET SELECTED ROW ID
-            onClick={() => openEditMenu(rowData)}
+            className="mx-auto my-auto"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            <MdOutlineModeEditOutline className="text-lg font-light" />
+            Cake Type
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
           </Button>
         );
       },
     },
     {
-      header: "Delete",
-      id: "remove",
-      cell: ({ row }) => {
-        const rowData = row.original;
-
-        // FIND IF THE MENU TABLE CONTAINS A CATEGORY
-        const isDeletable = categoryTable.find((category) => {
-          let isEmpty;
-          {
-            category.menuId == rowData.menuId
-              ? (isEmpty = true)
-              : (isEmpty = false);
-          }
-
-          return isEmpty;
-        });
-
+      accessorKey: "status",
+      header: ({ column }) => {
         return (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              {!isDeletable ? (
-                <Button className="bg-transparent text-black hover:bg-primary hover:text-white">
-                  <MdOutlineDeleteOutline className="text-xl font-light" />
-                </Button>
-              ) : (
-                <Button
-                  disabled
-                  className="bg-transparent text-black hover:bg-primary hover:text-white"
-                >
-                  <MdOutlineDeleteOutline className="text-xl font-light" />
-                </Button>
-              )}
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>
-                  Are you sure you want to
-                  <span className="text-primary"> delete</span> this menu?
-                </AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete the
-                  selected data and remove it from the server.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  className="hover:bg-ring"
-                  onClick={async () => {
-                    // EDIT TABLE SA UI
-                    const updatedMenu = data.filter(
-                      (row) => row.menuId != rowData.menuId
-                    );
-
-                    // UPDATE IN THE UI
-                    updateMenuTable(updatedMenu, "edit");
-
-                    // DELETE SA DATABASE
-                    const deleteData = {
-                      method: "DELETE",
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
-                      body: JSON.stringify({
-                        menuId: rowData.menuId,
-                      }),
-                    };
-                    const res = await fetch(
-                      `http://localhost:3000/api/admin/menu/menu`,
-                      deleteData
-                    );
-                  }}
-                >
-                  Continue
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <Button
+            className="mx-auto my-auto"
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Status
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
+          </Button>
         );
       },
     },
+    // {
+    //   accessorKey: "menuId",
+    //   header: ({ column }) => {
+    //     return (
+    //       <Button
+    //         variant="ghost"
+    //         className="mx-auto my-auto"
+    //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+    //       >
+    //         Menu Id
+    //         <span className="text-xs ml-2">Sort</span>
+    //         <ArrowUpDown className="h-3 w-3" />
+    //       </Button>
+    //     );
+    //   },
+    // },
+    // {
+    //   accessorKey: "menuName",
+    //   header: ({ column }) => {
+    //     return (
+    //       <Button
+    //         variant="ghost"
+    //         className="mx-auto my-auto"
+    //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+    //       >
+    //         Menu
+    //         <span className="text-xs ml-2">Sort</span>
+    //         <ArrowUpDown className="h-3 w-3" />
+    //       </Button>
+    //     );
+    //   },
+    // },
+    // {
+    //   header: "Edit",
+    //   id: "edit",
+    //   cell: ({ row }) => {
+    //     const rowData = row.original;
+
+    //     return (
+    //       <Button
+    //         variant="ghost"
+    //         className="h-8 w-8 p-0 hover:bg-primary hover:text-white"
+    //         // PASS ROW DATA TO GET SELECTED ROW ID
+    //         onClick={() => openEditMenu(rowData)}
+    //       >
+    //         <MdOutlineModeEditOutline className="text-lg font-light" />
+    //       </Button>
+    //     );
+    //   },
+    // },
+    // {
+    //   header: "Delete",
+    //   id: "remove",
+    //   cell: ({ row }) => {
+    //     const rowData = row.original;
+
+    //     // FIND IF THE MENU TABLE CONTAINS A CATEGORY
+    //     // const isDeletable = categoryTable.find((category) => {
+    //     //   let isEmpty;
+    //     //   {
+    //     //     category.menuId == rowData.menuId
+    //     //       ? (isEmpty = true)
+    //     //       : (isEmpty = false);
+    //     //   }
+
+    //     //   return isEmpty;
+    //     // });
+
+    //     return (
+    //       <AlertDialog>
+    //         <AlertDialogTrigger asChild>
+    //           {/* {!isDeletable ? ( */}
+    //           <Button className="bg-transparent text-black hover:bg-primary hover:text-white">
+    //             <MdOutlineDeleteOutline className="text-xl font-light" />
+    //           </Button>
+    //           {/* ) : (
+    //             <Button
+    //               disabled
+    //               className="bg-transparent text-black hover:bg-primary hover:text-white"
+    //             >
+    //               <MdOutlineDeleteOutline className="text-xl font-light" />
+    //             </Button>
+    //           )} */}
+    //         </AlertDialogTrigger>
+    //         <AlertDialogContent>
+    //           <AlertDialogHeader>
+    //             <AlertDialogTitle>
+    //               Are you sure you want to
+    //               <span className="text-primary"> delete</span> this menu?
+    //             </AlertDialogTitle>
+    //             <AlertDialogDescription>
+    //               This action cannot be undone. This will permanently delete the
+    //               selected data and remove it from the server.
+    //             </AlertDialogDescription>
+    //           </AlertDialogHeader>
+    //           <AlertDialogFooter>
+    //             <AlertDialogCancel>Cancel</AlertDialogCancel>
+    //             <AlertDialogAction
+    //               className="hover:bg-ring"
+    //               onClick={async () => {
+    //                 // EDIT TABLE SA UI
+    //                 const updatedMenu = data.filter(
+    //                   (row) => row.menuId != rowData.menuId
+    //                 );
+
+    //                 // UPDATE IN THE UI
+    //                 updateMenuTable(updatedMenu, "edit");
+
+    //                 // DELETE SA DATABASE
+    //                 // const deleteData = {
+    //                 //   method: "DELETE",
+    //                 //   headers: {
+    //                 //     "Content-Type": "application/json",
+    //                 //   },
+    //                 //   body: JSON.stringify({
+    //                 //     menuId: rowData.menuId,
+    //                 //   }),
+    //                 // };
+    //                 // const res = await fetch(
+    //                 //   `http://localhost:3000/api/admin/menu/menu`,
+    //                 //   deleteData
+    //                 // );
+    //               }}
+    //             >
+    //               Continue
+    //             </AlertDialogAction>
+    //           </AlertDialogFooter>
+    //         </AlertDialogContent>
+    //       </AlertDialog>
+    //     );
+    //   },
+    // },
   ];
 
   const table = useReactTable({

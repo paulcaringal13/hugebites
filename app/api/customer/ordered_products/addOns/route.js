@@ -32,14 +32,23 @@ export async function POST(req, res) {
   const connection = await con();
 
   const reqBody = await req.json();
-  const { orderedProductId, orderId, addOnsId, addOnsQuantity, addOnsTotal } =
-    reqBody;
+  const {
+    orderedProductId,
+    orderId,
+    specialPropertyId,
+    addOnsId,
+    addOnsQuantity,
+    addOnsTotal,
+  } = reqBody;
   try {
-    const query = `INSERT INTO ordered_products_addons (orderedProductId, orderId, addOnsId, addOnsQuantity, addOnsTotal ) VALUES ('${orderedProductId}', '${orderId}', '${addOnsId}', '${addOnsQuantity}', '${addOnsTotal}')`;
+    let query;
+
+    !specialPropertyId
+      ? (query = `INSERT INTO ordered_products_addons (orderedProductId, orderId,  addOnsId, addOnsQuantity, addOnsTotal ) VALUES ('${orderedProductId}', '${orderId}',  '${addOnsId}', '${addOnsQuantity}', '${addOnsTotal}')`)
+      : (query = `INSERT INTO ordered_products_addons (orderedProductId, orderId, specialPropertyId, addOnsId, addOnsQuantity, addOnsTotal ) VALUES ('${orderedProductId}', '${orderId}', '${specialPropertyId}', '${addOnsId}', '${addOnsQuantity}', '${addOnsTotal}')`);
+
     const results = await connection.execute(query);
     connection.end();
-
-    console.log(results);
 
     return NextResponse.json(results);
   } catch (error) {

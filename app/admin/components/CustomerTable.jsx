@@ -45,7 +45,8 @@ import {
   TableRow,
 } from "../../../components/ui/table";
 import { BiChevronDown } from "react-icons/bi";
-import { customerColumns as columns } from "../components/customerTableColumn";
+import { ReloadIcon } from "@radix-ui/react-icons";
+
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;

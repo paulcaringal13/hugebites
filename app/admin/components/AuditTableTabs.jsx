@@ -17,8 +17,6 @@ const AuditTableTabs = () => {
     const auditRes = await fetch(`http://localhost:3000/api/admin/audit`);
     const data = await auditRes.json();
 
-    console.log(data);
-
     const x = data.map((audit) => {
       return {
         employeeId: `${audit.employeeId}`,

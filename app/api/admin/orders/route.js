@@ -11,10 +11,14 @@ async function con() {
   return connection;
 }
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request) {
   const connection = await con();
 
-  const query = `SELECT * FROM orders`;
+  const query = `SELECT orders.*, tbl_customer.totalSpent
+  FROM orders
+  LEFT JOIN tbl_customer ON orders.customerId = tbl_customer.customerId;`;
   const res = await connection.execute(query);
   connection.end();
 

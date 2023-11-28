@@ -16,11 +16,11 @@ export default function AddOnsDelete({
   addOnsList,
   newAddOnsList,
   setNewAddOnsList,
+  tier2AddOnsList,
+  tier3AddOnsList,
+  setTier2AddOnsList,
+  setTier3AddOnsList,
 }) {
-  console.log(addOnsList);
-  //   console.log("selectedAddOn", selectedAddOn);
-  console.log("newAddOnsList", newAddOnsList);
-
   return (
     <Dialog
       open={openConfirmRemoveAddOns}
@@ -66,7 +66,18 @@ export default function AddOnsDelete({
                 (i) => i.cartAddOnsId != selectedAddOn.cartAddOnsId
               );
 
+              const updatedTier2List = tier2AddOnsList.filter(
+                (i) => i.cartAddOnsId != selectedAddOn.cartAddOnsId
+              );
+
+              const updatedTier3List = tier3AddOnsList.filter(
+                (i) => i.cartAddOnsId != selectedAddOn.cartAddOnsId
+              );
+
               setAddOnsList(updatedAddOnsList);
+              setTier2AddOnsList(updatedTier2List);
+              setTier3AddOnsList(updatedTier3List);
+
               setNewAddOnsList(updatedNewAddOnsList);
 
               setOpenConfirmRemoveAddOns(false);

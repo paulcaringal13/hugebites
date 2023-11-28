@@ -1,53 +1,34 @@
 "use client";
-import {
-  Box,
-  Drawer,
-  Link,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Typography,
-} from "@mui/material";
 import { useRouter } from "next/navigation";
-import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
-import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
-import ShoppingBasketRoundedIcon from "@mui/icons-material/ShoppingBasketRounded";
-import ControlPointDuplicateRoundedIcon from "@mui/icons-material/ControlPointDuplicateRounded";
-import HourglassBottomIcon from "@mui/icons-material/HourglassBottom";
-import InventoryRoundedIcon from "@mui/icons-material/InventoryRounded";
-import SummarizeRoundedIcon from "@mui/icons-material/SummarizeRounded";
-import ContactMailRoundedIcon from "@mui/icons-material/ContactMailRounded";
-import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
-import { useState } from "react";
-
 import { FiUsers } from "react-icons/fi";
 import { LuShoppingBasket } from "react-icons/lu";
 import { RiCakeLine } from "react-icons/ri";
 import { BiBookAdd } from "react-icons/bi";
 import { AiOutlineAudit } from "react-icons/ai";
-
 import { MdOutlineInventory } from "react-icons/md";
-
 import { GrNotes } from "react-icons/gr";
 import { AiOutlineUserSwitch } from "react-icons/ai";
-
 import { ScrollArea } from "../../../components/ui/scroll-area";
 import { Separator } from "../../../components/ui/separator";
 import { Button } from "../../../components/ui/button";
-import { Toggle } from "../../../components/ui/toggle";
+import { useState } from "react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "../../../components/ui/tooltip";
-
+import { ChevronDown, ChevronUp } from "lucide-react";
 const MiniAdminSidebar = ({ props }) => {
   const router = useRouter();
 
   // const [openDraw, setOpenDraw] = useState(drawerState);
+  const [isOpen, setIsOpen] = useState(false);
 
   const routes = [
     {
@@ -101,25 +82,119 @@ const MiniAdminSidebar = ({ props }) => {
     },
   ];
 
+  const reportRoutes = [
+    {
+      id: 1,
+      name: "All Products",
+      reportType: "all",
+    },
+    {
+      id: 2,
+      name: "Common Cake",
+      reportType: "common",
+    },
+    {
+      id: 3,
+      name: "Special Cake",
+      reportType: "special",
+    },
+    {
+      id: 4,
+      name: "Add Ons",
+      reportType: "addons",
+    },
+    {
+      id: 5,
+      name: "Shape",
+      reportType: "shape ",
+    },
+    {
+      id: 6,
+      name: "Flavor",
+      reportType: "flavor",
+    },
+    {
+      id: 7,
+      name: "Color",
+      reportType: "color",
+    },
+
+    {
+      id: 8,
+      name: "Packaging",
+      reportType: "packaging",
+    },
+  ];
+
   return (
-    <ScrollArea className="h-screen w-16 bg-white" style={{ zIndex: "1" }}>
-      <div className="mx-auto text-center">
+    <ScrollArea
+      className="h-full w-fit bg-white border-e-[1px] border-zinc-200"
+      style={{ zIndex: "1" }}
+    >
+      <div className="mr-auto">
         {routes.map((route) => (
           <div
             key={route.id}
-            className="hover:bg-accent hover:shadow-lg hover:border-e-2"
-            style={{ borderColor: "#EE7376" }}
+            className={`border-b-[1px] border-zinc-200 ${
+              !isOpen ? "hover:bg-accent" : "hover:bg-white"
+            }`}
           >
             <TooltipProvider delayDuration>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button
-                    className="bg-transparent p-0 m-0 "
-                    onClick={() => router.push(route.route)}
-                    style={{ color: "black" }}
-                  >
-                    {route.icon}
-                  </Button>
+                  {route.name == "Reports" ? (
+                    <Collapsible
+                      open={isOpen}
+                      onOpenChange={setIsOpen}
+                      className="bg-transparent m-0 "
+                    >
+                      <div className="flex items-center justify-between space-x-4 border-zinc-200 border-b-[1px] w-full">
+                        <CollapsibleTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            className="py-8 px-6 my-0 ml-0 w-full mr-auto flex"
+                          >
+                            <h1 className="w-fit h-fit flex mr-auto">
+                              <span className="mr-4">{route.icon}</span>
+                              {route.name}
+                            </h1>
+                            {!isOpen ? (
+                              <ChevronDown className="h-4 w-4" />
+                            ) : (
+                              <ChevronUp className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </CollapsibleTrigger>
+                      </div>
+                      <CollapsibleContent className="m-0 p-0 shadow-inner">
+                        {reportRoutes.map((i) => {
+                          return (
+                            <Button
+                              variant="ghost"
+                              className="mx-auto flex text-xs text-muted-foreground font-extralight rounded-none border-zinc-200 border-b-[1px] w-full py-6 px-2"
+                              key={i.id}
+                              onClick={() =>
+                                router.replace(`/admin/reports/${i.reportType}`)
+                              }
+                            >
+                              {i.name}
+                            </Button>
+                          );
+                        })}
+                      </CollapsibleContent>
+                    </Collapsible>
+                  ) : (
+                    <Button
+                      className="bg-transparent py-8 px-6 m-0 w-full"
+                      onClick={() => router.replace(`/admin/${route.route}`)}
+                      style={{ color: "black" }}
+                    >
+                      <h1 className="w-fit h-fit flex mr-auto">
+                        <span className="mr-4">{route.icon}</span>
+                        {route.name}
+                      </h1>
+                    </Button>
+                  )}
                 </TooltipTrigger>
                 <TooltipContent
                   side="right"
@@ -130,7 +205,6 @@ const MiniAdminSidebar = ({ props }) => {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <Separator />
           </div>
         ))}
       </div>

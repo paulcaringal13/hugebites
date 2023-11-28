@@ -4,8 +4,24 @@ import HomePageNavbar from "./HomePageNavbar";
 import MenuSelectedProduct from "../components/MenuSelectedProduct";
 import MenuCart from "./MenuCart";
 import MenuEditCartProduct from "./MenuEditCartProduct";
+import MenuCheckOutForm from "./MenuCheckOutForm";
+import {
+  Toast,
+  ToastClose,
+  ToastDescription,
+  ToastProvider,
+  ToastTitle,
+  ToastViewport,
+} from "@/components/ui/toast";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import {
+  IoInformationCircleOutline,
+  IoCheckmarkCircleOutline,
+  IoWarningOutline,
+} from "react-icons/io5";
 
 const MenuOrderProductModule = ({
   user,
@@ -18,14 +34,21 @@ const MenuOrderProductModule = ({
   shapes,
   addOnsArray,
 }) => {
+  const params = useParams();
+  const { userId, prodId } = params;
+  const router = useRouter();
+
   const [cartList, setCartList] = useState([]);
   const [cartProduct, setCartProduct] = useState({});
   const [specificProductSizes, setSpecificProductSizes] = useState([]);
+  // const [selectedProduct, setSelectedProduct] = useState([]);
+  const [specificProductOffers, setSpecificProductOffers] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [productPrices, setProductPrices] = useState([]);
   const [addOnsList, setAddOnsList] = useState([]);
-  const [openMenuCheckOut, setOpenMenuCheckOut] = useState(false);
+  const [specialPropertyList, setSpecialPropertyList] = useState([]);
 
+  const [openMenuCheckOut, setOpenMenuCheckOut] = useState(false);
   const [openAddToCartConfirmation, setOpenAddToCartConfirmation] =
     useState(false);
   const [openEditCartProduct, setOpenEditCartProduct] = useState(false);
@@ -33,6 +56,24 @@ const MenuOrderProductModule = ({
 
   const [responseSuccess, setResponseSuccess] = useState(false);
   const [responseError, setResponseError] = useState(false);
+
+  // alert state
+  const [alertMessageOpen, setAlertMessageOpen] = useState(false);
+  const [alertTitle, setAlertTitle] = useState(false);
+  const [alertType, setAlertType] = useState(false);
+  const [alertMessage, setAlertMessage] = useState(false);
+
+  const openRequestAlert = () => {
+    setAlertMessageOpen(true);
+    setTimeout(() => {
+      setAlertMessageOpen(false);
+      router.replace(`/customer/menu/${user.customerId}`);
+    }, 3000);
+  };
+
+  const closeRequestAlert = () => {
+    setAlertMessageOpen(false);
+  };
 
   const handleCartRemoveProduct = (prod) => {
     setCartProduct(prod);
@@ -71,6 +112,12 @@ const MenuOrderProductModule = ({
 
     const removedItem = updatedCart.find((i) => i.quantity == 0);
 
+    removedItem && removeProductToDatabase(removedItem);
+
+    setCartList(filteredCart);
+  };
+
+  const removeProductToDatabase = async (removedItem) => {
     const deleteCart = {
       method: "DELETE",
       headers: {
@@ -88,8 +135,6 @@ const MenuOrderProductModule = ({
     } catch (error) {
       console.log(error);
     }
-
-    setCartList(filteredCart);
   };
 
   // update quantity in the array list
@@ -184,11 +229,11 @@ const MenuOrderProductModule = ({
   const getCart = async () => {
     const res = await fetch(
       `http://localhost:3000/api/customer/cart?` +
-        new URLSearchParams({ customerId: user.customerId }),
+        new URLSearchParams({ customerId: userId }),
       {
         cache: "no-store",
-      },
-      { next: { revalidate: 10 } }
+      }
+      // { next: { revalidate: 10 } }
     );
     const data = await res.json();
 
@@ -197,12 +242,22 @@ const MenuOrderProductModule = ({
 
       const addOns = addOnsList.filter((addOn) => addOn.cartId == cartId);
 
+      const specialProp = specialPropertyList.filter(
+        (prop) => prop.cartId == cartId
+      );
+
       let sum = subTotal;
       addOns.forEach((j) => {
         sum += j.addOnsTotal * quantity;
       });
 
-      return { ...i, addOns, subTotal: subTotal, totalPrice: sum };
+      return {
+        ...i,
+        addOns,
+        specialProperty: specialProp,
+        subTotal: subTotal,
+        totalPrice: sum,
+      };
     });
 
     setCartList(cartWithAddOnsList);
@@ -211,7 +266,7 @@ const MenuOrderProductModule = ({
   const getAddOns = async () => {
     const addOnsRes = await fetch(
       `http://localhost:3000/api/customer/cart/addOns?` +
-        new URLSearchParams({ customerId: user.customerId }),
+        new URLSearchParams({ customerId: userId }),
       {
         cache: "no-store",
       }
@@ -222,10 +277,24 @@ const MenuOrderProductModule = ({
     setAddOnsList(addOns[0]);
   };
 
+  const getSpecialProperty = async () => {
+    const specialPropRes = await fetch(
+      `http://localhost:3000/api/customer/cart/specialProperty?` +
+        new URLSearchParams({ customerId: userId }),
+      {
+        cache: "no-store",
+      }
+    );
+
+    const specialProperties = await specialPropRes.json();
+
+    setSpecialPropertyList(specialProperties[0]);
+  };
+
   const getAddOnsPrices = async (cart) => {
     const addOnsRes = await fetch(
       `http://localhost:3000/api/customer/cart/edit/addOnsPrices?` +
-        new URLSearchParams({ customerId: user.customerId }),
+        new URLSearchParams({ customerId: userId }),
       {
         cache: "no-store",
       }
@@ -270,90 +339,303 @@ const MenuOrderProductModule = ({
     setProductPrices(pricesWithAddOns);
   };
 
+  // for sizes lang
+  const getSpecificProductOffers = async () => {
+    const res = await fetch(
+      `http://localhost:3000/api/default-products/specificProduct/?` +
+        new URLSearchParams({
+          productId: prodId,
+        }),
+      { cache: "no-store" }
+    );
+    const data = await res.json();
+    setSpecificProductOffers(data);
+  };
+
+  // const getSpecificProduct = async () => {
+  //   const res = await fetch(
+  //     `http://localhost:3000/api/customer/menu/product/specificProduct?` +
+  //       new URLSearchParams({ productId: prodId }),
+  //     {
+  //       cache: "no-store",
+  //     }
+  //   );
+
+  //   const product = await res.json();
+
+  //   setSelectedProduct(product);
+  // };
+
+  const uploadImage = async (file) => {
+    const data = new FormData();
+    data.set("file", file);
+
+    const res = await fetch("/api/upload/image-reference", {
+      method: "POST",
+      body: data,
+    });
+    const results = await res.json();
+
+    // setImage(`/response-images/${results}`);
+    if (!res.ok) throw new Error(await res.text());
+
+    return results;
+  };
+
   const addToCart = async (
     cartProduct,
     productName,
     quantity,
     subTotal,
-    image,
+    selectedProductImage,
     totalPrice,
-    addOnsList
+    addOnsList,
+    file,
+    specialProperty,
+    isCakeCustomized
   ) => {
-    console.log(subTotal);
-    console.log(quantity);
-    console.log(cartProduct);
-
-    const cartPost = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        customerId: cartProduct.customerId,
-        productId: cartProduct.productId,
-        packagingId: cartProduct.packagingId,
-        flavorId: cartProduct.flavorId,
-        shapeId: cartProduct.shapeId,
-        freshFlowerId: cartProduct.freshFlowerId,
-        drageesId: cartProduct.drageesId,
-        colorId: cartProduct.colorId,
-        quantity: cartProduct.quantity,
-        subTotal: cartProduct.subTotal,
-        message: cartProduct.message,
-      }),
-    };
     try {
-      const res = await fetch(
-        `http://localhost:3000/api/customer/cart`,
-        cartPost
-      );
+      let results = null;
 
-      const results = await res.json();
+      !file ? null : (results = await uploadImage(file));
 
-      const { insertId } = results[0];
+      let customizedRef;
+      let imageRef;
 
-      addOnsList.forEach(async (i) => {
-        const cartAddOnsPost = {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            cartId: insertId,
-            customerId: cartProduct.customerId,
-            addOnsId: i.addOnsId,
-            addOnsQuantity: i.addOnsQuantity,
-            addOnsTotal: i.addOnsTotal,
-          }),
-        };
-        try {
-          const response = await fetch(
-            `http://localhost:3000/api/customer/cart/addOns`,
-            cartAddOnsPost
-          );
-        } catch (e) {
-          console.log(e);
-        }
-      });
+      !results ? null : (imageRef = `/image-reference/${results}`);
+      isCakeCustomized == true ? (customizedRef = 1) : (customizedRef = 0);
 
-      setCartList([
-        ...cartList,
-        {
-          customerId: cartProduct.customerId,
-          cartId: insertId,
-          productName: productName,
-          quantity: Number(quantity),
-          subTotal: Number(subTotal),
-          totalPrice: Number(totalPrice),
-          image: image,
-          addOnsList: { ...addOnsList },
+      const cartPost = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      ]);
+        body: JSON.stringify({
+          customerId: cartProduct.customerId,
+          productId: cartProduct.productId,
+          packagingId: cartProduct.packagingId,
+          flavorId: cartProduct.flavorId,
+          shapeId: cartProduct.shapeId,
+          colorId: cartProduct.colorId,
+          quantity: cartProduct.quantity,
+          subTotal: cartProduct.subTotal,
+          message: cartProduct.message,
+          imageReference: imageRef,
+          isCakeCustomized: customizedRef,
+        }),
+      };
+      try {
+        const res = await fetch(
+          `http://localhost:3000/api/customer/cart`,
+          cartPost
+        );
 
-      setOpenAddToCartConfirmation(false);
-      setResponseSuccess(true);
-    } catch (error) {
-      setResponseError(true);
+        const results = await res.json();
+
+        const { insertId } = results[0];
+        const newCartId = insertId;
+
+        cartProduct.cakeTypeId != 5 &&
+        cartProduct.cakeTypeId != 6 &&
+        cartProduct.cakeTypeId != 1 &&
+        cartProduct.cakeTypeId != 7
+          ? specialProperty.forEach(async (i) => {
+              const specialPropertyPost = {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  cartId: newCartId,
+                  customerId: cartProduct.customerId,
+                  cartSpecialPropertyValue: i.specialPropertyValue,
+                  cartSpecialPropertyName: i.specialPropertyName,
+                }),
+              };
+              try {
+                const response = await fetch(
+                  `http://localhost:3000/api/customer/cart/specialProperty`,
+                  specialPropertyPost
+                );
+              } catch (e) {
+                console.log(e);
+              }
+            })
+          : null;
+
+        // pag 2 tiers
+        cartProduct.cakeTypeId == 5 && specialProperty.length != 0
+          ? specialProperty.forEach(async (i) => {
+              const specialPropertyPost = {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  cartId: newCartId,
+                  customerId: cartProduct.customerId,
+                  cartSpecialPropertyValue: specialProperty[0].length,
+                  cartSpecialPropertyName: "Tier 2 Add Ons",
+                }),
+              };
+              try {
+                const response = await fetch(
+                  `http://localhost:3000/api/customer/cart/specialProperty`,
+                  specialPropertyPost
+                );
+
+                const results = await response.json();
+
+                const { insertId } = results[0];
+
+                specialProperty[0].forEach(async (i) => {
+                  const tier2AddOnsPost = {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      cartId: newCartId,
+                      cartSpecialPropertyId: insertId,
+                      customerId: cartProduct.customerId,
+                      addOnsId: i.addOnsId,
+                      addOnsQuantity: i.addOnsQuantity,
+                      addOnsTotal: i.addOnsTotal,
+                    }),
+                  };
+                  try {
+                    const response = await fetch(
+                      `http://localhost:3000/api/customer/cart/addOns`,
+                      tier2AddOnsPost
+                    );
+                  } catch (e) {
+                    console.log(e);
+                  }
+                });
+              } catch (e) {
+                console.log(e);
+              }
+            })
+          : null;
+
+        // pag 3 tiers
+        cartProduct.cakeTypeId == 6 && specialProperty.length != 0
+          ? specialProperty.forEach(async (i, index) => {
+              let specialPropertyName;
+              console.log("special prop======>", i);
+
+              i.length == 2
+                ? (specialPropertyName = i[1].specialPropertyName)
+                : (specialPropertyName = i[0].specialPropertyName);
+
+              const specialPropertyPost = {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  cartId: newCartId,
+                  customerId: cartProduct.customerId,
+                  cartSpecialPropertyValue: specialProperty[index].length,
+                  cartSpecialPropertyName: specialPropertyName,
+                }),
+              };
+              try {
+                const response = await fetch(
+                  `http://localhost:3000/api/customer/cart/specialProperty`,
+                  specialPropertyPost
+                );
+
+                const results = await response.json();
+
+                const { insertId } = results[0];
+
+                i.length == 2
+                  ? null
+                  : i.forEach(async (j) => {
+                      const tieredAddOns = {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          cartId: newCartId,
+                          cartSpecialPropertyId: insertId,
+                          customerId: cartProduct.customerId,
+                          addOnsId: j.addOnsId,
+                          addOnsQuantity: j.addOnsQuantity,
+                          addOnsTotal: j.addOnsTotal,
+                        }),
+                      };
+                      try {
+                        const response = await fetch(
+                          `http://localhost:3000/api/customer/cart/addOns`,
+                          tieredAddOns
+                        );
+                      } catch (e) {
+                        console.log(e);
+                      }
+                    });
+              } catch (e) {
+                console.log(e);
+              }
+            })
+          : null;
+
+        addOnsList.forEach(async (i) => {
+          const cartAddOnsPost = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              cartId: newCartId,
+              cartSpecialPropertyId: 0,
+              customerId: cartProduct.customerId,
+              addOnsId: i.addOnsId,
+              addOnsQuantity: i.addOnsQuantity,
+              addOnsTotal: i.addOnsTotal,
+            }),
+          };
+          try {
+            const response = await fetch(
+              `http://localhost:3000/api/customer/cart/addOns`,
+              cartAddOnsPost
+            );
+          } catch (e) {
+            console.log(e);
+          }
+        });
+
+        setCartList([
+          ...cartList,
+          {
+            customerId: cartProduct.customerId,
+            cartId: insertId,
+            productName: productName,
+            quantity: Number(quantity),
+            subTotal: Number(subTotal),
+            totalPrice: Number(totalPrice),
+            image: selectedProductImage,
+            imageReference: imageRef,
+            cakeTypeId: selectedProduct.cakeTypeId,
+            addOnsList: { ...addOnsList },
+            specialProperty: { ...specialProperty },
+          },
+        ]);
+
+        setOpenAddToCartConfirmation(false);
+        setAlertMessage(
+          "Order added to cart successfully. Redirecting to menu page, please wait."
+        );
+        setAlertTitle("Success!");
+        setAlertType("success");
+        openRequestAlert();
+      } catch (error) {
+        setResponseError(true);
+      }
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -361,9 +643,7 @@ const MenuOrderProductModule = ({
   const updateTotal = () => {
     let totalPrice = 0;
     cartList.forEach((i) => {
-      user.customerId == i.customerId
-        ? (totalPrice = totalPrice + i.totalPrice)
-        : null;
+      userId == i.customerId ? (totalPrice = totalPrice + i.totalPrice) : null;
     });
     setTotalPrice(totalPrice);
   };
@@ -374,17 +654,18 @@ const MenuOrderProductModule = ({
 
   useEffect(() => {
     getCart();
-  }, [addOnsList]);
+  }, [addOnsList, specialPropertyList]);
 
   useEffect(() => {
     getAddOns();
+    getSpecificProductOffers();
+    getSpecialProperty();
+    // getSpecificProduct();
   }, []);
-
-  // CHECK OUT CHANGES
 
   return (
     <div>
-      <HomePageNavbar />
+      <HomePageNavbar userId={user.customerId} />
       <div className="w-full h-full flex flex-row px-10 py-4 gap-6">
         <div className="w-[70%]">
           <MenuSelectedProduct
@@ -400,6 +681,7 @@ const MenuOrderProductModule = ({
             setOpenAddToCartConfirmation={setOpenAddToCartConfirmation}
             responseSuccess={responseSuccess}
             responseError={responseError}
+            specificProductOffers={specificProductOffers}
           />
         </div>
         <div className="w-[30%] mt-4">
@@ -413,7 +695,7 @@ const MenuOrderProductModule = ({
             handleCartEditProduct={handleCartEditProduct}
             handleCartRemoveProduct={handleCartRemoveProduct}
             findSpecificProductSizes={findSpecificProductSizes}
-            // getCartProductPrices={getCartProductPrices}
+            getCartProductPrices={getCartProductPrices}
             getAddOnsPrices={getAddOnsPrices}
             totalPrice={totalPrice}
             setOpenMenuCheckOut={setOpenMenuCheckOut}
@@ -505,6 +787,36 @@ const MenuOrderProductModule = ({
           setOpenMenuCheckOut={setOpenMenuCheckOut}
         />
       )}
+
+      {/* ALERT */}
+      {alertMessageOpen ? (
+        <ToastProvider swipeDirection="up" duration={3000}>
+          <Toast className="w-fit h-fit mr-5" variant={alertType}>
+            <div className="flex flex-row gap-2">
+              <div className=" mt-2">
+                {alertType == "warning" && (
+                  <IoWarningOutline className="w-[45px] h-[30px]" />
+                )}
+                {alertType == "info" && (
+                  <IoInformationCircleOutline className="w-[45px] h-[30px]" />
+                )}
+                {alertType == "success" && (
+                  <IoCheckmarkCircleOutline className="w-[45px] h-[30px]" />
+                )}
+              </div>
+              <div className="flex flex-col gap-1">
+                <ToastTitle className="text-lg">{alertTitle}</ToastTitle>
+                <ToastDescription className="text-sm font-light">
+                  {alertMessage}
+                </ToastDescription>
+              </div>
+            </div>
+
+            <ToastClose />
+          </Toast>
+          <ToastViewport />
+        </ToastProvider>
+      ) : null}
     </div>
   );
 };

@@ -115,7 +115,7 @@ const AddMenuForm = ({
               </Button>
             </DialogTitle>
             <DialogDescription>
-              Put the Menu name then press the 'Add' button.
+              Put the Menu name then press the Add button.
             </DialogDescription>
           </DialogHeader>
 

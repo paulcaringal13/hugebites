@@ -18,6 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import MenuCheckOutForm from "./MenuCheckOutForm";
+import { useParams } from "next/navigation";
 
 const MenuModule = ({
   user,
@@ -31,8 +32,15 @@ const MenuModule = ({
   shapes,
   categoryArray,
 }) => {
+  console.log(user);
+  const params = useParams();
+  const { userId } = params;
+
+  const [loggedInUser, setLoggedInUser] = useState();
   const [cartList, setCartList] = useState([]);
   const [addOnsList, setAddOnsList] = useState([]);
+  const [specialPropertyList, setSpecialPropertyList] = useState([]);
+
   const [cartProduct, setCartProduct] = useState({});
   const [productPrices, setProductPrices] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -80,6 +88,12 @@ const MenuModule = ({
 
     const removedItem = updatedCart.find((i) => i.quantity == 0);
 
+    removedItem && removeProductToDatabase(removedItem);
+
+    setCartList(filteredCart);
+  };
+
+  const removeProductToDatabase = async (removedItem) => {
     const deleteCart = {
       method: "DELETE",
       headers: {
@@ -97,8 +111,6 @@ const MenuModule = ({
     } catch (error) {
       console.log(error);
     }
-
-    setCartList(filteredCart);
   };
 
   // update quantity in the array list
@@ -193,11 +205,11 @@ const MenuModule = ({
   const getCart = async () => {
     const res = await fetch(
       `http://localhost:3000/api/customer/cart?` +
-        new URLSearchParams({ customerId: user.customerId }),
+        new URLSearchParams({ customerId: userId }),
       {
         cache: "no-store",
-      },
-      { next: { revalidate: 10 } }
+      }
+      // { next: { revalidate: 10 } }
     );
     const data = await res.json();
 
@@ -206,11 +218,20 @@ const MenuModule = ({
 
       const addOns = addOnsList.filter((addOn) => addOn.cartId == cartId);
 
+      const specialProp = specialPropertyList.filter(
+        (prop) => prop.cartId == cartId
+      );
       let sum = subTotal;
       addOns.forEach((j) => {
         sum += j.addOnsTotal * quantity;
       });
-      return { ...i, addOns, subTotal: subTotal, totalPrice: sum };
+      return {
+        ...i,
+        addOns,
+        specialProperty: specialProp,
+        subTotal: subTotal,
+        totalPrice: sum,
+      };
     });
 
     setCartList(cartWithAddOnsList);
@@ -219,7 +240,7 @@ const MenuModule = ({
   const getAddOns = async () => {
     const addOnsRes = await fetch(
       `http://localhost:3000/api/customer/cart/addOns?` +
-        new URLSearchParams({ customerId: user.customerId }),
+        new URLSearchParams({ customerId: userId }),
       {
         cache: "no-store",
       }
@@ -230,10 +251,24 @@ const MenuModule = ({
     setAddOnsList(addOns[0]);
   };
 
+  const getSpecialProperty = async () => {
+    const specialPropRes = await fetch(
+      `http://localhost:3000/api/customer/cart/specialProperty?` +
+        new URLSearchParams({ customerId: userId }),
+      {
+        cache: "no-store",
+      }
+    );
+
+    const specialProperties = await specialPropRes.json();
+
+    setSpecialPropertyList(specialProperties[0]);
+  };
+
   const getAddOnsPrices = async (cart) => {
     const addOnsRes = await fetch(
       `http://localhost:3000/api/customer/cart/edit/addOnsPrices?` +
-        new URLSearchParams({ customerId: user.customerId }),
+        new URLSearchParams({ customerId: userId }),
       {
         cache: "no-store",
       }
@@ -282,9 +317,7 @@ const MenuModule = ({
   const updateTotal = () => {
     let totalPrice = 0;
     cartList.forEach((i) => {
-      user.customerId == i.customerId
-        ? (totalPrice = totalPrice + i.totalPrice)
-        : null;
+      userId == i.customerId ? (totalPrice = totalPrice + i.totalPrice) : null;
     });
 
     setTotalPrice(totalPrice);
@@ -296,128 +329,129 @@ const MenuModule = ({
 
   useEffect(() => {
     getCart();
-  }, [addOnsList]);
+  }, [addOnsList, specialPropertyList]);
 
   useEffect(() => {
     getAddOns();
+    getSpecialProperty();
+  }, [loggedInUser]);
+
+  useEffect(() => {
+    setLoggedInUser(user);
   }, []);
 
-  // CHECK OUT CHANGES
-
   return (
-    <>
-      <div>
-        <HomePageNavbar />
-        <div className="w-full h-full flex flex-row px-10 py-4 gap-6">
-          <div className="w-[70%]">
-            <MenuProductMenu
-              prodArray={prodArray}
-              categoryArray={categoryArray}
-            />
-          </div>
-          <div className="w-[30%] mt-4">
-            <MenuCart
-              user={user}
-              cart={cartList}
-              minusQuantityToList={minusQuantityToList}
-              addQuantityToList={addQuantityToList}
-              deductQuantity={deductQuantity}
-              addQuantity={addQuantity}
-              handleCartEditProduct={handleCartEditProduct}
-              handleCartRemoveProduct={handleCartRemoveProduct}
-              findSpecificProductSizes={findSpecificProductSizes}
-              // getCartProductPrices={getCartProductPrices}
-              getAddOnsPrices={getAddOnsPrices}
-              totalPrice={totalPrice}
-              setOpenMenuCheckOut={setOpenMenuCheckOut}
-            />
-          </div>
-        </div>
-        <Dialog
-          open={openRemoveCartProduct}
-          onOpenChange={setOpenRemoveCartProduct}
-          onClose
-        >
-          <DialogContent className="flex flex-col max-w-full max-h-full md:w-[35%] md:h-fit">
-            <div className="flex-1 h-fit m-0">
-              <DialogTitle className="h-fit">
-                Are you sure you want to remove
-                <span className="text-primary font-extrabold mx-2">
-                  {cartProduct.productName}
-                </span>
-                cake?
-              </DialogTitle>
-            </div>
-            <div className="flex flex-row justify-end gap-3">
-              <Button
-                variant="outline"
-                className="hover:bg-primary hover:text-white active:bg-primary-foreground duration-300 w-fit"
-                onClick={() => {
-                  setOpenRemoveCartProduct(false);
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                className="hover:bg-ring active:bg-primary-foreground duration-300 w-fit"
-                onClick={async () => {
-                  const deleteData = {
-                    method: "DELETE",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                      cartId: cartProduct.cartId,
-                    }),
-                  };
-                  const res = await fetch(
-                    `http://localhost:3000/api/customer/cart/remove`,
-                    deleteData
-                  );
-
-                  const newCartList = cartList.filter(
-                    (i) => i.cartId != cartProduct.cartId
-                  );
-
-                  setCartList(newCartList);
-                  setOpenRemoveCartProduct(false);
-                }}
-              >
-                Remove
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-        {openEditCartProduct ? (
-          <MenuEditCartProduct
-            cartProduct={cartProduct}
-            setCartProduct={setCartProduct}
-            openEditCartProduct={openEditCartProduct}
-            setOpenEditCartProduct={setOpenEditCartProduct}
-            specificProductSizes={specificProductSizes}
-            flavors={flavors}
-            colors={colors}
-            sprinkles={sprinkles}
-            flowers={flowers}
-            shapes={shapes}
-            productPrices={productPrices}
-            setCartList={setCartList}
-            listOfAddOns={addOnsArray}
-            cartList={cartList}
+    <div className="w-full">
+      <HomePageNavbar userId={user.customerId} />
+      <div className="w-full h-full flex flex-row px-10 py-4 gap-6">
+        <div className="w-[70%]">
+          <MenuProductMenu
+            prodArray={prodArray}
+            categoryArray={categoryArray}
           />
-        ) : null}
-
-        {/* binabago kay checkout */}
-        {!openMenuCheckOut ? null : (
-          <MenuCheckOutForm
+        </div>
+        <div className="w-[30%] mt-4">
+          <MenuCart
+            user={user}
             cart={cartList}
-            orderPrice={totalPrice}
-            openMenuCheckOut={openMenuCheckOut}
+            minusQuantityToList={minusQuantityToList}
+            addQuantityToList={addQuantityToList}
+            deductQuantity={deductQuantity}
+            addQuantity={addQuantity}
+            handleCartEditProduct={handleCartEditProduct}
+            handleCartRemoveProduct={handleCartRemoveProduct}
+            findSpecificProductSizes={findSpecificProductSizes}
+            getCartProductPrices={getCartProductPrices}
+            getAddOnsPrices={getAddOnsPrices}
+            totalPrice={totalPrice}
             setOpenMenuCheckOut={setOpenMenuCheckOut}
           />
-        )}
+        </div>
       </div>
-    </>
+      <Dialog
+        open={openRemoveCartProduct}
+        onOpenChange={setOpenRemoveCartProduct}
+        onClose
+      >
+        <DialogContent className="flex flex-col max-w-full max-h-full md:w-[35%] md:h-fit">
+          <div className="flex-1 h-fit m-0">
+            <DialogTitle className="h-fit">
+              Are you sure you want to remove
+              <span className="text-primary font-extrabold mx-2">
+                {cartProduct.productName}
+              </span>
+              cake?
+            </DialogTitle>
+          </div>
+          <div className="flex flex-row justify-end gap-3">
+            <Button
+              variant="outline"
+              className="hover:bg-primary hover:text-white active:bg-primary-foreground duration-300 w-fit"
+              onClick={() => {
+                setOpenRemoveCartProduct(false);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="hover:bg-ring active:bg-primary-foreground duration-300 w-fit"
+              onClick={async () => {
+                const deleteData = {
+                  method: "DELETE",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    cartId: cartProduct.cartId,
+                  }),
+                };
+                const res = await fetch(
+                  `http://localhost:3000/api/customer/cart/remove`,
+                  deleteData
+                );
+
+                const newCartList = cartList.filter(
+                  (i) => i.cartId != cartProduct.cartId
+                );
+
+                setCartList(newCartList);
+                setOpenRemoveCartProduct(false);
+              }}
+            >
+              Remove
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {openEditCartProduct ? (
+        <MenuEditCartProduct
+          cartProduct={cartProduct}
+          setCartProduct={setCartProduct}
+          openEditCartProduct={openEditCartProduct}
+          setOpenEditCartProduct={setOpenEditCartProduct}
+          specificProductSizes={specificProductSizes}
+          flavors={flavors}
+          colors={colors}
+          sprinkles={sprinkles}
+          flowers={flowers}
+          shapes={shapes}
+          productPrices={productPrices}
+          setCartList={setCartList}
+          listOfAddOns={addOnsArray}
+          cartList={cartList}
+        />
+      ) : null}
+
+      {/* binabago kay checkout */}
+      {!openMenuCheckOut ? null : (
+        <MenuCheckOutForm
+          cart={cartList}
+          orderPrice={totalPrice}
+          openMenuCheckOut={openMenuCheckOut}
+          setOpenMenuCheckOut={setOpenMenuCheckOut}
+        />
+      )}
+    </div>
   );
 };
 

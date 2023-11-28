@@ -9,6 +9,11 @@ export async function POST(request) {
   const data = await request.formData();
   const file = data.get("file");
 
+  let name = file.name;
+
+  let fileType = name.split(".");
+  let imageName = `${currentDateAndTime}.${fileType[1]}`;
+
   if (!file) {
     return NextResponse.json({ success: false });
   }

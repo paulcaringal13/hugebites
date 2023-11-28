@@ -23,8 +23,6 @@ export async function GET(request) {
 
   const results = res[0];
 
-  console.log(results);
-
   return NextResponse.json(results);
 }
 

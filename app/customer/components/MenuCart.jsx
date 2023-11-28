@@ -17,6 +17,7 @@ import {
 
 import SmallCardImg from "../../../public/images/SmallCardImg.jpg";
 import MenuCheckOutForm from "./MenuCheckOutForm";
+import { useRouter } from "next/navigation";
 
 const MenuCart = ({
   user,
@@ -32,6 +33,8 @@ const MenuCart = ({
   totalPrice,
   setOpenMenuCheckOut,
 }) => {
+  const router = useRouter();
+
   const [total, setTotal] = useState();
   // const [openMenuCheckOut, setOpenMenuCheckOut] = useState(false);
 
@@ -76,6 +79,9 @@ const MenuCart = ({
               <Button
                 variant="ghost"
                 className="my-auto h-8 w-fit text-ring border-solid border-2 border-primary hover:bg-primary hover:text-white"
+                onClick={() =>
+                  router.replace(`/customer/edit-profile/${user.customerId}`)
+                }
               >
                 Change
               </Button>
@@ -191,7 +197,7 @@ const MenuCart = ({
                 className="w-full hover:bg-ring"
                 onClick={() => setOpenMenuCheckOut(true)}
               >
-                Checkout
+                Place Order
               </Button>
             </div>
           </CardContent>

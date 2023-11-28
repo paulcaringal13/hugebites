@@ -41,17 +41,12 @@ export const routes = [
   },
 ];
 
-// const SidebarContext = createContext()
 export default function CustomerSidebar({ children, account }) {
   const router = useRouter();
 
   const [expanded, setExpanded] = useState(true);
 
-  const handleClick = () => {
-    location.href = `www.test.com/?a=${queryA}&b=${queryB}`;
-  };
   return (
-    //
     <aside className={`h-full transition-all ${expanded ? "w-52" : "w-16"}`}>
       <nav className="h-full flex flex-col bg-white border-r-2 shadow-xl drop-shadow-sm">
         <div className="p-4 pb-2 flex justify-between items-center rounded-md">
@@ -73,7 +68,6 @@ export default function CustomerSidebar({ children, account }) {
           </button>
         </div>
         <ul className="flex-1 px-3 bg-white text-black pt-3">
-          {/* {children} */}
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -82,13 +76,8 @@ export default function CustomerSidebar({ children, account }) {
                     expanded ? "flex flex-row" : ""
                   }`}
                   onClick={() =>
-                    router.push(`/customer/menu/${account.customerId}`)
+                    router.replace(`/customer/menu/${account.customerId}`)
                   }
-                  // ${
-                  //   active
-                  //     ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
-                  //     : "hover:bg-primary-foreground "
-                  // }`
                 >
                   <RiCakeLine className="me-2 text-xl" />
                   <span
@@ -114,11 +103,9 @@ export default function CustomerSidebar({ children, account }) {
                   className={`relative items-center text-center py-2 px-3 my-1 font-medium rounded-md cursor-pointer transition-colors hover:bg-primary-foreground hover:text-white ${
                     expanded ? "flex " : ""
                   }`}
-                  // ${
-                  //   active
-                  //     ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
-                  //     : "hover:bg-primary-foreground "
-                  // }`
+                  onClick={() =>
+                    router.replace(`/customer/orders/${account.customerId}`)
+                  }
                 >
                   <LuShoppingBasket size={20} className="me-2" />{" "}
                   <span
@@ -144,11 +131,9 @@ export default function CustomerSidebar({ children, account }) {
                   className={`relative items-center text-center py-2 px-3 my-1 font-medium rounded-md cursor-pointer transition-colors hover:bg-primary-foreground hover:text-white ${
                     expanded ? "flex " : ""
                   }`}
-                  // ${
-                  //   active
-                  //     ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
-                  //     : "hover:bg-primary-foreground "
-                  // }`
+                  onClick={() =>
+                    router.replace(`/customer/requests/${account.customerId}`)
+                  }
                 >
                   <AiOutlineUserSwitch size={20} className="me-2" />
                   <span

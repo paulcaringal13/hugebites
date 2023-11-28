@@ -109,7 +109,7 @@ const CustomizationAddFlavorForm = ({
               </Button>
             </DialogTitle>
             <DialogDescription>
-              Fill out the fields then press the 'Add' button.
+              Fill out the fields then press the Add button.
             </DialogDescription>
           </DialogHeader>
 

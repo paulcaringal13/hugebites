@@ -35,22 +35,24 @@ import {
 } from "react-icons/bi";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 const ProductTable = ({
   data,
   openEditProduct,
-  relaunchProductOpen,
   openRelaunchProduct,
-  removeProductOpen,
   openRemoveProduct,
-  setRemoveProductOpen,
-  setRelaunchProductOpen,
+  openOfferedProducts,
+  openAddOfferedProducts,
+  openAddOfferedProductSize,
+  sizes,
 }) => {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [columnSelected, setColumnSelected] = useState("");
   const [search, setSearch] = useState("");
+
   const columns = [
     {
       header: "Image",
@@ -115,7 +117,7 @@ const ProductTable = ({
       },
     },
     {
-      accessorKey: "cakeType",
+      accessorKey: "cakeTypeName",
       header: ({ column }) => {
         return (
           <Button
@@ -147,59 +149,121 @@ const ProductTable = ({
       },
     },
     {
+      header: "Offered Products",
+      id: "offeredReq",
+      cell: ({ row }) => {
+        const rowData = row.original;
+
+        const isSizeAvailable = sizes.filter(
+          (i) => rowData.productId == i.productId
+        );
+
+        return rowData.prodDefaultProducts.length == 0 ? (
+          <>
+            {rowData.productId == "7000" ? (
+              <Button variant="outline" disabled={rowData.productId == "7000"}>
+                View Offered Products
+              </Button>
+            ) : (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={() => openAddOfferedProducts(rowData)}
+                >
+                  Release new product
+                </Button>
+              </>
+            )}
+          </>
+        ) : (
+          <>
+            {rowData.isRemoved == 1 ? (
+              <Button variant="outline" disabled>
+                View Offered Products
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                onClick={() => openOfferedProducts(rowData)}
+              >
+                View Offered Products
+              </Button>
+            )}
+          </>
+        );
+      },
+    },
+    {
       header: "Action",
       id: "actions",
       cell: ({ row }) => {
         const rowData = row.original;
 
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="p-0">
-              <DropdownMenuItem className="p-0">
-                <Button
-                  className="bg-transparent text-black m-0 w-full h-full rounded-none hover:bg-emerald-400 hover:text-emerald-50"
-                  onClick={() => {
-                    openEditProduct(rowData);
-                  }}
-                >
-                  <BiEditAlt className="text-lg me-1" />
-                  Edit
-                </Button>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator className="m-0" />
-              {rowData.isRemoved == 0 ? (
-                <DropdownMenuItem className="p-0">
+          <>
+            {rowData.productId == "7000" ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
                   <Button
-                    className="bg-transparent text-black m-0 w-full h-full rounded-none hover:bg-rose-600 hover:text-rose-50"
-                    onClick={() => {
-                      openRemoveProduct(rowData);
-                    }}
+                    variant="ghost"
+                    className="h-8 w-8 p-0"
+                    disabled={rowData.productId == "7000"}
                   >
-                    <BiSolidUserX className="text-lg me-1" />
-                    Remove to menu
+                    <span className="sr-only">Open menu</span>
+                    <MoreHorizontal className="h-4 w-4" />
                   </Button>
-                </DropdownMenuItem>
-              ) : (
-                <DropdownMenuItem className="p-0">
-                  <Button
-                    className="bg-transparent text-black m-0 w-full h-full rounded-none hover:bg-blue-400 hover:text-blue-50"
-                    onClick={() => {
-                      openRelaunchProduct(rowData);
-                    }}
-                  >
-                    <BiSolidUserCheck className="text-lg me-1" />
-                    Relaunch Product
+                </DropdownMenuTrigger>
+              </DropdownMenu>
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="h-8 w-8 p-0">
+                    <span className="sr-only">Open menu</span>
+                    <MoreHorizontal className="h-4 w-4" />
                   </Button>
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="p-0">
+                  <DropdownMenuItem className="p-0">
+                    <Button
+                      className="bg-transparent text-black m-0 w-full h-full rounded-none hover:bg-emerald-400 hover:text-emerald-50"
+                      onClick={() => {
+                        openEditProduct(rowData);
+                      }}
+                    >
+                      <BiEditAlt className="text-lg me-1" />
+                      Edit
+                    </Button>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="m-0" />
+                  {rowData.isRemoved == 0 ? (
+                    <DropdownMenuItem className="p-0">
+                      <Button
+                        className="bg-transparent text-black m-0 w-full h-full rounded-none hover:bg-rose-600 hover:text-rose-50"
+                        onClick={() => {
+                          openRemoveProduct(rowData);
+                        }}
+                      >
+                        <BiSolidUserX className="text-lg me-1" />
+                        Remove to menu
+                      </Button>
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem className="p-0">
+                      <Button
+                        className="bg-transparent text-black m-0 w-full h-full rounded-none hover:bg-blue-400 hover:text-blue-50"
+                        onClick={() => {
+                          openRelaunchProduct(rowData);
+                        }}
+                      >
+                        <BiSolidUserCheck className="text-lg me-1" />
+                        Relaunch Product
+                      </Button>
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </>
         );
       },
     },
@@ -282,12 +346,12 @@ const ProductTable = ({
           />
         ) : null}
         {/* if name is selected */}
-        {columnSelected == "menuName" ? (
+        {columnSelected == "cakeType" ? (
           <Input
-            placeholder="Filter menu name..."
-            value={table.getColumn("menuName")?.getFilterValue() ?? ""}
+            placeholder="Filter cake type..."
+            value={table.getColumn("cakeType")?.getFilterValue() ?? ""}
             onChange={(event) =>
-              table.getColumn("menuName")?.setFilterValue(event.target.value)
+              table.getColumn("cakeType")?.setFilterValue(event.target.value)
             }
             className="max-w-sm w-1/6 ml-4"
           />
@@ -327,7 +391,7 @@ const ProductTable = ({
               Product Name
             </DropdownMenuItem>
             <DropdownMenuItem
-              id="category"
+              id="categoryName"
               onClick={(e) => {
                 setColumnSelected(e.target.id);
               }}
@@ -407,36 +471,66 @@ const ProductTable = ({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      <div className="text-center">
+          {!search ? (
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id} className="text-center ">
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
                         )}
-                      </div>
-                    </TableCell>
-                  ))}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center relative overflow-hidden text-stone-600"
+                  >
+                    <ReloadIcon className="mx-auto my-5 h-3/6 w-3/6 animate-spin" />
+                    <h1> Loading Data</h1>
+                  </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+              )}
+            </TableBody>
+          ) : (
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id} className="text-center ">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          )}
         </Table>
         {/* pagination */}
         <div className="flex items-center justify-end space-x-2 py-4 me-5 ">

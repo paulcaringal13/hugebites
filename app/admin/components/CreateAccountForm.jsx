@@ -163,7 +163,7 @@ const CreateAccountForm = ({ refreshTable }) => {
               </Button>
             </DialogTitle>
             <DialogDescription>
-              Fill up all the fields to enable the 'Create' button.
+              Fill up all the fields to enable the Create button.
             </DialogDescription>
           </DialogHeader>
 

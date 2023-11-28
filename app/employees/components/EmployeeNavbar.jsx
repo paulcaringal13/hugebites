@@ -98,7 +98,7 @@ const EmployeeNavbar = () => {
   return (
     <div className="w-full h-1/6 z-10 ">
       <div className="flex h-1/6 items-center bg-white border">
-        <Image src="/initial-images/Logo.png" alt="bg" height={33} width={72} />
+        <Image src="/images/Logo.png" alt="bg" height={33} width={72} />
         <Label className="my-auto text-3xl ms-10">HugeBites</Label>
         <Popover>
           <PopoverTrigger className="ms-auto me-16 flex flex-row">

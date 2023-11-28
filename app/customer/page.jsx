@@ -1,81 +1,108 @@
+"use client";
 import Image from "next/image";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import homebg from "../../public/images/homebg.png";
 import shape from "../../public/images/shape.png";
-import Bordered from "../../public/images/Bordered.JPG";
-import Smudges from "../../public/images/Smudges.JPG";
-import Minimalist from "../../public/images/Minimalist.JPG";
-import Gradient from "../../public/images/Gradient.JPG";
-import Floral_Patterned from "../../public/images/Floral_Patterned.JPG";
 import customizeCakeBg from "../../public/images/customizeCakeBg.jpg";
 import { Button } from "@/components/ui/button";
 import LandingPageNavbar from "./components/LandingPageNavbar";
 import Footer from "./components/Footer";
-import {
-  getFlavor,
-  getColor,
-  getShape,
-  getAddOns,
-  getSizes,
-} from "../customer/utils/getCustomization";
-import {
-  getAllProducts,
-  getAllCategories,
-} from "../customer/utils/getAllProductsDetails";
 import LandingPageMenu from "./components/LandingPageMenu";
 
-// RETURN ALL DATAS IN THE DATABASE
+const Page = () => {
+  // PRODUCTS
+  const [productsData, setProductsData] = useState([]);
+  // CATEGORIES
+  const [categoriesData, setCategoriesData] = useState([]);
+  // SIZES / PACKAGING
+  const [packagingSizes, setPackagingSizes] = useState([]);
 
-// PRODUCTS
-const productsData = await getAllProducts();
+  // FINAL PRODUCTS ARRAY
+  const [prodArray, setProdArray] = useState([]);
 
-// CATEGORIES
-const categoriesData = await getAllCategories();
-
-// SIZES / PACKAGING
-const packagingSizes = await getSizes();
-
-// ADD ONS (DRAGEES) AND (FLOWERS)
-const addOnsArray = await getAddOns();
-
-// FLAVORS
-const flavors = await getFlavor();
-
-// COLORS
-const colors = await getColor();
-// SHAPES
-const shapes = await getShape();
-
-const handleProducts = () => {
-  const availableCategories = categoriesData.filter((i) => i.isRemoved == 0);
-
-  const productsWithAvailableCategories = productsData.filter((prod) => {
-    const { categoryId } = prod;
-
-    const isProductCategoryNotRemoved = availableCategories.find(
-      (ctg) => ctg.categoryId == categoryId
+  const getAllProducts = async () => {
+    const res = await fetch(
+      `http://localhost:3000/api/customer/menu/product/products`,
+      {
+        cache: "no-store",
+      }
     );
 
-    return isProductCategoryNotRemoved;
-  });
+    const data = await res.json();
 
-  const productsWithSizes = productsWithAvailableCategories.map((prod) => {
-    const { productId } = prod;
+    const availableProducts = data.filter((prod) => prod.isRemoved != 1);
 
-    const sizes = packagingSizes.filter((size) => productId === size.productId);
+    setProductsData(availableProducts);
+  };
 
-    return { ...prod, sizes };
-  });
+  const getAllCategories = async () => {
+    const res = await fetch(
+      `http://localhost:3000/api/customer/menu/categories`,
+      {
+        cache: "no-store",
+      }
+    );
 
-  const prods = productsWithSizes.filter((prod) => prod.sizes.length != 0);
+    const data = await res.json();
 
-  return prods;
-};
-// COMBINE CATEGORIES AND PRODUCT
-const prodArray = await handleProducts();
-console.log(prodArray);
+    setCategoriesData(data);
+  };
 
-const page = () => {
+  const getSizes = async () => {
+    const res = await fetch(
+      `http://localhost:3000/api/customer/menu/packaging`,
+      {
+        cache: "no-store",
+      }
+    );
+
+    const sizes = await res.json();
+
+    setPackagingSizes(sizes);
+  };
+  console.log(categoriesData);
+  const x = () => {
+    handleProducts();
+  };
+
+  const handleProducts = () => {
+    const availableCategories = categoriesData.filter((i) => i.isRemoved == 0);
+
+    const productsWithAvailableCategories = productsData.filter((prod) => {
+      const { categoryId } = prod;
+
+      const isProductCategoryNotRemoved = availableCategories.find(
+        (ctg) => ctg.categoryId == categoryId
+      );
+
+      return isProductCategoryNotRemoved;
+    });
+
+    const productsWithSizes = productsWithAvailableCategories.map((prod) => {
+      const { productId } = prod;
+
+      const sizes = packagingSizes.filter(
+        (size) => productId === size.productId
+      );
+
+      return { ...prod, sizes };
+    });
+
+    const prods = productsWithSizes.filter((prod) => prod.sizes.length != 0);
+
+    setProdArray(prods);
+  };
+
+  useEffect(() => {
+    getAllProducts();
+    getAllCategories();
+    getSizes();
+  }, []);
+
+  useEffect(() => {
+    handleProducts();
+  }, [productsData, categoriesData, packagingSizes]);
+
   return (
     <>
       <section id="hero">
@@ -101,20 +128,6 @@ const page = () => {
             position: "relative",
           }}
         >
-          {/* <div
-            style={{
-              content: "",
-              position: "absolute",
-              left: "0",
-              top: "0",
-              height: " 100%",
-              width: "100%",
-              backgroundColor: " black",
-              opacity: "0.7",
-            }}
-          >
-            <h1 className="text-white">asdasd</h1>
-          </div> */}
           <div
             style={{
               content: "",
@@ -331,179 +344,6 @@ const page = () => {
             prodArray={prodArray}
             categoryArray={categoriesData}
           />
-          {/* <div className="grid grid-cols-4 gap-x-4 gap-y-6 mt-10">
-            {prodArray.map((product) => {
-              <div className="bg-white h-fit w-5/6 shadow-md rounded-lg ">
-                <div className="h-fit overflow-hidden">
-                  <div
-                    className="flex flex-col h-64 w-full rounded-t-lg transform transition-all hover:scale-110 duration-700"
-                    style={{
-                      backgroundImage: `url('${product.image}')`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      cursor: "pointer",
-                    }}
-                  ></div>
-                </div>
-
-                <div className="text-center w-full p-5 relative">
-                  <div
-                    className="absolute inline-block w-fit p-5 border-2 bg-white rounded-full text-center font-serif text-lg"
-                    style={{
-                      top: "-35px",
-                      zIndex: "2",
-                      transform: "transLateX(-50%)",
-                    }}
-                  >
-                    <h1>₱350.00</h1>
-                  </div>
-                  <h1 className="mt-6 font-semilight text-xl">Gradient</h1>
-                  <Button
-                    className="mb-2 mt-3 shadow-md hover:bg-ring"
-                    style={{ borderRadius: "8px" }}
-                  >
-                    Add to Cart
-                  </Button>
-                </div>
-              </div>;
-            })}
-
-            <div className="bg-white h-fit w-5/6 shadow-md rounded-lg ">
-              <div className="h-fit overflow-hidden">
-                <div
-                  className="flex flex-col h-64 w-full rounded-t-lg transform transition-all hover:scale-110 duration-700"
-                  style={{
-                    backgroundImage: `url('${Gradient.src}')`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    cursor: "pointer",
-                  }}
-                ></div>
-              </div>
-
-              <div className="text-center w-full p-5 relative">
-                <div
-                  className="absolute inline-block w-fit p-5 border-2 bg-white rounded-full text-center font-serif text-lg"
-                  style={{
-                    top: "-35px",
-                    zIndex: "2",
-                    transform: "transLateX(-50%)",
-                  }}
-                >
-                  <h1>₱200.00</h1>
-                </div>
-                <h1 className="mt-6 font-semilight text-xl">Bordered Cake</h1>
-                <Button
-                  className="mb-2 mt-3 shadow-md hover:bg-ring"
-                  style={{ borderRadius: "8px" }}
-                >
-                  Add to Cart
-                </Button>
-              </div>
-            </div>
-            <div className="bg-white h-fit w-5/6 shadow-md rounded-lg ">
-              <div className="h-fit overflow-hidden">
-                <div
-                  className="flex flex-col h-64 w-full rounded-t-lg transform transition-all hover:scale-110 duration-700"
-                  style={{
-                    backgroundImage: `url('${Smudges.src}')`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    cursor: "pointer",
-                  }}
-                ></div>
-              </div>
-
-              <div className="text-center w-full p-5 relative">
-                <div
-                  className="absolute inline-block w-fit p-5 border-2 bg-white rounded-full text-center font-serif text-lg"
-                  style={{
-                    top: "-35px",
-                    zIndex: "2",
-                    transform: "transLateX(-50%)",
-                  }}
-                >
-                  <h1>₱250.00</h1>
-                </div>
-                <h1 className="mt-6 font-semilight text-xl">Smudges</h1>
-                <Button
-                  className="mb-2 mt-3 shadow-md hover:bg-ring"
-                  style={{ borderRadius: "8px" }}
-                >
-                  Add to Cart
-                </Button>
-              </div>
-            </div>
-            <div className="bg-white h-fit w-5/6 shadow-md rounded-lg ">
-              <div className="h-fit overflow-hidden">
-                <div
-                  className="flex flex-col h-64 w-full rounded-t-lg transform transition-all hover:scale-110 duration-700"
-                  style={{
-                    backgroundImage: `url('${Minimalist.src}')`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    cursor: "pointer",
-                  }}
-                ></div>
-              </div>
-
-              <div className="text-center w-full p-5 relative">
-                <div
-                  className="absolute inline-block w-fit p-5 border-2 bg-white rounded-full text-center font-serif text-lg"
-                  style={{
-                    top: "-35px",
-                    zIndex: "2",
-                    transform: "transLateX(-50%)",
-                  }}
-                >
-                  <h1>₱200.00</h1>
-                </div>
-                <h1 className="mt-6 font-semilight text-xl">Minimalist</h1>
-                <Button
-                  className="mb-2 mt-3 shadow-md hover:bg-ring"
-                  style={{ borderRadius: "8px" }}
-                >
-                  Add to Cart
-                </Button>
-              </div>
-            </div>
-            <div className="bg-white h-fit w-5/6 shadow-md rounded-lg ">
-              <div className="h-fit overflow-hidden">
-                <div
-                  className="flex flex-col h-64 w-full rounded-t-lg transform transition-all hover:scale-110 duration-700"
-                  style={{
-                    backgroundImage: `url('${Floral_Patterned.src}')`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    cursor: "pointer",
-                  }}
-                ></div>
-              </div>
-
-              <div className="text-center w-full p-5 relative">
-                <div
-                  className="absolute inline-block w-fit p-5 border-2 bg-white rounded-full text-center font-serif text-lg"
-                  style={{
-                    top: "-35px",
-                    zIndex: "2",
-                    transform: "transLateX(-50%)",
-                  }}
-                >
-                  <h1>₱450.00</h1>
-                </div>
-                <h1 className="mt-6 font-semilight text-xl">
-                  Floral Patterned
-                </h1>
-                <Button
-                  className="mb-2 mt-3 shadow-md hover:bg-ring"
-                  style={{ borderRadius: "8px" }}
-                >
-                  Add to Cart
-                </Button>
-              </div>
-            </div>
-          </div>
-       */}
         </div>
       </section>
 
@@ -543,19 +383,6 @@ const page = () => {
           </div>
         </div>
       </section>
-      {/* <section id="aboutUs" className="h-screen w-full bg-red-500">
-        <div
-          style={{
-            height: "80%",
-            width: "80%",
-            backgroundColor: "blue",
-            marginRight: "auto",
-            marginLeft: "auto",
-          }}
-        >
-          <div style={{}}></div>
-        </div>
-      </section> */}
 
       <section
         id="aboutUs"
@@ -566,10 +393,8 @@ const page = () => {
           paddingTop: "25px",
           paddingBottom: "25px",
           alignItems: "center",
-          // marginLeft: "auto",
         }}
       >
-        {/* className="grid grid-cols-3 gap-y-8" col-span-3 */}
         <div
           className="shadow-sm drop-shadow-lg"
           style={{
@@ -621,7 +446,7 @@ const page = () => {
         </div>
       </section>
       <section>
-        <div style={{ height: "50vh", width: "100vw" }}>
+        <div className="h-fit" style={{ width: "100vw" }}>
           <Footer />
         </div>
       </section>
@@ -629,4 +454,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

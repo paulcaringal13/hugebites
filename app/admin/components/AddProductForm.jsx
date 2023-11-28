@@ -41,39 +41,19 @@ const AddProductForm = ({
   setAddProductOpen,
   closeAddProduct,
   updateProductTable,
-  menuTable,
   productTable,
   categoryTable,
+  cakeTypes,
 }) => {
   const [validationMessage, setValidationMessage] = useState();
 
-  const [cakeType, setCakeType] = useState("");
-
+  const [cakeType, setCakeType] = useState();
   const [errorCakeTypeSelection, setErrorCakeTypeSelection] = useState(false);
 
   const [file, setFile] = useState();
   const [image, setImage] = useState("");
 
-  const uploadImage = async (e) => {
-    e.preventDefault();
-    if (!file) return;
-
-    try {
-      const data = new FormData();
-      data.set("file", file);
-
-      const res = await fetch("/api/upload/products", {
-        method: "POST",
-        body: data,
-      });
-      const results = await res.json();
-
-      setImage(`/products/${results}`);
-      if (!res.ok) throw new Error(await res.text());
-    } catch (e) {
-      console.error(e);
-    }
-  };
+  const uploadImage = async (e) => {};
 
   // STORAGE FOR SELECT VALUE
   const [category, setCategory] = useState("");
@@ -83,7 +63,7 @@ const AddProductForm = ({
 
   const form = useForm({
     defaultValues: {
-      categoryName: "",
+      productName: "",
     },
     mode: "onTouched",
   });
@@ -128,66 +108,77 @@ const AddProductForm = ({
   const addProduct = async (data) => {
     const { productName } = data;
 
-    // FIND THE SELECTED MENU ID (SELECT COMPONENT FROM SHAD CANT DISPLAY THE NAME OF THE SELECTION IF THE VALUE IT PASSES IS THE ID)
-    const categorySelected = categoryTable.find(
-      (i) => i.categoryName == category
-    );
-
-    // FOR THE CAKE TYPE SELECTION
-    let isSpecial;
-    {
-      cakeType === "Special Cake" ? (isSpecial = 1) : (isSpecial = 0);
-    }
-
-    const productPost = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        productName: productName,
-        categoryId: categorySelected.categoryId,
-        image: image,
-        isSpecial: isSpecial,
-        isRemoved: 0,
-        status: "Available",
-      }),
-    };
+    if (!file) return;
 
     try {
-      const res = await fetch(
-        `http://localhost:3000/api/admin/menu/product`,
-        productPost
+      const data = new FormData();
+      data.set("file", file);
+
+      const res = await fetch("/api/upload/products", {
+        method: "POST",
+        body: data,
+      });
+      const results = await res.json();
+
+      setImage(`/images/products/${results}`);
+      if (!res.ok) throw new Error(await res.text());
+
+      // FIND THE SELECTED MENU ID (SELECT COMPONENT FROM SHAD CANT DISPLAY THE NAME OF THE SELECTION IF THE VALUE IT PASSES IS THE ID)
+      const categorySelected = categoryTable.find(
+        (i) => i.categoryName == category
       );
-      console.log(image);
-      const response = await res.json();
-      const { insertId } = response[0];
-      const updatedTable = {
-        productId: insertId,
-        productName: productName,
-        image: image,
-        cakeType: cakeType,
-        isRemoved: 0,
-        categoryName: categorySelected.categoryName,
-        status: "Available",
+
+      const cakeTypeSelected = cakeTypes.find(
+        (i) => i.cakeTypeName == cakeType
+      );
+      // FOR THE CAKE TYPE SELECTION
+      let isSpecial;
+      {
+        cakeType != "Common Cake" ? (isSpecial = 1) : (isSpecial = 0);
+      }
+
+      const productPost = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productName: productName,
+          categoryId: categorySelected.categoryId,
+          image: `/images/products/${results}`,
+          isSpecial: isSpecial,
+          cakeTypeId: cakeTypeSelected.cakeTypeId,
+          isRemoved: 0,
+          status: "Available",
+        }),
       };
-      updateProductTable(updatedTable, "add");
-      closeAddProduct();
-    } catch (error) {
-      console.log(error);
+
+      try {
+        const res = await fetch(
+          `http://localhost:3000/api/admin/menu/product`,
+          productPost
+        );
+        const response = await res.json();
+        const { insertId } = response[0];
+        const updatedTable = {
+          productId: insertId,
+          productName: productName,
+          image: `/images/products/${results}`,
+          cakeTypeName: cakeTypeSelected.cakeTypeName,
+          isRemoved: 0,
+          categoryName: categorySelected.categoryName,
+          prodDefaultProducts: [],
+          status: "Available",
+        };
+        updateProductTable(updatedTable, "add");
+        closeAddProduct();
+      } catch (error) {
+        console.log(error);
+      }
+    } catch (e) {
+      console.error(e);
     }
   };
-
-  const cakeTypes = [
-    {
-      id: 1,
-      value: "Common Cake",
-    },
-    {
-      id: 2,
-      value: "Special Cake",
-    },
-  ];
 
   return (
     <>
@@ -206,7 +197,7 @@ const AddProductForm = ({
               </Button>
             </DialogTitle>
             <DialogDescription>
-              Fill out the fields then press the 'Add' button.
+              Fill out the fields then press the Add button.
             </DialogDescription>
           </DialogHeader>
 
@@ -262,12 +253,12 @@ const AddProductForm = ({
                 </Label>
                 <Select asChild value={cakeType} onValueChange={setCakeType}>
                   <SelectTrigger className="w-full mt-1">
-                    <SelectValue placeholder="Select Cake Type" />
+                    <h1>{!cakeType ? "Select Cake Type" : `${cakeType}`}</h1>
                   </SelectTrigger>
                   <SelectContent>
                     {cakeTypes.map((i) => (
-                      <SelectItem key={i.id} value={i.value}>
-                        {i.value}
+                      <SelectItem key={i.cakeTypeId} value={i.cakeTypeName}>
+                        {i.cakeTypeName}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -285,23 +276,23 @@ const AddProductForm = ({
                 <Input
                   id="image"
                   type="file"
-                  onChange={(e) => setFile(e.target.files?.[0])}
+                  onChange={(e) => {
+                    setFile(e.target.files?.[0]);
+
+                    const reader = new FileReader();
+                    reader.readAsDataURL(e.target.files?.[0]);
+                    reader.onload = () => {
+                      setImage(reader.result);
+                    };
+                  }}
                 />
-                <div className="flex flex-col">
-                  {image && (
-                    <div className="items-center relative inline-block overflow-hidden m-0 w-44 h-fit max-h-56 mx-auto my-2 rounded-lg">
+                {image && (
+                  <div className="h-full w-full">
+                    <div className="flex mx-auto items-center relative overflow-hidden m-0 w-44 h-fit max-h-56my-2 rounded-lg">
                       <img src={image} alt="bg" />
                     </div>
-                  )}
-                  {file ? (
-                    <Button
-                      onClick={uploadImage}
-                      className="hover:bg-ring mt-2 w-2/6"
-                    >
-                      Upload
-                    </Button>
-                  ) : null}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
 

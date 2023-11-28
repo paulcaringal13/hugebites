@@ -24,8 +24,6 @@ export async function GET(request) {
 
     const results = res[0];
 
-    console.log(results);
-
     return NextResponse.json(results);
   } catch (e) {
     console.log(e);
@@ -49,8 +47,14 @@ export async function POST(req, res) {
       colorId,
       subTotal,
       message,
+      isCakeCustomized,
+      imageReference,
     } = reqBody;
-    const query = `INSERT INTO ordered_products (customerId, orderId, productId, packagingId, flavorId, shapeId, quantity, colorId,subTotal, message) VALUES ('${customerId}', '${orderId}', '${productId}','${packagingId}','${flavorId}','${shapeId}','${quantity}','${colorId}','${subTotal}','${message}')`;
+    const query = `INSERT INTO ordered_products (customerId, isCakeCustomized, orderId, productId, packagingId, flavorId ${
+      !shapeId ? "," : ",shapeId,"
+    } quantity, colorId,subTotal, message, imageReference) VALUES ('${customerId}', '${isCakeCustomized}', '${orderId}', '${productId}','${packagingId}','${flavorId}' ${
+      !shapeId ? "," : `,'${shapeId}',`
+    } '${quantity}','${colorId}','${subTotal}','${message}', '${imageReference}')`;
     const results = await connection.execute(query);
     connection.end();
 

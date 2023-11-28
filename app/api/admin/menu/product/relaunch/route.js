@@ -18,7 +18,7 @@ export async function PUT(req, path) {
     const reqBody = await req.json();
     const { productId } = reqBody;
 
-    const query = `UPDATE products SET isRemoved = 0 WHERE productId = ${productId}`;
+    const query = `UPDATE products SET isRemoved = 0, status='Available' WHERE productId = ${productId}`;
     const results = await connection.execute(query);
     connection.end();
 

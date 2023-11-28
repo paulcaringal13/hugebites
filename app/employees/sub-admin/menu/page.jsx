@@ -1,69 +1,59 @@
-import MiniAdminSidebar from "../components/MiniAdminSidebar";
-import MenuTableTabs from "../components/MenuTableTabs";
+"use client";
+import { useState, useEffect } from "react";
+import MiniAdminSidebar from "../../../admin/components/MiniAdminSidebar";
+import MenuTableTabs from "../../../admin/components/MenuTableTabs";
 
-const getAllProducts = async () => {
-  const res = await fetch(`http://localhost:3000/api/sub-admin/menu/product`);
+const SubAdminMenu = () => {
+  const [productList, setProductList] = useState([]);
+  const [categoryList, setCategoryList] = useState([]);
 
-  const data = await res.json();
+  const getAllProducts = async () => {
+    const res = await fetch(`http://localhost:3000/api/sub-admin/menu/product`);
 
-  const { results } = data;
+    const data = await res.json();
 
-  const products = results[0];
+    const { results } = data;
 
-  return products;
-};
+    const products = results[0];
 
-const getAllCategories = async () => {
-  const res = await fetch(
-    `http://localhost:3000/api/sub-admin/menu/categories`
-  );
+    setProductList(products);
+  };
 
-  const data = await res.json();
+  const getAllCategories = async () => {
+    const res = await fetch(
+      `http://localhost:3000/api/sub-admin/menu/categories`
+    );
 
-  const { results } = data;
+    const data = await res.json();
 
-  const categories = results[0];
+    const { results } = data;
 
-  const ctg = categories.map((category) => {
-    let cakeType;
-    {
-      category.isSpecial == 0
-        ? (cakeType = "Common Cake")
-        : (cakeType = "Special Cake");
-    }
-    return { ...category, cakeType };
-  });
+    const categories = results[0];
 
-  return ctg;
-};
+    const ctg = categories.map((category) => {
+      let cakeType;
+      {
+        category.isSpecial == 0
+          ? (cakeType = "Common Cake")
+          : (cakeType = "Special Cake");
+      }
+      return { ...category, cakeType };
+    });
 
-const getAllMenu = async () => {
-  const res = await fetch(`http://localhost:3000/api/sub-admin/menu/menu`);
+    setCategoryList(ctg);
+  };
 
-  const data = await res.json();
-
-  const { results } = data;
-
-  const menu = results[0];
-
-  return menu;
-};
-
-const SubAdminMenu = async () => {
-  const productList = await getAllProducts();
-  const categoryList = await getAllCategories();
-  const menuList = await getAllMenu();
+  useEffect(() => {
+    getAllProducts();
+    getAllCategories();
+  }, []);
 
   return (
     <div className="flex flex-row">
       <div className="w-fit" style={{ zIndex: "1" }}>
         <MiniAdminSidebar />
       </div>
-      <MenuTableTabs
-        productList={productList}
-        categoryList={categoryList}
-        menuList={menuList}
-      />
+      <MenuTableTabs productList={productList} categoryList={categoryList} />
     </div>
   );
 };

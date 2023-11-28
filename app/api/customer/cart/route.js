@@ -17,7 +17,7 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const customerId = searchParams.get("customerId");
 
-  const query = `SELECT cartId, customerId, cart.productId, quantity, subTotal, cart.shapeId, cart.flavorId, cart.colorId, cart.packagingId, shapeName, productName, size, flavorName, colorName,  packagingPrice, shapePrice, colorPrice, image, message FROM cart LEFT JOIN customization_shape ON cart.shapeId = customization_shape.shapeId LEFT JOIN products ON cart.productId = products.productId LEFT JOIN customization_packaging ON cart.packagingId = customization_packaging.packagingId LEFT JOIN customization_flavor ON cart.flavorId = customization_flavor.flavorId LEFT JOIN customization_color ON cart.colorId = customization_color.colorId WHERE cart.customerId = ${customerId}`;
+  const query = `SELECT cartId, products.cakeTypeId,isCakeCustomized, products.categoryId, imageReference, customerId, cart.productId, quantity, subTotal, cart.shapeId, cart.flavorId, cart.colorId, cart.packagingId, shapeName, productName, size, flavorName, colorName,  packagingPrice, shapePrice, colorPrice, image, message FROM cart LEFT JOIN customization_shape ON cart.shapeId = customization_shape.shapeId LEFT JOIN products ON cart.productId = products.productId LEFT JOIN customization_packaging ON cart.packagingId = customization_packaging.packagingId LEFT JOIN customization_flavor ON cart.flavorId = customization_flavor.flavorId LEFT JOIN customization_color ON cart.colorId = customization_color.colorId WHERE cart.customerId = ${customerId}`;
   const res = await connection.execute(query);
   connection.end();
 
@@ -41,15 +41,28 @@ export async function POST(req, res) {
       colorId,
       subTotal,
       message,
+      isCakeCustomized,
+      imageReference,
     } = reqBody;
 
-    const query = `INSERT INTO cart (customerId, productId, packagingId, flavorId, quantity ${
-      !shapeId ? "," : ",shapeId,"
-    } colorId, subTotal, message) VALUES ('${customerId}', '${productId}','${packagingId}','${flavorId}','${quantity}' ${
-      !shapeId ? "," : `,'${shapeId}',`
-    } '${colorId}','${subTotal}', '${message}')`;
+    let query;
+
+    imageReference == null || imageReference == undefined
+      ? (query = `INSERT INTO cart (isCakeCustomized, customerId, productId, packagingId, flavorId, quantity ${
+          !shapeId ? "," : ",shapeId,"
+        } colorId, subTotal, message) VALUES ('${isCakeCustomized}','${customerId}', '${productId}','${packagingId}','${flavorId}','${quantity}' ${
+          !shapeId ? "," : `,'${shapeId}',`
+        } '${colorId}','${subTotal}', '${message}')`)
+      : (query = `INSERT INTO cart (isCakeCustomized, imageReference, customerId, productId, packagingId, flavorId, quantity ${
+          !shapeId ? "," : ",shapeId,"
+        } colorId, subTotal, message) VALUES ('${isCakeCustomized}','${imageReference}','${customerId}', '${productId}','${packagingId}','${flavorId}','${quantity}' ${
+          !shapeId ? "," : `,'${shapeId}',`
+        } '${colorId}','${subTotal}', '${message}')`);
+
     const results = await connection.execute(query);
     connection.end();
+
+    console.log(query);
 
     return NextResponse.json(results);
   } catch (error) {
@@ -89,11 +102,12 @@ export async function PUT(request) {
       subTotal,
       message,
       flavorId,
+      imageReference,
     } = reqBody;
 
     const query = `UPDATE cart SET flavorId ='${flavorId}', quantity ='${quantity}' ${
       !shapeId ? `,shapeId=NULL,` : `,shapeId='${shapeId}',`
-    } subTotal='${subTotal}', packagingId='${packagingId}', colorId='${colorId}', message='${message}' WHERE cartId = ${cartId}`;
+    } subTotal='${subTotal}', packagingId='${packagingId}', colorId='${colorId}', message='${message}', imageReference='${imageReference}' WHERE cartId = ${cartId}`;
 
     const results = await connection.execute(query);
     connection.end();

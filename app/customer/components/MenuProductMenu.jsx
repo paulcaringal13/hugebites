@@ -17,12 +17,31 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
+import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
+import lodash from "lodash";
 
 const MenuProductMenu = ({ prodArray, categoryArray }) => {
   const router = useRouter();
   const pathname = usePathname();
   const [productList, setProductList] = useState([]);
   const [products, setProducts] = useState([]);
+
+  const [pageSize, setPageSize] = useState(9);
+
+  const pagesCount = Math.ceil(products.length / pageSize);
+  const pages = lodash.range(1, pagesCount + 1);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const paginate = () => {
+    const startIndex = (currentPage - 1) * pageSize;
+    return lodash(products).slice(startIndex).take(pageSize).value();
+  };
+
+  const paginatedList = paginate();
 
   useEffect(() => {
     const prods = prodArray.map((i) => {
@@ -43,7 +62,7 @@ const MenuProductMenu = ({ prodArray, categoryArray }) => {
   }, [prodArray]);
   return (
     <>
-      <div className="w-full my-8" style={{ height: "1000px" }}>
+      <div className="w-full h-fit my-8">
         <div
           className="h-80 w-11/12 mx-auto bg-black mb-6 shadow-md"
           style={{
@@ -108,7 +127,7 @@ const MenuProductMenu = ({ prodArray, categoryArray }) => {
                 </button>
               );
             })}
-            <Card className="w-fit h-fit p-1 border-accent border-2 cursor-pointer transform transition-all hover:scale-110 duration-700">
+            {/* <Card className="w-fit h-fit p-1 border-accent border-2 cursor-pointer transform transition-all hover:scale-110 duration-700">
               <div
                 style={{
                   width: "100px",
@@ -121,7 +140,7 @@ const MenuProductMenu = ({ prodArray, categoryArray }) => {
                   Customized
                 </p>
               </div>
-            </Card>
+            </Card> */}
           </Card>
 
           <div className="h-fit">
@@ -133,7 +152,7 @@ const MenuProductMenu = ({ prodArray, categoryArray }) => {
               </div>
             ) : (
               <div className="grid grid-cols-3 gap-x-2 gap-y-2 mt-5 h-full w-full">
-                {products.map((prod) => {
+                {paginatedList.map((prod) => {
                   return (
                     <Card
                       className="col-span-1 border-stone-400 border-2"
@@ -228,6 +247,30 @@ const MenuProductMenu = ({ prodArray, categoryArray }) => {
                   );
                 })}
               </div>
+            )}
+          </div>
+          <div className="w-fit mx-auto flex my-4">
+            {pagesCount === 1 ? null : (
+              <nav
+                className="isolate inline-flex -space-x-px rounded-md shadow-sm h-14 w-9"
+                aria-label="Pagination"
+              >
+                {pages.map((page) => (
+                  <a
+                    href="#"
+                    aria-current="page"
+                    className={`relative z-10 inline-flex items-center hover:text-text-decoration-none  border-zinc-200 border-[1px] px-4 py-2 text-sm font-semibold  ${
+                      currentPage === page
+                        ? "bg-ring text-white "
+                        : " bg-transparent text-black"
+                    }`}
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                  >
+                    {page}
+                  </a>
+                ))}
+              </nav>
             )}
           </div>
         </div>
