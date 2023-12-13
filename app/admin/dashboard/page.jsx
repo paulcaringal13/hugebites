@@ -1,4 +1,7 @@
+"use client";
+import { useEffect, useState } from "react";
 import MiniAdminSidebar from "../components/MiniAdminSidebar";
+import Dashboard from "../components/pages/Dashboard/Dashboard";
 
 const AdminDashboard = () => {
   return (
@@ -6,7 +9,9 @@ const AdminDashboard = () => {
       <div className="w-fit" style={{ zIndex: "1" }}>
         <MiniAdminSidebar />
       </div>
-      <div className="h-[1000px] w-full">ASD</div>
+      <div className="h-fit w-full m-10">
+        <Dashboard />
+      </div>
     </div>
   );
 };

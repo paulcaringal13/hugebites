@@ -13,6 +13,8 @@ async function con() {
   return connection;
 }
 
+export const dynamic = "force-dynamic";
+
 // GET ALL CUSTOMER ACCOUNTS FROM ACCOUNTS TABLE FOR SIGN IN PURPOSES REFERENCE
 export async function GET(request) {
   const connection = await con();

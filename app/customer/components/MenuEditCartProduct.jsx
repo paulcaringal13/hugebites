@@ -25,6 +25,19 @@ import { IoAdd } from "react-icons/io5";
 import AddOnsDelete from "./AddOnsDelete";
 import { RiContactsBookLine } from "react-icons/ri";
 import { type } from "os";
+import {
+  Toast,
+  ToastClose,
+  ToastDescription,
+  ToastProvider,
+  ToastTitle,
+  ToastViewport,
+} from "@/components/ui/toast";
+import {
+  IoInformationCircleOutline,
+  IoCheckmarkCircleOutline,
+  IoWarningOutline,
+} from "react-icons/io5";
 
 const MenuEditCartProduct = ({
   cartProduct,
@@ -40,7 +53,24 @@ const MenuEditCartProduct = ({
   cartList,
   listOfAddOns,
 }) => {
-  console.log(cartProduct);
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "PHP",
+  });
+
+  // alert state
+  const [alertMessageOpen, setAlertMessageOpen] = useState(false);
+  const [alertTitle, setAlertTitle] = useState(false);
+  const [alertType, setAlertType] = useState(false);
+  const [alertMessage, setAlertMessage] = useState(false);
+
+  const openRequestAlert = () => {
+    setAlertMessageOpen(true);
+    setTimeout(() => {
+      setAlertMessageOpen(false);
+    }, 3000);
+  };
+
   // PAG COMMON CAKE ITO NALANG ANG IPASA PARA NULL AT HINDI NA MAADD SA DATABASE
   const [specialProperty, setSpecialProperty] = useState([
     {
@@ -339,7 +369,6 @@ const MenuEditCartProduct = ({
     });
     const results = await res.json();
 
-    // setImage(`/response-images/${results}`);
     if (!res.ok) throw new Error(await res.text());
 
     return results;
@@ -449,7 +478,7 @@ const MenuEditCartProduct = ({
     let totalPrice = sum + addOnsSum + tier2AddOnsSum + tier3AddOnsSum;
 
     setTotalPrice(totalPrice);
-    setSubTotal(sum);
+    setSubTotal(totalPrice);
   }, [
     prices,
     quantity,
@@ -566,11 +595,15 @@ const MenuEditCartProduct = ({
     );
 
     const cupcakeFlavors = flavors.filter(
-      (i) => i.flavorId == 1 || i.flavorId == 2
+      (i) => i.flavorId == 300400 || i.flavorId == 300401
     );
 
     {
-      cartProduct.categoryId == 8003 || cartProduct.cakeTypeId == 7
+      cartProduct.categoryId == 8003 ||
+      cartProduct.cakeTypeId == 7 ||
+      cartProduct.cakeTypeId == 3 ||
+      cartProduct.cakeTypeId == 4 ||
+      cartProduct.cakeTypeId == 2
         ? setFlavorOptions(cupcakeFlavors)
         : setFlavorOptions(flavorSelect);
     }
@@ -639,8 +672,6 @@ const MenuEditCartProduct = ({
                         <div>
                           {!size.packagingId ? "Select size" : size.size}
                         </div>
-
-                        {/* <SelectValue placeholder="Select size" /> */}
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
@@ -658,21 +689,6 @@ const MenuEditCartProduct = ({
                         </SelectGroup>
                       </SelectContent>
                     </Select>
-
-                    {/* <Button
-                    variant="outline"
-                    disabled={!size.packagingId}
-                    className="mt-1 h-10 w-fit items-center"
-                    onClick={() => {
-                      setSize({ packagingId: 0, packagingPrice: 0, size: "" });
-                      setPrices((prev) => ({
-                        ...prev,
-                        packagingPrice: Number(0),
-                      }));
-                    }}
-                  >
-                    <IoIosClose className="w-5 h-5 text-muted-foreground" />
-                  </Button> */}
                   </div>
                   {isSizeInvalid ? (
                     <Label className="errorMessage mb-1">Select size!</Label>
@@ -697,8 +713,6 @@ const MenuEditCartProduct = ({
                             ? "Select a flavor"
                             : flavor.flavorName}
                         </div>
-
-                        {/* <SelectValue placeholder="Select a flavor" /> */}
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
@@ -716,15 +730,6 @@ const MenuEditCartProduct = ({
                         </SelectGroup>
                       </SelectContent>
                     </Select>
-
-                    {/* <Button
-                    variant="outline"
-                    disabled={!flavor.flavorId}
-                    className="mt-1 h-10 w-fit items-center"
-                    onClick={() => setFlavor({ flavorId: 0, flavorName: "" })}
-                  >
-                    <IoIosClose className="w-5 h-5 text-muted-foreground" />
-                  </Button> */}
                   </div>
                   {isFlavorInvalid ? (
                     <Label className="errorMessage mb-1">
@@ -912,7 +917,17 @@ const MenuEditCartProduct = ({
                               : addOns.addOnsName}
                           </div>
                         </SelectTrigger>
-                        <SelectContent></SelectContent>
+                        <SelectContent>
+                          <SelectGroup>
+                            {addOnsArray.map((i) => {
+                              return (
+                                <SelectItem key={i.addOnsId} value={i}>
+                                  {i.addOnsName}
+                                </SelectItem>
+                              );
+                            })}
+                          </SelectGroup>
+                        </SelectContent>
                       </Select>
                     </div>
                     <div className="col-span-1">
@@ -931,7 +946,7 @@ const MenuEditCartProduct = ({
 
                     <div className="col-span-1 my-auto text-center">
                       <Label className="text-gray-200 font-bold text-xl">
-                        ₱{addOnsTotal}.00
+                        {formatter.format(addOnsTotal)}
                       </Label>
                     </div>
                     <div className="col-span-1 w-full">
@@ -940,7 +955,8 @@ const MenuEditCartProduct = ({
                         disabled={cartProduct.categoryId == 8003}
                         className="mt-1 h-10 w-fit items-center rounded-full active:bg-white"
                       >
-                        <IoAdd className="w-5 h-5 text-muted-foreground" />
+                        {/* <IoAdd className="w-5 h-5 text-muted-foreground" /> */}
+                        Add
                       </Button>
                     </div>
                   </div>
@@ -949,190 +965,26 @@ const MenuEditCartProduct = ({
                 // if hindi cupcake
                 <>
                   <div className="w-auto flex flex-col col-span-2">
-                    <div className="grid grid-cols-6 gap-x-2 col-span-2 w-full">
-                      <div className="col-span-3">
-                        <Select
-                          asChild
-                          value={addOns}
-                          onValueChange={(value) => {
-                            setAddOns(value);
-                          }}
-                        >
-                          <SelectTrigger className="w-full mt-1">
-                            <div>
-                              {!addOns.addOnsId
-                                ? "Select add ons"
-                                : addOns.addOnsName}
-                            </div>
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              {addOnsArray?.map((i) => {
-                                return (
-                                  <SelectItem key={i.addOnsId} value={i}>
-                                    {i.addOnsName}
-                                  </SelectItem>
-                                );
-                              })}
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="col-span-1">
-                        <Input
-                          type="number"
-                          min={1}
-                          max={5}
-                          placeholder="Quantity"
-                          value={addOnsQuantity}
-                          onChange={(e) => {
-                            setAddOnsQuantity(e.target.value);
-                          }}
-                        ></Input>
-                      </div>
-
-                      <div className="col-span-1 my-auto text-center">
-                        <Label className="text-primary font-bold text-xl">
-                          ₱{addOnsTotal}.00
-                        </Label>
-                      </div>
-                      <div className="col-span-1 w-full">
-                        <Button
-                          variant="outline"
-                          disabled={!addOns.addOnsId}
-                          className="mt-1 w-fit items-center rounded-full active:bg-white"
-                          // className={`mt-1 w-fit items-center rounded-full active:bg-white ${cartProduct.cakeType == 6 ? "h-5" : "h-10"}`}
-                          onClick={() => {
-                            const randomNum = Math.random();
-
-                            addOnsList?.push({
-                              ...addOns,
-                              cartId: cartProduct.cartId,
-                              customerId: cartProduct.customerId,
-                              addOnsQuantity: Number(addOnsQuantity),
-                              addOnsTotal: addOnsTotal,
-                              cartSpecialPropertyId: 0,
-                              cartAddOnsId: randomNum,
-                            });
-
-                            newAddOnsList?.push({
-                              ...addOns,
-                              cartId: cartProduct.cartId,
-                              customerId: cartProduct.customerId,
-                              addOnsQuantity: Number(addOnsQuantity),
-                              addOnsTotal: addOnsTotal,
-                              cartSpecialPropertyId: 0,
-                              cartAddOnsId: randomNum,
-                            });
-
-                            setAddOns({
-                              cartAddOnsId: 0,
-                              addOnsId: 0,
-                              addOnsName: "",
-                              addOnsPrice: 0,
-                            });
-                            setAddOnsQuantity(0);
-                            setAddOnsTotal(0);
-                          }}
-                        >
-                          <IoAdd className="w-5 h-5 text-muted-foreground" />
-                        </Button>
-                      </div>
-                      {!addOnsList?.length ? null : (
-                        <div className="col-span-6 grid grid-cols-6 h-auto">
-                          <Label className="col-span-6 mt-1 text-center text-lg font-bold">
-                            {cartProduct.cakeTypeId == 6 ||
-                            cartProduct.cakeTypeId == 5
-                              ? "Tier 1 List of Add Ons "
-                              : "List of Add Ons :"}
-                          </Label>
-                          <h1 className="col-span-2 text-md font-semibold">
-                            {" "}
-                            Name
-                          </h1>
-                          <h1 className="col-span-1 text-md font-semibold text-center">
-                            {" "}
-                            Price
-                          </h1>
-                          <h1 className="col-span-1 text-md font-semibold text-center ">
-                            {" "}
-                            Qty
-                          </h1>
-                          <h1 className="col-span-1 text-md font-semibold text-center text-primary">
-                            Subtotal
-                          </h1>
-                          <h1 className="col-span-1 text-md font-semibold text-center text-primary mr-7">
-                            Action
-                          </h1>
-
-                          <div
-                            className={`col-span-6 p-2 border-[1px] border-zinc-200 rounded-sm overflow-y-scroll ${
-                              cartProduct.cakeTypeId == 6
-                                ? "h-[70px]"
-                                : "h-[160px]"
-                            }`}
-                          >
-                            {addOnsList.map((i, index) => {
-                              return (
-                                <div
-                                  key={i.cartAddOnsId}
-                                  className="col-span-6 grid grid-cols-6 border-b-[1px] border-zinc-200 mb-1"
-                                >
-                                  <h1 className="col-span-2 text-sm">
-                                    {" "}
-                                    {i.addOnsName}
-                                  </h1>
-                                  <h1 className="col-span-1 text-sm text-center">
-                                    {" "}
-                                    ₱{i.addOnsPrice}.00
-                                  </h1>
-                                  <h1 className="col-span-1 text-sm text-center">
-                                    {i.addOnsQuantity}
-                                  </h1>
-                                  <h1 className="col-span-1 text-sm font-bold text-center text-primary">
-                                    ₱{i.addOnsTotal}.00
-                                  </h1>
-                                  <Button
-                                    variant="ghost"
-                                    className="col-span-1 text-md font-semibold text-center text-muted-foreground  h-[20px] w-fit mx-auto hover:text-black active:bg-slate-200"
-                                    onClick={() => {
-                                      // nilipat ko pa sa component yung dialog kasi madedelay yung data pag state sila parehas and same component lang inopen si dialog
-                                      setSelectedAddOn(i);
-                                      setOpenConfirmRemoveAddOns(true);
-                                    }}
-                                  >
-                                    <IoIosClose />
-                                  </Button>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    {cartProduct.cakeTypeId == 5 ||
-                    cartProduct.cakeTypeId == 6 ? (
+                    {addOnsList?.length <= 2 ? (
                       <div className="grid grid-cols-6 gap-x-2 col-span-2 w-full">
                         <div className="col-span-3">
                           <Select
                             asChild
-                            value={tier2AddOns}
+                            value={addOns}
                             onValueChange={(value) => {
-                              setTier2AddOns(value);
+                              setAddOns(value);
                             }}
                           >
                             <SelectTrigger className="w-full mt-1">
-                              {/* <SelectValue placeholder="Select a sprinkle" /> */}
-
                               <div>
-                                {!tier2AddOns.addOnsId
-                                  ? "Select tier 2 add ons"
-                                  : tier2AddOns.addOnsName}
+                                {!addOns.addOnsId
+                                  ? "Select add ons"
+                                  : addOns.addOnsName}
                               </div>
                             </SelectTrigger>
                             <SelectContent>
                               <SelectGroup>
-                                {addOnsArray.map((i) => {
+                                {addOnsArray?.map((i) => {
                                   return (
                                     <SelectItem key={i.addOnsId} value={i}>
                                       {i.addOnsName}
@@ -1149,73 +1001,74 @@ const MenuEditCartProduct = ({
                             min={1}
                             max={5}
                             placeholder="Quantity"
-                            value={tier2AddOnsQuantity}
+                            value={addOnsQuantity}
                             onChange={(e) => {
-                              setTier2AddOnsQuantity(e.target.value);
+                              setAddOnsQuantity(e.target.value);
                             }}
                           ></Input>
                         </div>
 
                         <div className="col-span-1 my-auto text-center">
                           <Label className="text-primary font-bold text-xl">
-                            ₱{tier2AddOnsTotal}.00
+                            ₱{addOnsTotal}.00
                           </Label>
                         </div>
                         <div className="col-span-1 w-full">
                           <Button
                             variant="outline"
-                            disabled={!tier2AddOns.addOnsId}
-                            className="mt-1 h-10 w-fit items-center rounded-full active:bg-white"
+                            disabled={!addOns.addOnsId || addOnsQuantity <= 0}
+                            className="mt-1 w-fit items-center rounded-full active:bg-white"
                             onClick={() => {
                               const randomNum = Math.random();
 
-                              tier2AddOnsList?.push({
-                                ...tier2AddOns,
+                              addOnsList?.push({
+                                ...addOns,
                                 cartId: cartProduct.cartId,
                                 customerId: cartProduct.customerId,
-                                addOnsQuantity: tier2AddOnsQuantity,
-                                addOnsTotal: tier2AddOnsTotal,
-                                cartSpecialPropertyId: tier2SpecialPropertyId,
+                                addOnsQuantity: Number(addOnsQuantity),
+                                addOnsTotal: addOnsTotal,
+                                cartSpecialPropertyId: 0,
                                 cartAddOnsId: randomNum,
                               });
 
                               newAddOnsList?.push({
-                                ...tier2AddOns,
+                                ...addOns,
                                 cartId: cartProduct.cartId,
                                 customerId: cartProduct.customerId,
-                                addOnsQuantity: Number(tier2AddOnsQuantity),
-                                addOnsTotal: tier2AddOnsTotal,
-                                cartSpecialPropertyId: tier2SpecialPropertyId,
+                                addOnsQuantity: Number(addOnsQuantity),
+                                addOnsTotal: addOnsTotal,
+                                cartSpecialPropertyId: 0,
                                 cartAddOnsId: randomNum,
                               });
 
-                              setTier2AddOns({
+                              setAddOns({
+                                cartAddOnsId: 0,
                                 addOnsId: 0,
                                 addOnsName: "",
                                 addOnsPrice: 0,
                               });
-                              setTier2AddOnsQuantity(0);
-                              setTier2AddOnsTotal(0);
+                              setAddOnsQuantity(0);
+                              setAddOnsTotal(0);
                             }}
                           >
-                            <IoAdd className="w-5 h-5 text-muted-foreground" />
+                            Add
                           </Button>
                         </div>
-                        {!tier2AddOnsList?.length ? null : (
+                        {!addOnsList?.length ? null : (
                           <div className="col-span-6 grid grid-cols-6 h-auto">
                             <Label className="col-span-6 mt-1 text-center text-lg font-bold">
-                              Tier 2 List of Add Ons :
+                              {cartProduct.cakeTypeId == 6 ||
+                              cartProduct.cakeTypeId == 5
+                                ? "Tier 1 List of Add Ons "
+                                : "List of Add Ons :"}
                             </Label>
                             <h1 className="col-span-2 text-md font-semibold">
-                              {" "}
                               Name
                             </h1>
                             <h1 className="col-span-1 text-md font-semibold text-center">
-                              {" "}
                               Price
                             </h1>
                             <h1 className="col-span-1 text-md font-semibold text-center ">
-                              {" "}
                               Qty
                             </h1>
                             <h1 className="col-span-1 text-md font-semibold text-center text-primary">
@@ -1224,248 +1077,390 @@ const MenuEditCartProduct = ({
                             <h1 className="col-span-1 text-md font-semibold text-center text-primary mr-7">
                               Action
                             </h1>
-
-                            <div
-                              className={`col-span-6 p-2 border-[1px] border-zinc-200 rounded-sm overflow-y-scroll ${
-                                cartProduct.cakeTypeId == 6
-                                  ? "h-[70px]"
-                                  : "h-[160px]"
-                              }`}
-                            >
-                              {tier2AddOnsList.map((i, index) => {
-                                return (
-                                  <div
-                                    key={i.cartAddOnsId}
-                                    className="col-span-6 grid grid-cols-6 border-b-[1px] border-zinc-200 mb-1"
-                                  >
-                                    <h1 className="col-span-2 text-sm">
-                                      {" "}
-                                      {i.addOnsName}
-                                    </h1>
-                                    <h1 className="col-span-1 text-sm text-center">
-                                      {" "}
-                                      ₱{i.addOnsPrice}.00
-                                    </h1>
-                                    <h1 className="col-span-1 text-sm text-center">
-                                      {i.addOnsQuantity}
-                                    </h1>
-                                    <h1 className="col-span-1 text-sm font-bold text-center text-primary">
-                                      ₱{i.addOnsTotal}.00
-                                    </h1>
-                                    <Button
-                                      variant="ghost"
-                                      className="col-span-1 text-md font-semibold text-center text-muted-foreground  h-[20px] w-fit mx-auto hover:text-black active:bg-slate-200"
-                                      onClick={() => {
-                                        // nilipat ko pa sa component yung dialog kasi madedelay yung data pag state sila parehas and same component lang inopen si dialog
-                                        setSelectedAddOn(i);
-                                        setOpenConfirmRemoveAddOns(true);
-
-                                        // const x = tier2AddOnsList.filter(
-                                        //   (j) =>
-                                        //     i.cartAddOnsId != j.cartAddOnsId
-                                        // );
-
-                                        // const y = newAddOnsList.filter(
-                                        //   (j) =>
-                                        //     i.cartAddOnsId != j.cartAddOnsId
-                                        // );
-
-                                        // setNewAddOnsList(y);
-                                        // setTier2AddOnsList(x);
-                                      }}
-                                    >
-                                      <IoIosClose />
-                                    </Button>
-                                  </div>
-                                );
-                              })}
-                            </div>
                           </div>
                         )}
                       </div>
+                    ) : (
+                      <Label className="col-span-6 mt-1 text-center text-lg font-bold">
+                        {cartProduct.cakeTypeId == 6 ||
+                        cartProduct.cakeTypeId == 5
+                          ? "Tier 1 List of Add Ons "
+                          : "List of Add Ons :"}
+                      </Label>
+                    )}
+                    <div
+                      className={`col-span-6 p-2 border-[1px] border-zinc-200 rounded-sm ${
+                        cartProduct.cakeTypeId == 6 ? "h-fit" : "h-fit"
+                      }`}
+                    >
+                      {addOnsList?.map((i, index) => {
+                        return (
+                          <div
+                            key={i.cartAddOnsId}
+                            className="col-span-6 grid grid-cols-6 border-b-[1px] border-zinc-200 mb-1"
+                          >
+                            <h1 className="col-span-2 text-sm">
+                              {" "}
+                              {i.addOnsName}
+                            </h1>
+                            <h1 className="col-span-1 text-sm text-center">
+                              {" "}
+                              ₱{i.addOnsPrice}.00
+                            </h1>
+                            <h1 className="col-span-1 text-sm text-center">
+                              {i.addOnsQuantity}
+                            </h1>
+                            <h1 className="col-span-1 text-sm font-bold text-center text-primary">
+                              ₱{i.addOnsTotal}.00
+                            </h1>
+                            <Button
+                              variant="ghost"
+                              className="col-span-1 text-md font-semibold text-center text-muted-foreground  h-[20px] w-fit mx-auto hover:text-black active:bg-slate-200"
+                              onClick={() => {
+                                setSelectedAddOn(i);
+                                setOpenConfirmRemoveAddOns(true);
+                              }}
+                            >
+                              <IoIosClose />
+                            </Button>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {cartProduct.cakeTypeId == 5 ||
+                    cartProduct.cakeTypeId == 6 ? (
+                      <>
+                        {tier2AddOnsList?.length <= 2 ? (
+                          <div className="grid grid-cols-6 gap-x-2 col-span-2 w-full">
+                            <div className="col-span-3">
+                              <Select
+                                asChild
+                                value={tier2AddOns}
+                                onValueChange={(value) => {
+                                  setTier2AddOns(value);
+                                }}
+                              >
+                                <SelectTrigger className="w-full mt-1">
+                                  <div>
+                                    {!tier2AddOns.addOnsId
+                                      ? "Select tier 2 add ons"
+                                      : tier2AddOns.addOnsName}
+                                  </div>
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectGroup>
+                                    {addOnsArray.map((i) => {
+                                      return (
+                                        <SelectItem key={i.addOnsId} value={i}>
+                                          {i.addOnsName}
+                                        </SelectItem>
+                                      );
+                                    })}
+                                  </SelectGroup>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="col-span-1">
+                              <Input
+                                type="number"
+                                min={1}
+                                max={5}
+                                placeholder="Quantity"
+                                value={tier2AddOnsQuantity}
+                                onChange={(e) => {
+                                  setTier2AddOnsQuantity(e.target.value);
+                                }}
+                              ></Input>
+                            </div>
+
+                            <div className="col-span-1 my-auto text-center">
+                              <Label className="text-primary font-bold text-xl">
+                                {formatter.format(tier2AddOnsTotal)}
+                              </Label>
+                            </div>
+                            <div className="col-span-1 w-full">
+                              <Button
+                                variant="outline"
+                                disabled={
+                                  !tier2AddOns.addOnsId ||
+                                  tier2AddOnsQuantity <= 0
+                                }
+                                className="mt-1 h-10 w-fit items-center rounded-full active:bg-white"
+                                onClick={() => {
+                                  const randomNum = Math.random();
+
+                                  tier2AddOnsList?.push({
+                                    ...tier2AddOns,
+                                    cartId: cartProduct.cartId,
+                                    customerId: cartProduct.customerId,
+                                    addOnsQuantity: tier2AddOnsQuantity,
+                                    addOnsTotal: tier2AddOnsTotal,
+                                    cartSpecialPropertyId:
+                                      tier2SpecialPropertyId,
+                                    cartAddOnsId: randomNum,
+                                  });
+
+                                  newAddOnsList?.push({
+                                    ...tier2AddOns,
+                                    cartId: cartProduct.cartId,
+                                    customerId: cartProduct.customerId,
+                                    addOnsQuantity: Number(tier2AddOnsQuantity),
+                                    addOnsTotal: tier2AddOnsTotal,
+                                    cartSpecialPropertyId:
+                                      tier2SpecialPropertyId,
+                                    cartAddOnsId: randomNum,
+                                  });
+
+                                  setTier2AddOns({
+                                    addOnsId: 0,
+                                    addOnsName: "",
+                                    addOnsPrice: 0,
+                                  });
+                                  setTier2AddOnsQuantity(0);
+                                  setTier2AddOnsTotal(0);
+                                }}
+                              >
+                                Add
+                              </Button>
+                            </div>
+                            {!tier2AddOnsList?.length ? null : (
+                              <div className="col-span-6 grid grid-cols-6 h-auto">
+                                <Label className="col-span-6 mt-1 text-center text-lg font-bold">
+                                  Tier 2 List of Add Ons :
+                                </Label>
+                                <h1 className="col-span-2 text-md font-semibold">
+                                  {" "}
+                                  Name
+                                </h1>
+                                <h1 className="col-span-1 text-md font-semibold text-center">
+                                  {" "}
+                                  Price
+                                </h1>
+                                <h1 className="col-span-1 text-md font-semibold text-center ">
+                                  {" "}
+                                  Qty
+                                </h1>
+                                <h1 className="col-span-1 text-md font-semibold text-center text-primary">
+                                  Subtotal
+                                </h1>
+                                <h1 className="col-span-1 text-md font-semibold text-center text-primary mr-7">
+                                  Action
+                                </h1>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <Label className="col-span-6 mt-1 text-center text-lg font-bold">
+                            Tier 2 List of Add Ons
+                          </Label>
+                        )}
+                        <div
+                          className={`col-span-6 p-2 border-[1px] border-zinc-200 rounded-sm ${
+                            cartProduct.cakeTypeId == 6 ? "h-fit" : "h-fit"
+                          }`}
+                        >
+                          {tier2AddOnsList?.map((i, index) => {
+                            return (
+                              <div
+                                key={i.cartAddOnsId}
+                                className="col-span-6 grid grid-cols-6 border-b-[1px] border-zinc-200 mb-1"
+                              >
+                                <h1 className="col-span-2 text-sm">
+                                  {i.addOnsName}
+                                </h1>
+                                <h1 className="col-span-1 text-sm text-center">
+                                  {formatter.format(i.addOnsPrice)}
+                                </h1>
+                                <h1 className="col-span-1 text-sm text-center">
+                                  {i.addOnsQuantity}
+                                </h1>
+                                <h1 className="col-span-1 text-sm font-bold text-center text-primary">
+                                  {formatter.format(i.addOnsTotal)}
+                                </h1>
+                                <Button
+                                  variant="ghost"
+                                  className="col-span-1 text-md font-semibold text-center text-muted-foreground  h-[20px] w-fit mx-auto hover:text-black active:bg-slate-200"
+                                  onClick={() => {
+                                    setSelectedAddOn(i);
+                                    setOpenConfirmRemoveAddOns(true);
+                                  }}
+                                >
+                                  <IoIosClose />
+                                </Button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </>
                     ) : null}
 
                     {cartProduct.cakeTypeId == 6 ? (
-                      <div className="grid grid-cols-6 gap-x-2 col-span-2 w-full">
-                        <div className="col-span-3">
-                          <Select
-                            asChild
-                            value={tier3AddOns}
-                            onValueChange={(value) => {
-                              setTier3AddOns(value);
-                            }}
-                          >
-                            <SelectTrigger className="w-full mt-1">
-                              {/* <SelectValue placeholder="Select a sprinkle" /> */}
-                              <div>
-                                {!tier3AddOns.addOnsId
-                                  ? "Select tier 3 add ons"
-                                  : tier3AddOns.addOnsName}
-                              </div>
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectGroup>
-                                {addOnsArray.map((i) => {
-                                  return (
-                                    <SelectItem key={i.addOnsId} value={i}>
-                                      {i.addOnsName}
-                                    </SelectItem>
-                                  );
-                                })}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="col-span-1">
-                          <Input
-                            type="number"
-                            min={1}
-                            max={5}
-                            placeholder="Quantity"
-                            value={tier3AddOnsQuantity}
-                            onChange={(e) => {
-                              setTier3AddOnsQuantity(e.target.value);
-                            }}
-                          ></Input>
-                        </div>
-
-                        <div className="col-span-1 my-auto text-center">
-                          <Label className="text-primary font-bold text-xl">
-                            ₱{tier3AddOnsTotal}.00
-                          </Label>
-                        </div>
-                        <div className="col-span-1 w-full">
-                          <Button
-                            variant="outline"
-                            disabled={!tier3AddOns.addOnsId}
-                            className="mt-1 h-10 w-fit items-center rounded-full active:bg-white"
-                            onClick={() => {
-                              const randomNum = Math.random();
-
-                              // let specialPropertyId;
-
-                              // {
-                              //   cartProduct.specialProperty.length == 0
-                              //     ? (specialPropertyId = randomNum)
-                              //     : (specialPropertyId =
-                              //         cartProduct.specialProperty[0]
-                              //           .cartSpecialPropertyId);
-                              // }
-
-                              tier3AddOnsList?.push({
-                                ...tier3AddOns,
-                                cartId: cartProduct.cartId,
-                                customerId: cartProduct.customerId,
-                                addOnsQuantity: tier3AddOnsQuantity,
-                                addOnsTotal: tier3AddOnsTotal,
-                                cartSpecialPropertyId: tier3SpecialPropertyId,
-                                cartAddOnsId: randomNum,
-                              });
-
-                              newAddOnsList?.push({
-                                ...tier3AddOns,
-                                cartId: cartProduct.cartId,
-                                customerId: cartProduct.customerId,
-                                addOnsQuantity: Number(tier3AddOnsQuantity),
-                                addOnsTotal: tier3AddOnsTotal,
-                                cartSpecialPropertyId: tier3SpecialPropertyId,
-                                cartAddOnsId: randomNum,
-                              });
-
-                              setTier2AddOns({
-                                addOnsId: 0,
-                                addOnsName: "",
-                                addOnsPrice: 0,
-                              });
-                              setTier2AddOnsQuantity(0);
-                              setTier2AddOnsTotal(0);
-                            }}
-                          >
-                            <IoAdd className="w-5 h-5 text-muted-foreground" />
-                          </Button>
-                        </div>
-                        {!tier3AddOnsList?.length ? null : (
-                          <div className="col-span-6 grid grid-cols-6 h-auto">
-                            <Label className="col-span-6 mt-1 text-center text-lg font-bold">
-                              Tier 3 List of Add Ons :
-                            </Label>
-                            <h1 className="col-span-2 text-md font-semibold">
-                              {" "}
-                              Name
-                            </h1>
-                            <h1 className="col-span-1 text-md font-semibold text-center">
-                              {" "}
-                              Price
-                            </h1>
-                            <h1 className="col-span-1 text-md font-semibold text-center ">
-                              {" "}
-                              Qty
-                            </h1>
-                            <h1 className="col-span-1 text-md font-semibold text-center text-primary">
-                              Subtotal
-                            </h1>
-                            <h1 className="col-span-1 text-md font-semibold text-center text-primary mr-7">
-                              Action
-                            </h1>
-
-                            <div
-                              className={`col-span-6 p-2 border-[1px] border-zinc-200 rounded-sm overflow-y-scroll ${
-                                cartProduct.cakeTypeId == 6
-                                  ? "h-[70px]"
-                                  : "h-[160px]"
-                              }`}
-                            >
-                              {tier3AddOnsList.map((i, index) => {
-                                return (
-                                  <div
-                                    key={i.cartAddOnsId}
-                                    className="col-span-6 grid grid-cols-6 border-b-[1px] border-zinc-200 mb-1"
-                                  >
-                                    <h1 className="col-span-2 text-sm">
-                                      {" "}
-                                      {i.addOnsName}
-                                    </h1>
-                                    <h1 className="col-span-1 text-sm text-center">
-                                      {" "}
-                                      ₱{i.addOnsPrice}.00
-                                    </h1>
-                                    <h1 className="col-span-1 text-sm text-center">
-                                      {i.addOnsQuantity}
-                                    </h1>
-                                    <h1 className="col-span-1 text-sm font-bold text-center text-primary">
-                                      ₱{i.addOnsTotal}.00
-                                    </h1>
-                                    <Button
-                                      variant="ghost"
-                                      className="col-span-1 text-md font-semibold text-center text-muted-foreground  h-[20px] w-fit mx-auto hover:text-black active:bg-slate-200"
-                                      onClick={() => {
-                                        // nilipat ko pa sa component yung dialog kasi madedelay yung data pag state sila parehas and same component lang inopen si dialog
-                                        setSelectedAddOn(i);
-                                        setOpenConfirmRemoveAddOns(true);
-
-                                        // const x = tier3AddOnsList.filter(
-                                        //   (j) =>
-                                        //     i.cartAddOnsId != j.cartAddOnsId
-                                        // );
-
-                                        // const y = newAddOnsList.filter(
-                                        //   (j) =>
-                                        //     i.cartAddOnsId != j.cartAddOnsId
-                                        // );
-
-                                        // setNewAddOnsList(y);
-                                        // setTier3AddOnsList(x);
-                                      }}
-                                    >
-                                      <IoIosClose />
-                                    </Button>
+                      <>
+                        {tier3AddOnsList?.length <= 1 ? (
+                          <div className="grid grid-cols-6 gap-x-2 col-span-2 w-full">
+                            <div className="col-span-3">
+                              <Select
+                                asChild
+                                value={tier3AddOns}
+                                onValueChange={(value) => {
+                                  setTier3AddOns(value);
+                                }}
+                              >
+                                <SelectTrigger className="w-full mt-1">
+                                  <div>
+                                    {!tier3AddOns.addOnsId
+                                      ? "Select tier 3 add ons"
+                                      : tier3AddOns.addOnsName}
                                   </div>
-                                );
-                              })}
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectGroup>
+                                    {addOnsArray.map((i) => {
+                                      return (
+                                        <SelectItem key={i.addOnsId} value={i}>
+                                          {i.addOnsName}
+                                        </SelectItem>
+                                      );
+                                    })}
+                                  </SelectGroup>
+                                </SelectContent>
+                              </Select>
                             </div>
+                            <div className="col-span-1">
+                              <Input
+                                type="number"
+                                min={1}
+                                max={5}
+                                placeholder="Quantity"
+                                value={tier3AddOnsQuantity}
+                                onChange={(e) => {
+                                  setTier3AddOnsQuantity(e.target.value);
+                                }}
+                              ></Input>
+                            </div>
+
+                            <div className="col-span-1 my-auto text-center">
+                              <Label className="text-primary font-bold text-xl">
+                                {formatter.format(tier3AddOnsTotal)}
+                              </Label>
+                            </div>
+                            <div className="col-span-1 w-full">
+                              <Button
+                                variant="outline"
+                                disabled={
+                                  !tier3AddOns.addOnsId ||
+                                  tier3AddOnsQuantity <= 0
+                                }
+                                className="mt-1 h-10 w-fit items-center rounded-full active:bg-white"
+                                onClick={() => {
+                                  const randomNum = Math.random();
+
+                                  tier3AddOnsList?.push({
+                                    ...tier3AddOns,
+                                    cartId: cartProduct.cartId,
+                                    customerId: cartProduct.customerId,
+                                    addOnsQuantity: tier3AddOnsQuantity,
+                                    addOnsTotal: tier3AddOnsTotal,
+                                    cartSpecialPropertyId:
+                                      tier3SpecialPropertyId,
+                                    cartAddOnsId: randomNum,
+                                  });
+
+                                  newAddOnsList?.push({
+                                    ...tier3AddOns,
+                                    cartId: cartProduct.cartId,
+                                    customerId: cartProduct.customerId,
+                                    addOnsQuantity: Number(tier3AddOnsQuantity),
+                                    addOnsTotal: tier3AddOnsTotal,
+                                    cartSpecialPropertyId:
+                                      tier3SpecialPropertyId,
+                                    cartAddOnsId: randomNum,
+                                  });
+
+                                  setTier2AddOns({
+                                    addOnsId: 0,
+                                    addOnsName: "",
+                                    addOnsPrice: 0,
+                                  });
+                                  setTier2AddOnsQuantity(0);
+                                  setTier2AddOnsTotal(0);
+                                }}
+                              >
+                                Add
+                              </Button>
+                            </div>
+                            {!tier3AddOnsList?.length ? null : (
+                              <div className="col-span-6 grid grid-cols-6 h-auto">
+                                <Label className="col-span-6 mt-1 text-center text-lg font-bold">
+                                  Tier 3 List of Add Ons :
+                                </Label>
+                                <h1 className="col-span-2 text-md font-semibold">
+                                  {" "}
+                                  Name
+                                </h1>
+                                <h1 className="col-span-1 text-md font-semibold text-center">
+                                  {" "}
+                                  Price
+                                </h1>
+                                <h1 className="col-span-1 text-md font-semibold text-center ">
+                                  {" "}
+                                  Qty
+                                </h1>
+                                <h1 className="col-span-1 text-md font-semibold text-center text-primary">
+                                  Subtotal
+                                </h1>
+                                <h1 className="col-span-1 text-md font-semibold text-center text-primary mr-7">
+                                  Action
+                                </h1>
+                              </div>
+                            )}
                           </div>
+                        ) : (
+                          <Label className="col-span-6 mt-1 text-center text-lg font-bold">
+                            Tier 3 List of Add Ons
+                          </Label>
                         )}
-                      </div>
+
+                        <div
+                          className={`col-span-6 p-2 border-[1px] border-zinc-200 rounded-sm  ${
+                            cartProduct.cakeTypeId == 6 ? "h-fit" : "h-fit"
+                          }`}
+                        >
+                          {tier3AddOnsList?.map((i, index) => {
+                            return (
+                              <div
+                                key={i.cartAddOnsId}
+                                className="col-span-6 grid grid-cols-6 border-b-[1px] border-zinc-200 mb-1"
+                              >
+                                <h1 className="col-span-2 text-sm">
+                                  {" "}
+                                  {i.addOnsName}
+                                </h1>
+                                <h1 className="col-span-1 text-sm text-center">
+                                  {formatter.format(i.addOnsPrice)}
+                                </h1>
+                                <h1 className="col-span-1 text-sm text-center">
+                                  {i.addOnsQuantity}
+                                </h1>
+                                <h1 className="col-span-1 text-sm font-bold text-center text-primary">
+                                  {formatter.format(i.addOnsTotal)}
+                                </h1>
+                                <Button
+                                  variant="ghost"
+                                  className="col-span-1 text-md font-semibold text-center text-muted-foreground  h-[20px] w-fit mx-auto hover:text-black active:bg-slate-200"
+                                  onClick={() => {
+                                    setSelectedAddOn(i);
+                                    setOpenConfirmRemoveAddOns(true);
+                                  }}
+                                >
+                                  <IoIosClose />
+                                </Button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </>
                     ) : null}
 
                     {/* PAG WALANG LAMAN OR PAG COMMON(?) WALANG ILALAGAY SA UI */}
@@ -1707,8 +1702,8 @@ const MenuEditCartProduct = ({
               <div className="w-[70%] flex flex-row gap-3">
                 <div className="ml-auto">
                   <Label className={`text-primary text-3xl font-extrabold`}>
-                    <span className="text-black">Subtotal:</span> ₱{totalPrice}
-                    .00
+                    <span className="text-black">Subtotal:</span>
+                    {formatter.format(totalPrice)}
                   </Label>
                 </div>
 
@@ -1780,7 +1775,7 @@ const MenuEditCartProduct = ({
                     shapeId: editedCartProduct.shapeId,
                     colorId: editedCartProduct.colorId,
                     quantity: editedCartProduct.quantity,
-                    subTotal: editedCartProduct.subTotal,
+                    subTotal: editedCartProduct.totalPrice,
                     message: editedCartProduct.message,
                     imageReference: imageRef,
                   }),
@@ -1790,6 +1785,11 @@ const MenuEditCartProduct = ({
                     `http://localhost:3000/api/customer/cart`,
                     putData
                   );
+
+                  setAlertMessage("Product edited successfully.");
+                  setAlertTitle("Success!");
+                  setAlertType("success");
+                  openRequestAlert();
 
                   // special prop updating
 
@@ -1914,30 +1914,38 @@ const MenuEditCartProduct = ({
           setNewAddOnsList={setNewAddOnsList}
         />
       ) : null}
+
+      {/* ALERT */}
+      {alertMessageOpen ? (
+        <ToastProvider swipeDirection="up" duration={3000}>
+          <Toast className="w-fit h-fit mr-5" variant={alertType}>
+            <div className="flex flex-row gap-2">
+              <div className=" mt-2">
+                {alertType == "warning" && (
+                  <IoWarningOutline className="w-[45px] h-[30px]" />
+                )}
+                {alertType == "info" && (
+                  <IoInformationCircleOutline className="w-[45px] h-[30px]" />
+                )}
+                {alertType == "success" && (
+                  <IoCheckmarkCircleOutline className="w-[45px] h-[30px]" />
+                )}
+              </div>
+              <div className="flex flex-col gap-1">
+                <ToastTitle className="text-lg">{alertTitle}</ToastTitle>
+                <ToastDescription className="text-sm font-light">
+                  {alertMessage}
+                </ToastDescription>
+              </div>
+            </div>
+
+            <ToastClose />
+          </Toast>
+          <ToastViewport />
+        </ToastProvider>
+      ) : null}
     </>
   );
 };
 
 export default MenuEditCartProduct;
-
-{
-  /* <Button
-                    variant="outline"
-                    disabled={!color.colorId}
-                    className="mt-1 h-10 w-fit items-center"
-                    onClick={() => {
-                      setColor({
-                        colorId: 0,
-                        colorName: "",
-                        colorPrice: 0,
-                      });
-
-                      setPrices((prev) => ({
-                        ...prev,
-                        colorPrice: Number(0),
-                      }));
-                    }}
-                  >
-                    <IoIosClose className="w-5 h-5 text-muted-foreground" />
-                  </Button> */
-}

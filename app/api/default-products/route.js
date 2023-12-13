@@ -11,6 +11,8 @@ async function con() {
   return connection;
 }
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const connection = await con();
 
@@ -35,7 +37,7 @@ export async function GET() {
   LEFT JOIN customization_flavor ON customization_flavor.flavorId = default_products.flavorId
   LEFT JOIN customization_color ON customization_color.colorId = default_products.colorId
   LEFT JOIN customization_shape ON customization_shape.shapeId = default_products.shapeId
-  LEFT JOIN customization_packaging ON customization_packaging.packagingId = default_products.packagingId`;
+  LEFT JOIN customization_packaging ON customization_packaging.packagingId = default_products.packagingId ORDER BY packagingPrice ASC`;
   const results = await connection.execute(query);
   connection.end();
 

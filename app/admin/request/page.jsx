@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import MiniAdminSidebar from "../components/MiniAdminSidebar";
-import RequestModuleAdmin from "../components/RequestModuleAdmin";
+import RequestModuleAdmin from "../components/pages/Request/RequestModuleAdmin";
 
 export default function AdminRequest() {
   const [loggedInUserId, setLoggedInUserId] = useState("");

@@ -11,6 +11,8 @@ async function con() {
   return connection;
 }
 
+export const dynamic = "force-dynamic";
+
 export async function PUT(request) {
   try {
     const connection = await con();
@@ -20,12 +22,11 @@ export async function PUT(request) {
       customerRequestId,
       moneyRefunded,
       responseMessage,
-      responseImage,
       requestStatus,
       isRejected,
     } = reqBody;
 
-    const query = `UPDATE customer_request SET moneyRefunded ='${moneyRefunded}', isRejected='${isRejected}', requestStatus='${requestStatus}', responseMessage ='${responseMessage}', responseImage='${responseImage}' WHERE customerRequestId = ${customerRequestId}`;
+    const query = `UPDATE customer_request SET moneyRefunded ='${moneyRefunded}', isRejected='${isRejected}', requestStatus='${requestStatus}', responseMessage ='${responseMessage}' WHERE customerRequestId = ${customerRequestId}`;
 
     const results = await connection.execute(query);
     connection.end();

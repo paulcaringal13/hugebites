@@ -69,10 +69,16 @@ const Footer = () => {
                   <p className="text-white my-auto">happyhugebites@gmail.com</p>
                 </div>
                 <div className="flex flex-row h-full gap-2">
-                  <a className="rounded-full p-2 bg-ring text-white">
+                  <a
+                    className="rounded-full p-2 bg-ring text-white"
+                    href="https://www.facebook.com/happyhugebites"
+                  >
                     <FaFacebookF />
                   </a>
-                  <a className="rounded-full p-2 bg-ring text-white">
+                  <a
+                    className="rounded-full p-2 bg-ring text-white"
+                    href="https://www.instagram.com/happyhugebites/"
+                  >
                     <FaInstagram />
                   </a>
                 </div>

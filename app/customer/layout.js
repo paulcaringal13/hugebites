@@ -4,14 +4,12 @@ import Footer from "./components/Footer";
 
 export default function CustomerLayout({ children }) {
   return (
-    <div className="bg-white overflow-hidden">
+    <div className="h-fit">
       <title>Huge Bites</title>
-      <div className="h-fit w-full">{children}</div>
-      <section>
-        <div className="h-fit" style={{ width: "100vw" }}>
-          <Footer />
-        </div>
-      </section>
+      <div className="h-fit">{children}</div>
+      <div className="h-auto bottom-0" style={{ width: "100vw" }}>
+        <Footer />
+      </div>
     </div>
   );
 }

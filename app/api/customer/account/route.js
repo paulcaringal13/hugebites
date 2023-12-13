@@ -13,13 +13,15 @@ async function con() {
   return connection;
 }
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request) {
   const connection = await con();
 
   const { searchParams } = new URL(request.url);
   const customerId = searchParams.get("customerId");
 
-  const query = `SELECT accounts.accountId, tbl_customer.customerId, accounts.avatar, accounts.email,accounts.username, accounts.contact, accounts.userRole, tbl_customer.customerId, tbl_customer.firstName, tbl_customer.lastName, tbl_customer.address, tbl_customer.totalSpent FROM tbl_customer LEFT JOIN accounts ON accounts.accountId = tbl_customer.accountId WHERE tbl_customer.customerId = ${customerId}`;
+  const query = `SELECT accounts.accountId, accounts.password, tbl_customer.customerId, accounts.avatar, accounts.email,accounts.username, accounts.contact, accounts.userRole, tbl_customer.customerId, tbl_customer.firstName, tbl_customer.lastName, tbl_customer.address, tbl_customer.totalSpent FROM tbl_customer LEFT JOIN accounts ON accounts.accountId = tbl_customer.accountId WHERE tbl_customer.customerId = ${customerId}`;
   const res = await connection.execute(query);
   connection.end();
 
@@ -49,17 +51,14 @@ export async function PUT(req) {
   try {
     const connection = await con();
 
-    const { searchParams } = new URL(req.url);
-    const accountId = searchParams.get("accountId");
-
     const reqBody = await req.json();
-    const { firstName, lastName, email, password, age, contact } = reqBody;
+    const { accountId, email, contact, username } = reqBody;
 
-    const query = `UPDATE accounts SET firstName ='${firstName}', lastName ='${lastName}', email ='${email}', password='${password}', age ='${age}', contact ='${contact}' WHERE accountId = ${accountId}`;
+    const query = `UPDATE accounts SET email ='${email}', contact ='${contact}', username ='${username}' WHERE accountId = ${accountId}`;
     const results = await connection.execute(query);
     connection.end();
 
-    return NextResponse.json({ results });
+    return NextResponse.json(results[0]);
   } catch (error) {
     console.log(error);
   }

@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import CategoryIconCake from "../../../public/images/categories/CategoryIconCake.png";
 import CategoryIconCupcake from "../../../public/images/categories/CategoryIconCupcake.png";
 import CategoryIconDog from "../../../public/images/categories/CategoryIconDog.png";
-import CategoryIconCustomized from "../../../public/images/categories/CategoryIconCustomized.png";
 import CategoryIconAll from "../../../public/images/categories/CategoryIconAll.png";
 
 import MenuCart from "../components/MenuCart";
@@ -23,6 +22,11 @@ import lodash from "lodash";
 const MenuProductMenu = ({ prodArray, categoryArray }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "PHP",
+  });
+
   const [productList, setProductList] = useState([]);
   const [products, setProducts] = useState([]);
 
@@ -60,6 +64,7 @@ const MenuProductMenu = ({ prodArray, categoryArray }) => {
     setProductList(prods);
     setProducts(prods);
   }, [prodArray]);
+
   return (
     <>
       <div className="w-full h-fit my-8">
@@ -83,19 +88,18 @@ const MenuProductMenu = ({ prodArray, categoryArray }) => {
                 setProducts(productList);
               }}
             >
+              <p className="w-full font-extralight text-xs text-center">
+                All Cakes
+              </p>
               <Card className="w-fit h-fit p-1 border-accent border-2 cursor-pointer transform transition-all hover:scale-110 duration-700">
                 <div
                   style={{
-                    width: "100px",
-                    height: "100px",
+                    width: "60px",
+                    height: "60px",
                     backgroundImage: `url('/images/categories/CategoryIconAll.png')`,
                     backgroundSize: "cover",
                   }}
-                >
-                  <p className="w-full font-extralight text-xs text-center">
-                    All Cakes
-                  </p>
-                </div>
+                ></div>
               </Card>
             </button>
             {categoryArray.map((ctg) => {
@@ -110,37 +114,22 @@ const MenuProductMenu = ({ prodArray, categoryArray }) => {
                     setProducts(listOfCakes);
                   }}
                 >
+                  <p className="w-full font-extralight text-xs text-center">
+                    {ctg.categoryName}
+                  </p>
                   <Card className="w-fit h-fit p-1 border-accent border-2 cursor-pointer transform transition-all hover:scale-110 duration-700">
                     <div
                       style={{
-                        width: "100px",
-                        height: "100px",
+                        width: "60px",
+                        height: "60px",
                         backgroundImage: `url('${ctg.categoryImage}')`,
                         backgroundSize: "cover",
                       }}
-                    >
-                      <p className="w-full font-extralight text-xs text-center">
-                        {ctg.categoryName}
-                      </p>
-                    </div>
+                    ></div>
                   </Card>
                 </button>
               );
             })}
-            {/* <Card className="w-fit h-fit p-1 border-accent border-2 cursor-pointer transform transition-all hover:scale-110 duration-700">
-              <div
-                style={{
-                  width: "100px",
-                  height: "100px",
-                  backgroundImage: `url('${CategoryIconCustomized.src}')`,
-                  backgroundSize: "cover",
-                }}
-              >
-                <p className="w-full font-extralight text-xs text-center">
-                  Customized
-                </p>
-              </div>
-            </Card> */}
           </Card>
 
           <div className="h-fit">
@@ -152,6 +141,19 @@ const MenuProductMenu = ({ prodArray, categoryArray }) => {
               </div>
             ) : (
               <div className="grid grid-cols-3 gap-x-2 gap-y-2 mt-5 h-full w-full">
+                <h1
+                  className="col-span-3 text-5xl text-primary w-fit text-center mx-auto flex"
+                  style={{ fontWeight: "950" }}
+                >
+                  Cake Designs
+                </h1>
+                <h1
+                  className="col-span-3 text-md mt-1 mb-4 w-[60%] mx-auto flex text-center "
+                  style={{ fontWeight: "600" }}
+                >
+                  OUR REGULAR OFFER PLUS VARIOUS COMBINATIONS. DON&apos;T WAIT,
+                  CHOOSE YOUR HUGE BITES NOW!
+                </h1>
                 {paginatedList.map((prod) => {
                   return (
                     <Card
@@ -197,24 +199,7 @@ const MenuProductMenu = ({ prodArray, categoryArray }) => {
                               <TooltipProvider key={i.packagingId}>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <div
-                                      className="h-7 w-7 border-2 p-1 rounded-full text-xs text-center active:bg-primary hover:outline-none hover:border-rose-400 hover:bg-rose-400 hover:text-white"
-                                      // update price pag nag cliclick
-                                      // onClick={() => {
-                                      // setProducts((prev) => {
-                                      //   // find index of product sa array
-                                      //   const idx = prev.findIndex(
-                                      //     (j) => j.productId === prod.productId
-                                      //   );
-                                      //   const newProds = [...prev];
-                                      //   newProds[idx] = {
-                                      //     ...newProds[idx],
-                                      //     priceDisplay: i.packagingPrice,
-                                      //   };
-                                      //   return newProds;
-                                      // });
-                                      // }}
-                                    >
+                                    <div className="h-7 w-7 border-2 p-1 rounded-full text-xs text-center active:bg-primary hover:outline-none hover:border-rose-400 hover:bg-rose-400 hover:text-white">
                                       {Array.from(`${i.size}`)[0]}
                                       {Array.from(`${i.size}`)[1]}
                                     </div>
@@ -229,7 +214,9 @@ const MenuProductMenu = ({ prodArray, categoryArray }) => {
                         </div>
                         <div className="flex flex-row justify-between">
                           <h1 className="text-ring text-lg font-extrabold my-2">
-                            {`₱${prod.minPrice}.00 ~ ₱${prod.maxPrice}.00`}
+                            {`${formatter.format(
+                              prod.minPrice
+                            )} ~ ${formatter.format(prod.maxPrice)}`}
                           </h1>
                           <Button
                             className="bg-ring pb-2 hover:bg-primary h-8 w-9 my-auto text-center active:bg-primary-foreground"

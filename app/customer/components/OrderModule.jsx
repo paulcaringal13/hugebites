@@ -28,6 +28,10 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 
 const OrderModule = ({ userData }) => {
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "PHP",
+  });
   const params = useParams();
   const { userId } = params;
 
@@ -65,8 +69,9 @@ const OrderModule = ({ userData }) => {
       const datePickupStr = dayjs(i.datePickUp).format("MMMM DD, YYYY");
       const dateOrderedStr = dayjs(i.dateOrdered).format("MMMM DD, YYYY");
       const refundDeadlineStr = dayjs(i.refundDeadline).format("MMMM DD, YYYY");
-      const totalPriceStr = `₱${i.totalPrice}.00`;
-      const amountPaidStr = `₱${i.amountPaid}.00`;
+      const totalPriceStr = formatter.format(i.totalPrice);
+
+      const amountPaidStr = formatter.format(i.amountPaid);
 
       return {
         ...i,
@@ -245,7 +250,6 @@ const OrderModule = ({ userData }) => {
 
   // request
   const [sendRequest, setSendRequest] = useState(false);
-
   const [requestMessage, setRequestMessage] = useState("");
 
   const uploadRefundImage = async (e) => {
@@ -316,6 +320,85 @@ const OrderModule = ({ userData }) => {
 
           return { ...i };
         });
+
+        const emailPost = {
+          method: "POST",
+          header: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from: "admin",
+            to: selectedOrder.email,
+            subject: `Customer ${selectedOrder.customerId}, Refund Request Id : ${insertId}`,
+            html: `
+            <div
+            style="width: 100%; height: auto"
+          >
+            <h1
+              style="
+                width: fit-content;
+                height: fit-content;
+                font-size: 0.875rem;
+                line-height: 1.25rem;
+                font-weight: 300;
+              "
+            >
+              Greetings, 
+              <span style="font-weight: 700">${selectedOrder.firstName}</span>!
+            </h1>
+            <p
+              style="
+              font-size: 0.875rem;
+              line-height: 1.25rem; 
+              
+                font-weight: 300;
+                text-align: justify;
+                text-indent: 2rem;
+              "
+            >
+            We received your refund request and are reviewing it promptly. We're committed to a fair and timely
+            resolution, considering our refund policy.  Your patience is appreciated. For additional details, reply to this email or contact us at
+            <span style="font-weight: 700">hugebitesofficial@gmail.com</span> or <span style="font-weight: 700">0927 662 3221</span>.
+            </p>
+          <p
+          style="
+          font-size: 0.875rem;
+          line-height: 1.25rem; 
+          
+            font-weight: 300;
+            text-align: justify;
+            text-indent: 2rem;
+          "
+          >
+          Thank you for understanding.
+          </p>
+          <p
+            style="
+            font-size: 0.875rem;
+            line-height: 1.25rem; 
+
+              font-weight: 300;
+              text-align: justify;
+            "
+          >
+          <br>
+          Best regards,<br>
+          <br>
+          <span style="font-weight:700">HugeBites</span>
+          </p>
+          </div>
+            `,
+          }),
+        };
+        try {
+          const emailNotifRes = await fetch(
+            `http://localhost:3000/api/email`,
+            emailPost,
+            { cache: "no-store" }
+          );
+        } catch (e) {
+          console.log(e);
+        }
 
         setOrdersTable(newTable);
         setAlertMessage(
@@ -445,7 +528,9 @@ const OrderModule = ({ userData }) => {
                             </div>
                             <div className="text-xs font-semibold h-fit transition-all">
                               Subtotal:
-                              <span className=" ml-4">₱{i.subTotal}.00</span>
+                              <span className=" ml-4">
+                                {formatter.format(i.subTotal)}
+                              </span>
                             </div>
                             <div className="text-xs font-semibold h-fit transition-all">
                               Size:

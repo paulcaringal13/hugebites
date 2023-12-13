@@ -29,7 +29,7 @@ export default function Orders(path) {
   }, []);
 
   return (
-    <main className="Home flex flex-row h-screen">
+    <main className="Home flex flex-row h-auto">
       <div className="">
         <CustomerSidebar account={userData} />
       </div>
@@ -37,11 +37,10 @@ export default function Orders(path) {
         style={{
           height: "100%",
           width: "100%",
-          overflowY: "scroll",
           bgcolor: "red",
         }}
       >
-        <HomePageNavbar userId={userId}/>
+        <HomePageNavbar userId={userId} />
         <OrderModule userData={userData} />
       </div>
     </main>

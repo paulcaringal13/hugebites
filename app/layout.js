@@ -18,25 +18,3 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
-
-// const [loggedInUserName, setLoggedInUserName] = useState("");
-// const [loggedInUserId, setLoggedInUserId] = useState("");
-
-// useEffect(() => {
-//   const userId =
-//     typeof window !== "undefined" && window.localStorage
-//       ? localStorage.getItem("accountId")
-//       : "";
-//   const userName =
-//     typeof window !== "undefined" && window.localStorage
-//       ? localStorage.getItem("userName")
-//       : "";
-
-//   {
-//     userId && setLoggedInUserId(userId);
-//   }
-
-//   {
-//     userName && setLoggedInUserName(userName);
-//   }
-// }, []);

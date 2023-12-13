@@ -13,6 +13,8 @@ async function con() {
   return connection;
 }
 
+export const dynamic = "force-dynamic";
+
 // FOR SIGN IN BOTH NI EMPLOYEE AND ADMINS. BINABALIK NITO YUNG ACCOUNT ID PARA MAGAMIT FOR GETTING THEIR NAMES ON TBL_EMPLOYEES
 export async function GET(request) {
   const connection = await con();
@@ -21,7 +23,7 @@ export async function GET(request) {
   const username = searchParams.get("username");
   const password = searchParams.get("password");
 
-  const query = `SELECT accountId FROM accounts WHERE username = '${username}' OR email = '${username}' AND password = '${password}' AND accountType = '0';`;
+  const query = `SELECT accountId FROM accounts WHERE username = '${username}' OR email = '${username}' AND password = PASSWORD('${password}') AND accountType = '0';`;
   const res = await connection.execute(query);
   connection.end();
 

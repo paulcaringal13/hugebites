@@ -17,6 +17,19 @@ import {
   DialogFooter,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Toast,
+  ToastClose,
+  ToastDescription,
+  ToastProvider,
+  ToastTitle,
+  ToastViewport,
+} from "@/components/ui/toast";
+import {
+  IoInformationCircleOutline,
+  IoCheckmarkCircleOutline,
+  IoWarningOutline,
+} from "react-icons/io5";
 import MenuCheckOutForm from "./MenuCheckOutForm";
 import { useParams } from "next/navigation";
 
@@ -32,7 +45,6 @@ const MenuModule = ({
   shapes,
   categoryArray,
 }) => {
-  console.log(user);
   const params = useParams();
   const { userId } = params;
 
@@ -44,11 +56,33 @@ const MenuModule = ({
   const [cartProduct, setCartProduct] = useState({});
   const [productPrices, setProductPrices] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [orderPrice, setOrderPrice] = useState(0);
 
   const [openEditCartProduct, setOpenEditCartProduct] = useState(false);
   const [openRemoveCartProduct, setOpenRemoveCartProduct] = useState(false);
   const [openMenuCheckOut, setOpenMenuCheckOut] = useState(false);
   const [specificProductSizes, setSpecificProductSizes] = useState([]);
+
+  const [voucher, setVoucher] = useState({});
+
+  const openCheckOutForm = (voucherSelected, total) => {
+    setVoucher(voucherSelected);
+    setOrderPrice(total);
+    setOpenMenuCheckOut(true);
+  };
+
+  // alert state
+  const [alertMessageOpen, setAlertMessageOpen] = useState(false);
+  const [alertTitle, setAlertTitle] = useState(false);
+  const [alertType, setAlertType] = useState(false);
+  const [alertMessage, setAlertMessage] = useState(false);
+
+  const openRequestAlert = () => {
+    setAlertMessageOpen(true);
+    setTimeout(() => {
+      setAlertMessageOpen(false);
+    }, 3000);
+  };
 
   const handleCartRemoveProduct = (prod) => {
     setCartProduct(prod);
@@ -221,16 +255,12 @@ const MenuModule = ({
       const specialProp = specialPropertyList.filter(
         (prop) => prop.cartId == cartId
       );
-      let sum = subTotal;
-      addOns.forEach((j) => {
-        sum += j.addOnsTotal * quantity;
-      });
+
       return {
         ...i,
         addOns,
         specialProperty: specialProp,
         subTotal: subTotal,
-        totalPrice: sum,
       };
     });
 
@@ -317,7 +347,7 @@ const MenuModule = ({
   const updateTotal = () => {
     let totalPrice = 0;
     cartList.forEach((i) => {
-      userId == i.customerId ? (totalPrice = totalPrice + i.totalPrice) : null;
+      userId == i.customerId ? (totalPrice = totalPrice + i.subTotal) : null;
     });
 
     setTotalPrice(totalPrice);
@@ -364,7 +394,8 @@ const MenuModule = ({
             getCartProductPrices={getCartProductPrices}
             getAddOnsPrices={getAddOnsPrices}
             totalPrice={totalPrice}
-            setOpenMenuCheckOut={setOpenMenuCheckOut}
+            openCheckOutForm={openCheckOutForm}
+            page={"menu"}
           />
         </div>
       </div>
@@ -415,6 +446,10 @@ const MenuModule = ({
                 );
 
                 setCartList(newCartList);
+                setAlertMessage("Product removed to cart.");
+                setAlertTitle("Success!");
+                setAlertType("success");
+                openRequestAlert();
                 setOpenRemoveCartProduct(false);
               }}
             >
@@ -446,11 +481,43 @@ const MenuModule = ({
       {!openMenuCheckOut ? null : (
         <MenuCheckOutForm
           cart={cartList}
-          orderPrice={totalPrice}
+          totalPrice={totalPrice}
+          orderPrice={orderPrice}
           openMenuCheckOut={openMenuCheckOut}
           setOpenMenuCheckOut={setOpenMenuCheckOut}
+          voucher={voucher}
         />
       )}
+
+      {/* ALERT */}
+      {alertMessageOpen ? (
+        <ToastProvider swipeDirection="up" duration={3000}>
+          <Toast className="w-fit h-fit mr-5" variant={alertType}>
+            <div className="flex flex-row gap-2">
+              <div className=" mt-2">
+                {alertType == "warning" && (
+                  <IoWarningOutline className="w-[45px] h-[30px]" />
+                )}
+                {alertType == "info" && (
+                  <IoInformationCircleOutline className="w-[45px] h-[30px]" />
+                )}
+                {alertType == "success" && (
+                  <IoCheckmarkCircleOutline className="w-[45px] h-[30px]" />
+                )}
+              </div>
+              <div className="flex flex-col gap-1">
+                <ToastTitle className="text-lg">{alertTitle}</ToastTitle>
+                <ToastDescription className="text-sm font-light">
+                  {alertMessage}
+                </ToastDescription>
+              </div>
+            </div>
+
+            <ToastClose />
+          </Toast>
+          <ToastViewport />
+        </ToastProvider>
+      ) : null}
     </div>
   );
 };

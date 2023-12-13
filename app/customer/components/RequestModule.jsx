@@ -32,6 +32,10 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 
 const RequestModule = ({ userData }) => {
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "PHP",
+  });
   const params = useParams();
   const { userId } = params;
 
@@ -69,14 +73,12 @@ const RequestModule = ({ userData }) => {
 
   const cancelRefundRequest = async () => {
     const cancelPut = {
-      method: "PUT",
+      method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         orderId: selectedRequest.orderId,
-        requestStatus: "Cancelled",
-        isCancelled: 1,
       }),
     };
 
@@ -85,16 +87,33 @@ const RequestModule = ({ userData }) => {
       cancelPut
     );
 
-    const newTable = requestTable.map((i) => {
-      i.orderId == selectedRequest.orderId ? (i.isCancelled = 1) : null;
-      i.orderId == selectedRequest.orderId
-        ? (i.requestStatus = "Cancelled")
-        : null;
+    const orderPut = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        orderId: selectedRequest.orderId,
+        hasRequest: "0",
+      }),
+    };
 
-      return { ...i };
-    });
+    const res = await fetch(
+      `http://localhost:3000/api/customer/request/cancel`,
+      orderPut
+    );
 
-    setRequestTable(newTable);
+    // const newTable = requestTable.map((i) => {
+    //   i.orderId == selectedRequest.orderId ? (i.isCancelled = 1) : null;
+    //   i.orderId == selectedRequest.orderId
+    //     ? (i.requestStatus = "Cancelled")
+    //     : null;
+
+    //   return { ...i };
+    // });
+
+    // setRequestTable(newTable);
+    window.location.reload(true);
     setSelectedRequest();
     setAlertMessage("Request for refund cancelled.");
     setAlertTitle("Success!");
@@ -132,7 +151,7 @@ const RequestModule = ({ userData }) => {
     const requests = results.map((i) => {
       const dateRequestedStr = dayjs(i.dateRequested).format("MMMM DD, YYYY");
       const refundDeadlineStr = dayjs(i.refundDeadline).format("MMMM DD, YYYY");
-      const totalPriceStr = `₱${i.totalPrice}.00`;
+      const totalPriceStr = formatter.format(i.totalPrice);
 
       return {
         ...i,
@@ -271,7 +290,7 @@ const RequestModule = ({ userData }) => {
           <DialogContent className="max-w-full max-h-full md:w-fit md:h-fit flex flex-col p-0">
             <div className="flex flex-col gap-1 h-auto w-full px-4 py-6">
               <DialogTitle className="h-fit mb-5 pr-16">
-                You can only send request once! Confirm cancel request.
+                Confirm cancel request.
               </DialogTitle>
 
               <div className="flex flex-row gap-2">

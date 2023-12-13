@@ -11,6 +11,8 @@ async function con() {
   return connection;
 }
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request, path) {
   const connection = await con();
 
@@ -27,7 +29,7 @@ export async function POST(request, path) {
     accStatus,
   } = reqBody;
   try {
-    const query = `INSERT INTO accounts ( email, password, username, contact, accountType, userRole, isDeactivated, accStatus) VALUES ('${email}', '${password}', '${username}', '${contact}', '${accountType}', '${userRole}', '${isDeactivated}', '${accStatus}')`;
+    const query = `INSERT INTO accounts ( email, password, username, contact, accountType, userRole, isDeactivated, accStatus) VALUES ('${email}', PASSWORD('${password}'), '${username}', '${contact}', '${accountType}', '${userRole}', '${isDeactivated}', '${accStatus}')`;
     const results = await connection.execute(query, []);
     connection.end();
     return NextResponse.json(results);

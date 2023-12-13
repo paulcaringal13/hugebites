@@ -15,8 +15,8 @@ import { useRouter } from "next/navigation";
 
 const HomePageNavbar = ({ userId }) => {
   const router = useRouter();
-  console.log("nav", userId);
   const [avatar, setAvatar] = useState("");
+  const [account, setAccount] = useState({});
 
   const getAccountInfo = async () => {
     const res = await fetch(
@@ -31,6 +31,7 @@ const HomePageNavbar = ({ userId }) => {
     const results = await res.json();
 
     const { accountInfo } = results;
+    setAccount(accountInfo);
     setAvatar(accountInfo.avatar);
   };
 
@@ -90,9 +91,21 @@ const HomePageNavbar = ({ userId }) => {
                     className="w-fit me-20 mt-2"
                     side="bottom"
                   >
-                    <DropdownMenuItem>Profile</DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => router.replace("/customer/sign-in")}
+                      onClick={() =>
+                        router.replace(
+                          `/customer/edit-profile/${account.customerId}`
+                        )
+                      }
+                    >
+                      Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        localStorage.clear();
+
+                        router.replace("/customer/sign-in");
+                      }}
                     >
                       Logout
                     </DropdownMenuItem>

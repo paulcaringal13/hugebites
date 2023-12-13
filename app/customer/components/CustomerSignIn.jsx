@@ -25,39 +25,42 @@ const CustomerSignIn = ({ customerAccounts, tableCustomerAccounts }) => {
   const [isNotExisting, setIsNotExisting] = useState(false);
 
   const onSubmit = async () => {
-    // FIND IF THE USER INPUT IS EXISTING IN THE DATABASE
-    const account = customerAccounts.find(
-      (acc) =>
-        (username == acc.username &&
-          password == acc.password &&
-          acc.isDeactivated == 0) ||
-        (username == acc.email &&
-          password == acc.password &&
-          acc.isDeactivated == 0)
+    const res = await fetch(
+      `http://localhost:3000/api/customer/sign-in/tbl_customer?` +
+        new URLSearchParams({
+          username: username,
+          password: password,
+        })
     );
+    const results = await res.json();
 
-    let customerAcc;
-    !account
-      ? null
-      : (customerAcc = tableCustomerAccounts.find(
-          (i) => account.accountId == i.accountId
-        ));
+    let account;
 
-    console.log(customerAcc);
+    !results ? null : (account = results);
 
     // IF NOTHING IS FOUND, SET ERROR MESSAGE TO TRUE
     {
-      !account ? setIsNotExisting(true) : redirectPage(customerAcc);
+      account.length == 0 ? setIsNotExisting(true) : redirectPage(account[0]);
     }
   };
 
   const redirectPage = (account) => {
     // REDIRECT TO HOMEPAGE WITH THE USER ID
+    localStorage.setItem("accountId", account.accountId);
+    localStorage.setItem("customerId", account.customerId);
+    localStorage.setItem("firstName", account.firstName);
+    localStorage.setItem("lastName", account.lastName);
+    localStorage.setItem("email", account.email);
+    localStorage.setItem("contact", account.contact);
+    localStorage.setItem("totalSpent", account.totalSpent);
+    localStorage.setItem("avatar", account.avatar);
+    localStorage.setItem("isFirstLogged", true);
+
     router.replace(`home/${account.customerId}`);
   };
 
   return (
-    <Card className="border-zinc-400 w-3/6 mx-auto">
+    <Card className="border-zinc-400 w-3/6 ml-auto mr-14 mt-4">
       <CardHeader>
         <CardTitle>Sign In</CardTitle>
       </CardHeader>
@@ -97,7 +100,7 @@ const CustomerSignIn = ({ customerAccounts, tableCustomerAccounts }) => {
           </a>
         </span>
         <Button
-          className="w-36 ms-auto hover:bg-ring "
+          className="w-36 ms-auto hover:bg-ring active:bg-primary-foreground"
           onClick={() => onSubmit()}
         >
           Sign In

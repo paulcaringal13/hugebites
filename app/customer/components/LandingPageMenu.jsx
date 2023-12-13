@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import CategoryIconCake from "../../../public/images/categories/CategoryIconCake.png";
 import CategoryIconCupcake from "../../../public/images/categories/CategoryIconCupcake.png";
 import CategoryIconDog from "../../../public/images/categories/CategoryIconDog.png";
-import CategoryIconCustomized from "../../../public/images/categories/CategoryIconCustomized.png";
 import CategoryIconAll from "../../../public/images/categories/CategoryIconAll.png";
 
 import MenuCart from "../components/MenuCart";
@@ -19,6 +18,10 @@ import {
 import { Button } from "@/components/ui/button";
 
 const LandingPageMenu = ({ prodArray, categoryArray }) => {
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "PHP",
+  });
   const router = useRouter();
   const pathname = usePathname();
   const [productList, setProductList] = useState([]);
@@ -101,20 +104,6 @@ const LandingPageMenu = ({ prodArray, categoryArray }) => {
                 </button>
               );
             })}
-            <Card className="w-fit h-fit p-1 border-accent border-2 cursor-pointer transform transition-all hover:scale-110 duration-700">
-              <div
-                style={{
-                  width: "100px",
-                  height: "100px",
-                  backgroundImage: `url('${CategoryIconCustomized.src}')`,
-                  backgroundSize: "cover",
-                }}
-              >
-                <p className="w-full font-extralight text-xs text-center">
-                  Customized
-                </p>
-              </div>
-            </Card>
           </Card>
 
           <div className="h-fit">
@@ -125,7 +114,7 @@ const LandingPageMenu = ({ prodArray, categoryArray }) => {
                 </h1>
               </div>
             ) : (
-              <div className="grid grid-cols-3 gap-x-2 gap-y-2 mt-5 h-full w-full">
+              <div className="grid grid-cols-4 gap-x-1 gap-y-2 mt-5 h-full w-full">
                 {products.map((prod) => {
                   return (
                     <Card
@@ -203,7 +192,9 @@ const LandingPageMenu = ({ prodArray, categoryArray }) => {
                         </div>
                         <div className="flex flex-row justify-between">
                           <h1 className="text-ring text-lg font-extrabold my-2">
-                            {`₱${prod.minPrice}.00 ~ ₱${prod.maxPrice}.00`}
+                            {`${formatter.format(
+                              prod.minPrice
+                            )} ~ ${formatter.format(prod.maxPrice)}`}
                           </h1>
                           <Button
                             className="bg-ring pb-2 hover:bg-primary h-8 w-9 my-auto text-center active:bg-primary-foreground"

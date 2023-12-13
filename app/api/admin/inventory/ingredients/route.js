@@ -13,6 +13,8 @@ async function con() {
   return connection;
 }
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const connection = await con();
 

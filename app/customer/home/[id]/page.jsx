@@ -1,11 +1,17 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import HomePageNavbar from "../../components/HomePageNavbar";
 import CustomerSidebar from "../../components/CustomerSidebar";
-import Link from "next/link";
+import HomePage from "../../components/Home/HomePage";
+import TermsAndConditions from "../../components/Home/TermsAndConditions";
 
-export default async function Home(path) {
+export default function Home(path) {
   const { params } = path;
   const { id } = params;
+
+  const [userData, setUserData] = useState({});
+  const [openTermsAndConditions, setOpenTermsAndConditions] = useState(false);
+  const [isFirstTime, setIsFirstTime] = useState();
 
   // GET ALL USER DATA NEEDED
   async function getUserData() {
@@ -19,23 +25,42 @@ export default async function Home(path) {
 
     const data = await res.json();
 
-    return data;
+    const isFirstLogged =
+      typeof window !== "undefined" && window.localStorage
+        ? localStorage.getItem("isFirstLogged")
+        : "";
+
+    isFirstLogged == "false" ? null : setIsFirstTime(true);
+
+    setUserData(data);
   }
 
-  const userData = await getUserData();
+  useEffect(() => {
+    getUserData();
+  }, []);
 
-  const redirect = () => {
-    <Link href={`/customer/menu/${userData.accountId}`}>ASD</Link>;
-  };
+  useEffect(() => {
+    isFirstTime && setOpenTermsAndConditions(true);
+
+    getUserData();
+  }, [isFirstTime]);
 
   return (
-    <main className="Home flex flex-row h-screen">
+    <main className="Home flex flex-row h-fit bg-accent">
       <div className="z-10">
         <CustomerSidebar account={userData} />
       </div>
       <div className="flex flex-col w-full">
-        <HomePageNavbar />
-        <div style={{ height: "100%" }}></div>
+        <HomePageNavbar userId={userData.customerId} />
+        <div className="h-auto w-full">
+          {!isFirstTime ? null : (
+            <TermsAndConditions
+              openTermsAndConditions={openTermsAndConditions}
+              setOpenTermsAndConditions={setOpenTermsAndConditions}
+            />
+          )}
+          <HomePage userData={userData} />
+        </div>
       </div>
     </main>
   );

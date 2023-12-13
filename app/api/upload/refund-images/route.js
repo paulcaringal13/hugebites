@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { join } from "path";
 import { writeFile } from "fs/promises";
 import dayjs from "dayjs";
+export const dynamic = "force-dynamic";
 
 export async function POST(request) {
   const currentDateAndTime = dayjs().format("MM/D/YYYY-H:mm:ss");

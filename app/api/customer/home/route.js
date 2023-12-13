@@ -11,6 +11,8 @@ async function con() {
   return connection;
 }
 
+export const dynamic = "force-dynamic";
+
 // GET LOGGED IN USER
 export async function GET(request) {
   const connection = await con();

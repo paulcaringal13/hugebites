@@ -11,10 +11,14 @@ async function con() {
   return connection;
 }
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const connection = await con();
 
-  const query = `SELECT * FROM customization_flavor`;
+  const query = `SELECT DISTINCT customization_flavor.*, product_categories.categoryName
+  FROM customization_flavor
+  LEFT JOIN product_categories ON customization_flavor.categoryId = product_categories.categoryId;`;
   const results = await connection.execute(query);
   connection.end();
 
@@ -25,9 +29,15 @@ export async function POST(req, res) {
   const connection = await con();
 
   const reqBody = await req.json();
-  const { flavorName, flavorPrice, flavorStatus, flavorDescription } = reqBody;
+  const {
+    flavorName,
+    flavorPrice,
+    flavorStatus,
+    flavorDescription,
+    categoryId,
+  } = reqBody;
   try {
-    const query = `INSERT INTO customization_flavor (flavorName, flavorPrice, flavorStatus, flavorDescription) VALUES ('${flavorName}', '${flavorPrice}',  '${flavorStatus}', '${flavorDescription}')`;
+    const query = `INSERT INTO customization_flavor (flavorName, flavorPrice, flavorStatus, flavorDescription, categoryId) VALUES ('${flavorName}', '${flavorPrice}',  '${flavorStatus}', '${flavorDescription}' , '${categoryId}')`;
     const results = await connection.execute(query);
     connection.end();
 

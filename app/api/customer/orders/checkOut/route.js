@@ -11,6 +11,8 @@ async function con() {
   return connection;
 }
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req, res) {
   try {
     const connection = await con();
@@ -26,8 +28,15 @@ export async function POST(req, res) {
       refundDeadline,
       orderStatus,
       methodOfPayment,
+      customerVoucherId,
+      hasVoucher,
     } = reqBody;
-    const query = `INSERT INTO orders (totalPrice, customerId, dateOrdered, datePickUp, paymentDeadline, refundDeadline, orderStatus, methodOfPayment) VALUES ('${totalPrice}', '${customerId}', '${dateOrdered}', '${datePickUp}', '${paymentDeadline}', '${refundDeadline}', '${orderStatus}', '${methodOfPayment}')`;
+    let query;
+
+    !customerVoucherId
+      ? (query = `INSERT INTO orders (totalPrice, customerId, dateOrdered, datePickUp, paymentDeadline, refundDeadline, orderStatus, methodOfPayment, hasVoucher) VALUES ('${totalPrice}', '${customerId}', '${dateOrdered}', '${datePickUp}', '${paymentDeadline}', '${refundDeadline}', '${orderStatus}', '${methodOfPayment}', '${hasVoucher}')`)
+      : (query = `INSERT INTO orders (totalPrice, customerId, dateOrdered, datePickUp, paymentDeadline, refundDeadline, orderStatus, methodOfPayment, customerVoucherId, hasVoucher) VALUES ('${totalPrice}', '${customerId}', '${dateOrdered}', '${datePickUp}', '${paymentDeadline}', '${refundDeadline}', '${orderStatus}', '${methodOfPayment}', '${customerVoucherId}', '${hasVoucher}')`);
+
     const results = await connection.execute(query);
     connection.end();
 

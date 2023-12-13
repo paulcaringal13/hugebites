@@ -1,6 +1,5 @@
 "use client";
 import "../../styles/globals.css";
-import MenuCart from "../components/MenuCart";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
@@ -12,7 +11,6 @@ import {
   SelectGroup,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
@@ -26,29 +24,26 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { IoIosClose } from "react-icons/io";
 import { IoReturnUpBackOutline } from "react-icons/io5";
-import AlertDialog from "../components/AlertDialog";
-import { useForm } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
-
-import { toast } from "@/components/ui/use-toast";
-import { IoAdd } from "react-icons/io5";
 
 const MenuSelectedProduct = ({
   user,
   addToCart,
   flavors,
+  sizes,
   colors,
   shapes,
   listOfAddOns,
   selectedProduct,
   openAddToCartConfirmation,
   setOpenAddToCartConfirmation,
-  responseSuccess,
-  responseError,
   specificProductOffers,
 }) => {
   const router = useRouter();
-
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "PHP",
+  });
   // SPECIAL CAKES STATES
 
   // PAG COMMON CAKE ITO NALANG ANG IPASA PARA NULL AT HINDI NA MAADD SA DATABASE
@@ -336,7 +331,6 @@ const MenuSelectedProduct = ({
     addOnsName: "",
     addOnsPrice: 0,
   });
-
   const [addOnsArray, setAddOnsArray] = useState([]);
 
   const [addOnsTotal, setAddOnsTotal] = useState(0);
@@ -375,6 +369,7 @@ const MenuSelectedProduct = ({
     colorId: 0,
     colorPrice: 0,
     colorName: "",
+    colorHex: "",
   });
   const [shape, setShape] = useState({
     shapeId: null,
@@ -386,6 +381,7 @@ const MenuSelectedProduct = ({
   const [subTotal, setSubTotal] = useState();
 
   const [totalPrice, setTotalPrice] = useState(0);
+  const [selectedSize, setSelectedSize] = useState("");
   const [file, setFile] = useState();
   const [image, setImage] = useState("");
   const [viewImageAttachment, setViewImageAttachment] = useState(false);
@@ -398,6 +394,8 @@ const MenuSelectedProduct = ({
   const [isSizeInvalid, setIsSizeInvalid] = useState(false);
   const [isFlavorInvalid, setIsFlavorInvalid] = useState(false);
   const [isColorInvalid, setIsColorInvalid] = useState(false);
+
+  const [priceDisplay, setPriceDisplay] = useState(0);
 
   // STATE FOR PRICES OF THE ORDER
   const [prices, setPrices] = useState({
@@ -413,6 +411,69 @@ const MenuSelectedProduct = ({
       ...prevState,
       [name]: value,
     }));
+  };
+
+  const setOfferedProductProperties = (i) => {
+    let colorHex;
+
+    i.colorName == "Navy Blue" ? (colorHex = "#0077dd") : null;
+    i.colorName == "Red" ? (colorHex = "#ff5252") : null;
+    i.colorName == "Black" ? (colorHex = "#313131") : null;
+    i.colorName == "Pink" ? (colorHex = "#ff63ca") : null;
+    i.colorName == "Purple" ? (colorHex = "#be29ec") : null;
+    i.colorName == "White" ? (colorHex = "#ececec") : null;
+    i.colorName == "Green" ? (colorHex = "#00ff83") : null;
+
+    setSize({
+      packagingId: i.packagingId,
+      packagingPrice: i.packagingPrice,
+      size: i.size,
+    });
+    setFlavor({
+      flavorId: i.flavorId,
+      flavorName: i.flavorName,
+      flavorPrice: i.flavorPrice,
+    });
+    setColor({
+      colorId: i.colorId,
+      colorPrice: i.colorPrice,
+      colorName: i.colorName,
+      colorHex: colorHex,
+    });
+    setShape({
+      shapeId: i.shapeId,
+      shapePrice: i.shapePrice,
+      shapeName: i.shapeName,
+    });
+    setNumberShape([
+      {
+        specialPropertyName: "None",
+        specialPropertyValue: 0,
+      },
+    ]);
+  };
+  const setCustomizedProperties = () => {
+    setSize({
+      packagingId: 0,
+      packagingPrice: 0,
+      size: "",
+    });
+    setFlavor({
+      flavorId: 0,
+      flavorName: "",
+      flavorPrice: 0,
+    });
+    setColor({
+      colorId: 0,
+      colorPrice: 0,
+      colorName: "",
+      // colorHex: colorHex,
+    });
+    setShape({
+      shapeId: null,
+      shapePrice: 0,
+      shapeName: "",
+    });
   };
 
   useEffect(() => {
@@ -450,25 +511,22 @@ const MenuSelectedProduct = ({
     let addOnsSum = 0;
     addOnsList?.forEach((i) => {
       addOnsSum = addOnsSum + Number(i.addOnsTotal) * quantity;
-      console.log("addOnsTotal", addOnsTotal);
     });
 
     let tier2AddOnsSum = 0;
     tier2AddOnsList?.forEach((i) => {
       tier2AddOnsSum = tier2AddOnsSum + Number(i.addOnsTotal) * quantity;
-      console.log("Tier2addOnsTotal", addOnsTotal);
     });
 
     let tier3AddOnsSum = 0;
     tier3AddOnsList?.forEach((i) => {
       tier3AddOnsSum = tier3AddOnsSum + Number(i.addOnsTotal) * quantity;
-      console.log("Tier3addOnsTotal", addOnsTotal);
     });
 
     let totalPrice = sum + addOnsSum + tier2AddOnsSum + tier3AddOnsSum;
 
     setTotalPrice(totalPrice);
-    setSubTotal(sum);
+    setSubTotal(totalPrice);
   }, [
     prices,
     quantity,
@@ -489,7 +547,6 @@ const MenuSelectedProduct = ({
   useEffect(() => {
     setTier3AddOnsTotal(tier3AddOns.addOnsPrice * tier3AddOnsQuantity);
   }, [tier3AddOns, tier3AddOnsQuantity]);
-  console.log("flavorPrice", flavor);
   useEffect(() => {
     setAddOnsArray(listOfAddOns);
   }, [listOfAddOns]);
@@ -505,11 +562,15 @@ const MenuSelectedProduct = ({
     );
 
     const cupcakeFlavors = flavors.filter(
-      (i) => i.flavorId == 1 || i.flavorId == 2
+      (i) => i.flavorId == 300400 || i.flavorId == 300401
     );
 
     {
-      selectedProduct.categoryId == 8003 || selectedProduct.cakeTypeId == 7
+      selectedProduct.categoryId == 8003 ||
+      selectedProduct.cakeTypeId == 7 ||
+      selectedProduct.cakeTypeId == 3 ||
+      selectedProduct.cakeTypeId == 2 ||
+      selectedProduct.cakeTypeId == 4
         ? setFlavorOptions(cupcakeFlavors)
         : setFlavorOptions(flavorSelect);
     }
@@ -521,60 +582,23 @@ const MenuSelectedProduct = ({
   useEffect(() => {
     setCustomizedProperties();
   }, [isCakeCustomized]);
+  useEffect(() => {
+    const specificProdSizes = sizes.filter(
+      (i) => selectedProduct.productId == i.productId
+    );
 
-  const setOfferedProductProperties = (i) => {
-    setSize({
-      packagingId: i.packagingId,
-      packagingPrice: i.packagingPrice,
-      size: i.size,
-    });
-    setFlavor({
-      flavorId: i.flavorId,
-      flavorName: i.flavorName,
-      flavorPrice: i.flavorPrice,
-    });
-    setColor({
-      colorId: i.colorId,
-      colorPrice: i.colorPrice,
-      colorName: i.colorName,
-    });
-    setShape({
-      shapeId: i.shapeId,
-      shapePrice: i.shapePrice,
-      shapeName: i.shapeName,
-    });
-    setNumberShape([
-      {
-        specialPropertyName: "None",
-        specialPropertyValue: 0,
-      },
-    ]);
-  };
-  const setCustomizedProperties = () => {
-    setSize({
-      packagingId: 0,
-      packagingPrice: 0,
-      size: "",
-    });
-    setFlavor({
-      flavorId: 0,
-      flavorName: "",
-      flavorPrice: 0,
-    });
-    setColor({
-      colorId: 0,
-      colorPrice: 0,
-      colorName: "",
-    });
-    setShape({
-      shapeId: null,
-      shapePrice: 0,
-      shapeName: "",
-    });
-  };
+    const sizesCost = specificProdSizes.map((size) =>
+      Number(size.packagingPrice)
+    );
+
+    const min = Math.min(...sizesCost);
+    const max = Math.max(...sizesCost);
+
+    setPriceDisplay(`${formatter.format(min)} ~ ${formatter.format(max)}`);
+  }, [selectedProduct]);
 
   return (
-    <>
+    <div className="h-full">
       <div className="h-fit w-full">
         <div className="w-max text-left">
           <nav aria-label="breadcrumb">
@@ -622,92 +646,52 @@ const MenuSelectedProduct = ({
             </ol>
           </nav>
         </div>
-        <div className="flex flex-row">
-          <Card
-            className="flex flex-col gap-3 rounded-xl"
-            style={{ width: "40%", height: "500px" }}
-          >
-            <div
-              className="rounded-t-xl"
-              style={{
-                width: "100%",
-                height: "70%",
-                backgroundImage: `url('${selectedProduct.image}')`,
-                backgroundPosition: "center",
-                backgroundSize: "cover",
-              }}
-            ></div>
-            <CardContent className="flex flex-col gap-3 rounded-xl">
-              <CardTitle>{selectedProduct.productName}</CardTitle>
-              <div className="flex flex-row gap-2">
-                <Badge
-                  variant="outline"
-                  className="text-black bg-white h-fit w-fit"
-                >
-                  {selectedProduct.categoryName}
-                </Badge>
+        <div className="flex flex-row h-fit">
+          <div className="flex flex-col h-fit w-[40%] gap-2">
+            <Card
+              className="flex flex-col gap-3 rounded-xl"
+              style={{ width: "100%", height: "400px" }}
+            >
+              <div
+                className="rounded-t-xl"
+                style={{
+                  width: "100%",
+                  height: "70%",
+                  backgroundImage: `url('${selectedProduct.image}')`,
+                  backgroundPosition: "center",
+                  backgroundSize: "cover",
+                }}
+              ></div>
+              <CardContent className="flex flex-col gap-3 rounded-xl">
+                <CardTitle>{selectedProduct.productName}</CardTitle>
+                <div className="flex flex-row gap-2">
+                  <Badge
+                    variant="outline"
+                    className="text-black bg-white h-fit w-fit"
+                  >
+                    {selectedProduct.categoryName}
+                  </Badge>
 
-                <Badge
-                  variant="outline"
-                  className="text-white bg-primary text-xs"
-                >
-                  {selectedProduct.isSpecial ? "Special Cake" : "Common Cake"}
-                </Badge>
-              </div>
-
-              <div className="flex flex-row gap-2">
-                <p className="text-xs font-extralight text-muted-foreground my-auto">
-                  Sizes:
-                </p>
-                {specificProductOffers?.map((i, index) => {
-                  return i.isDefaultProductRemoved == 0 ? (
-                    <Button
-                      key={i.defaultProductId}
-                      variant="outline"
-                      className={`h-7 w-7 border-2 p-1 my-auto cursor-pointer rounded-full text-xs text-center active:bg-primary focus:outline-none focus:border-rose-400 focus:bg-rose-400 focus:text-white ${
-                        size.packagingId == i.packagingId
-                          ? "bg-rose-400 border-rose-400 text-white"
-                          : "bg-transparent"
-                      }`}
-                      onClick={() => {
-                        {
-                          size && setIsSizeInvalid(false);
-                        }
-
-                        !i.shapeId ? (i.shapeName = "Default") : null;
-
-                        !i.colorId ? (i.colorName = "Default") : null;
-
-                        setOfferedProductProperties(i);
-
-                        // FOR CUSTOMIZATION DONT DELETE
-                        // {
-                        //   size && setIsSizeInvalid(false);
-                        // }
-                        // setSize(i);
-                      }}
-                    >
-                      {Array.from(`${i.size}`)[0]}
-                      {Array.from(`${i.size}`)[1]}
-                    </Button>
-                  ) : null;
-                })}
-                <span className="text-ring"> *</span>
-                {isSizeInvalid || size.packagingId == 0 ? (
-                  <Label className="errorMessage mb-1">Select size!</Label>
-                ) : null}
-              </div>
-
-              {!totalPrice ? null : (
-                <h1 className="text-primary text-xl font-extrabold">
-                  ₱{totalPrice}.00
-                </h1>
-              )}
-            </CardContent>
-          </Card>
+                  <Badge
+                    variant="outline"
+                    className="text-white bg-primary text-xs"
+                  >
+                    {selectedProduct.isSpecial ? "Special Cake" : "Common Cake"}
+                  </Badge>
+                </div>
+                <Label className="text-lg font-extrabold">{priceDisplay}</Label>
+              </CardContent>
+            </Card>
+            <Label className="text-2xl w-full font-extrabold text-justify">
+              Description
+            </Label>
+            <Label className="indent-8 w-full text-sm text-justify">
+              {selectedProduct.productDescription}
+            </Label>
+          </div>
           <div
-            className="mx-7 grid grid-cols-2 gap-x-2"
-            style={{ width: "60%", height: "500px" }}
+            className="h-fit mx-7 grid grid-cols-2 gap-x-2"
+            style={{ width: "60%" }}
           >
             <Label className="font-extrabold text-2xl col-span-1">
               Cake Details
@@ -729,6 +713,43 @@ const MenuSelectedProduct = ({
 
             <Separator className="my-2 col-span-2" />
             {/* <div className="flex flex-row flex-wrap gap-1"> */}
+            <div className="flex flex-col gap-2 col-span-2">
+              <Label className="mt-1">
+                Sizes:<span className="text-ring"> *</span>
+              </Label>
+              <div className="flex flex-row flex-wrap gap-2 ml-10">
+                {specificProductOffers?.map((i, index) => {
+                  return i.isDefaultProductRemoved == 0 ? (
+                    <Button
+                      key={i.defaultProductId}
+                      variant="outline"
+                      className={`h-fit w-fit border-[1px] px-4 py-2 my-auto cursor-pointer text-sm text-center active:bg-primary focus:outline-none focus:border-rose-400 focus:bg-rose-400 focus:text-white ${
+                        size.packagingId == i.packagingId
+                          ? "bg-rose-400 border-rose-400 text-white"
+                          : "bg-transparent"
+                      }`}
+                      onClick={() => {
+                        {
+                          size && setIsSizeInvalid(false);
+                        }
+
+                        !i.shapeId ? (i.shapeName = "Default") : null;
+
+                        !i.colorId ? (i.colorName = "Default") : null;
+
+                        setOfferedProductProperties(i);
+                        setSelectedSize(i);
+                      }}
+                    >
+                      {i.size}
+                    </Button>
+                  ) : null;
+                })}
+                {isSizeInvalid ? (
+                  <Label className="errorMessage mb-1">Select size!</Label>
+                ) : null}
+              </div>
+            </div>
 
             <Label className="col-span-1 mt-1">
               Flavor<span className="text-ring"> *</span>
@@ -764,15 +785,6 @@ const MenuSelectedProduct = ({
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-
-                {/* <Button
-                  variant="outline"
-                  disabled={!flavor.flavorId || !isCakeCustomized}
-                  className="mt-1 h-10 w-fit items-center"
-                  onClick={() => setFlavor("")}
-                >
-                  <IoIosClose className="w-5 h-5 text-muted-foreground" />
-                </Button> */}
               </div>
               {isFlavorInvalid ? (
                 <Label className="errorMessage mb-1">Select a flavor!</Label>
@@ -784,11 +796,34 @@ const MenuSelectedProduct = ({
                 <Select
                   asChild
                   value={!color.colorId ? color.colorName : color}
-                  onValueChange={setColor}
+                  onValueChange={(i) => {
+                    let colorHex;
+
+                    i.colorName == "Navy Blue" ? (colorHex = "#0077dd") : null;
+                    i.colorName == "Red" ? (colorHex = "#ff5252") : null;
+                    i.colorName == "Black" ? (colorHex = "#313131") : null;
+                    i.colorName == "Pink" ? (colorHex = "#ff63ca") : null;
+                    i.colorName == "Purple" ? (colorHex = "#be29ec") : null;
+                    i.colorName == "White" ? (colorHex = "#ececec") : null;
+                    i.colorName == "Green" ? (colorHex = "#00ff83") : null;
+
+                    setColor({
+                      colorName: i.colorName,
+                      colorId: i.colorId,
+                      colorPrice: i.colorPrice,
+                      colorHex: colorHex,
+                    });
+                  }}
                   disabled={!isCakeCustomized}
                 >
                   <SelectTrigger className="w-full mt-1">
                     {!color.colorId ? "Default" : color.colorName}
+                    {!color.colorId ? null : (
+                      <div
+                        className="h-full w-[23px] ml-auto mr-4 rounded-sm"
+                        style={{ backgroundColor: `${color.colorHex}` }}
+                      ></div>
+                    )}
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
@@ -1075,488 +1110,561 @@ const MenuSelectedProduct = ({
             ) : null}
 
             {/* add ons may condition kasi walang add ons ang cupcake kaya if 8003 or cupcake ang category ni product walang ipapakita */}
-            {selectedProduct.categoryId != 8003 ? (
-              <>
+            {selectedProduct.categoryId == 8001 ? (
+              <div className="col-span-2 mt-4">
                 <Label className="font-extrabold text-2xl col-span-2 mt-2">
                   Add Ons
                 </Label>
                 <Separator className="my-2 col-span-2" />
-                <div className="grid grid-cols-6 gap-x-2 col-span-2 w-full">
-                  <div className="col-span-3">
-                    <Select
-                      asChild
-                      value={addOns}
-                      onValueChange={(value) => {
-                        setAddOns(value);
-                      }}
-                    >
-                      <SelectTrigger className="w-full mt-1">
-                        {/* <SelectValue placeholder="Select a sprinkle" /> */}
-                        <div>
-                          {!addOns.addOnsId
-                            ? "Select add ons"
-                            : addOns.addOnsName}
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {addOnsArray.map((i) => {
-                            return (
-                              <SelectItem key={i.addOnsId} value={i}>
-                                {i.addOnsName}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="col-span-1">
-                    <Input
-                      type="number"
-                      min={1}
-                      max={5}
-                      placeholder="Quantity"
-                      value={addOnsQuantity}
-                      onChange={(e) => {
-                        setAddOnsQuantity(e.target.value);
-                      }}
-                    ></Input>
-                  </div>
+                {addOnsList.length <= 2 ? (
+                  <div className="col-span-2">
+                    <div className="grid grid-cols-6 gap-x-2 col-span-2 w-full">
+                      <div className="col-span-3">
+                        <Select
+                          asChild
+                          value={addOns}
+                          onValueChange={(value) => {
+                            setAddOns(value);
+                          }}
+                        >
+                          <SelectTrigger className="w-full mt-1">
+                            <div className="h-full w-full text-start ml-2 font-extrabold">
+                              {!addOns.addOnsId
+                                ? "Select add ons"
+                                : addOns.addOnsName}
+                            </div>
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              {addOnsArray.map((i) => {
+                                return (
+                                  <SelectItem key={i.addOnsId} value={i}>
+                                    {i.addOnsName}
+                                  </SelectItem>
+                                );
+                              })}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="col-span-1">
+                        <Input
+                          type="number"
+                          className="font-extrabold"
+                          min={1}
+                          max={5}
+                          placeholder="qty"
+                          value={addOnsQuantity}
+                          onChange={(e) => {
+                            setAddOnsQuantity(e.target.value);
+                          }}
+                        ></Input>
+                      </div>
 
-                  <div className="col-span-1 my-auto text-center">
-                    <Label className="text-primary font-bold text-xl">
-                      ₱{addOnsTotal}.00
+                      <div className="col-span-1 my-auto text-center">
+                        <Label className="text-ring font-bold text-xl">
+                          {formatter.format(addOnsTotal)}
+                        </Label>
+                      </div>
+                      <div className="col-span-1 w-full">
+                        <Button
+                          variant="outline"
+                          disabled={!addOns.addOnsId || addOnsQuantity <= 0}
+                          className="mt-1 h-10 w-fit items-center rounded-full active:bg-white"
+                          onClick={() => {
+                            const randomNum = Math.random();
+
+                            addOnsList.push({
+                              ...addOns,
+                              cartId: cartProduct.cartId,
+                              customerId: cartProduct.customerId,
+                              addOnsQuantity: addOnsQuantity,
+                              addOnsTotal: addOnsTotal,
+                              cartAddOnsId: randomNum,
+                            });
+
+                            setAddOns({
+                              addOnsId: 0,
+                              addOnsName: "",
+                              addOnsPrice: 0,
+                            });
+                            setAddOnsQuantity(0);
+                            setAddOnsTotal(0);
+                          }}
+                        >
+                          Add
+                        </Button>
+                      </div>
+                      {!addOnsList.length ? null : (
+                        <>
+                          <Label className="col-span-6 mt-1 text-center text-lg font-bold">
+                            List of Add Ons :
+                          </Label>
+                          <h1 className="col-span-1 text-md font-semibold">
+                            Name
+                          </h1>
+                          <h1 className="col-span-1 text-md font-semibold text-center">
+                            Price
+                          </h1>
+                          <h1 className="col-span-1 text-md font-semibold text-center ">
+                            Qty
+                          </h1>
+                          <h1 className="col-span-1 text-md font-semibold text-center text-primary">
+                            Subtotal
+                          </h1>
+                          <h1 className="col-span-2 text-md font-semibold text-center text-primary mr-7">
+                            Action
+                          </h1>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-full flex">
+                    <Label className="col-span-6 mt-1 text-center text-lg font-bold mx-auto">
+                      List of Add Ons :
                     </Label>
                   </div>
-                  <div className="col-span-1 w-full">
-                    <Button
-                      variant="outline"
-                      disabled={!addOns.addOnsId}
-                      className="mt-1 h-10 w-fit items-center rounded-full active:bg-white"
-                      onClick={() => {
-                        const randomNum = Math.random();
+                )}
+                {addOnsList.map((i, index) => {
+                  return (
+                    <div key={index} className="col-span-6 grid grid-cols-6">
+                      <Separator className="my-1 col-span-6" />
 
-                        addOnsList.push({
-                          ...addOns,
-                          cartId: cartProduct.cartId,
-                          customerId: cartProduct.customerId,
-                          addOnsQuantity: addOnsQuantity,
-                          addOnsTotal: addOnsTotal,
-                          cartAddOnsId: randomNum,
-                        });
+                      <h1 className="col-span-1 text-sm"> {i.addOnsName}</h1>
+                      <h1 className="col-span-1 text-sm text-center">
+                        {formatter.format(i.addOnsPrice)}
+                      </h1>
+                      <h1 className="col-span-1 text-sm text-center">
+                        {i.addOnsQuantity}
+                      </h1>
+                      <h1 className="col-span-1 text-sm font-bold text-center text-primary">
+                        {formatter.format(i.addOnsTotal)}
+                      </h1>
+                      <Button
+                        variant="ghost"
+                        className="col-span-2 text-md font-semibold text-center text-muted-foreground  h-[20px] w-fit mx-auto hover:text-black active:bg-slate-200"
+                        onClick={() => {
+                          const updatedAddOnsList = addOnsList.filter(
+                            (j) => j.cartAddOnsId != i.cartAddOnsId
+                          );
 
-                        setAddOns({
-                          addOnsId: 0,
-                          addOnsName: "",
-                          addOnsPrice: 0,
-                        });
-                        setAddOnsQuantity(0);
-                        setAddOnsTotal(0);
-                      }}
-                    >
-                      <IoAdd className="w-5 h-5 text-muted-foreground" />
-                    </Button>
-                  </div>
-                  {!addOnsList.length ? null : (
-                    <>
-                      <Label className="col-span-6 mt-1 text-center text-lg font-bold">
-                        List of Add Ons :
-                      </Label>
-                      <h1 className="col-span-1 text-md font-semibold">
-                        {" "}
-                        Name
-                      </h1>
-                      <h1 className="col-span-1 text-md font-semibold text-center">
-                        {" "}
-                        Price
-                      </h1>
-                      <h1 className="col-span-1 text-md font-semibold text-center ">
-                        {" "}
-                        Qty
-                      </h1>
-                      <h1 className="col-span-1 text-md font-semibold text-center text-primary">
-                        Subtotal
-                      </h1>
-                      <h1 className="col-span-2 text-md font-semibold text-center text-primary mr-7">
-                        Action
-                      </h1>
-
-                      {addOnsList.map((i, index) => {
-                        return (
-                          <div
-                            key={index}
-                            className="col-span-6 grid grid-cols-6"
-                          >
-                            <Separator className="my-1 col-span-6" />
-
-                            <h1 className="col-span-1 text-sm">
-                              {" "}
-                              {i.addOnsName}
-                            </h1>
-                            <h1 className="col-span-1 text-sm text-center">
-                              {" "}
-                              ₱{i.addOnsPrice}.00
-                            </h1>
-                            <h1 className="col-span-1 text-sm text-center">
-                              {i.addOnsQuantity}
-                            </h1>
-                            <h1 className="col-span-1 text-sm font-bold text-center text-primary">
-                              ₱{i.addOnsTotal}.00
-                            </h1>
-                            <Button
-                              variant="ghost"
-                              className="col-span-2 text-md font-semibold text-center text-muted-foreground  h-[20px] w-fit mx-auto hover:text-black active:bg-slate-200"
-                              onClick={() => {
-                                const updatedAddOnsList = addOnsList.filter(
-                                  (j) => j.cartAddOnsId != i.cartAddOnsId
-                                );
-
-                                setAddOnsList(updatedAddOnsList);
-                              }}
-                            >
-                              <IoIosClose />
-                            </Button>
-                          </div>
-                        );
-                      })}
-                    </>
-                  )}
-                </div>
-              </>
+                          setAddOnsList(updatedAddOnsList);
+                        }}
+                      >
+                        <IoIosClose />
+                      </Button>
+                    </div>
+                  );
+                })}
+              </div>
             ) : null}
 
             {selectedProduct.cakeTypeId == 5 ||
             selectedProduct.cakeTypeId == 6 ? (
-              <>
+              <div className="col-span-2 mt-4">
                 <Label className="font-extrabold text-2xl col-span-2 mt-2">
                   Tier 2 Add Ons
                 </Label>
                 <Separator className="my-2 col-span-2" />
-                <div className="grid grid-cols-6 gap-x-2 col-span-2 w-full">
-                  <div className="col-span-3">
-                    <Select
-                      asChild
-                      value={tier2AddOns}
-                      onValueChange={(value) => {
-                        setTier2AddOns(value);
-                      }}
-                    >
-                      <SelectTrigger className="w-full mt-1">
-                        {/* <SelectValue placeholder="Select a sprinkle" /> */}
-                        <div>
-                          {!tier2AddOns.addOnsId
-                            ? "Select add ons"
-                            : tier2AddOns.addOnsName}
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {addOnsArray.map((i) => {
-                            return (
-                              <SelectItem key={i.addOnsId} value={i}>
-                                {i.addOnsName}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="col-span-1">
-                    <Input
-                      type="number"
-                      min={1}
-                      max={5}
-                      placeholder="Quantity"
-                      value={tier2AddOnsQuantity}
-                      onChange={(e) => {
-                        setTier2AddOnsQuantity(e.target.value);
-                      }}
-                    ></Input>
-                  </div>
+                {tier2AddOnsList.length <= 2 ? (
+                  <div className="col-span-2">
+                    <div className="grid grid-cols-6 gap-x-2 col-span-2 w-full">
+                      <div className="col-span-3">
+                        <Select
+                          asChild
+                          value={tier2AddOns}
+                          onValueChange={(value) => {
+                            setTier2AddOns(value);
+                          }}
+                        >
+                          <SelectTrigger className="w-full mt-1">
+                            <div>
+                              {!tier2AddOns.addOnsId
+                                ? "Select add ons"
+                                : tier2AddOns.addOnsName}
+                            </div>
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              {addOnsArray.map((i) => {
+                                return (
+                                  <SelectItem key={i.addOnsId} value={i}>
+                                    {i.addOnsName}
+                                  </SelectItem>
+                                );
+                              })}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="col-span-1">
+                        <Input
+                          type="number"
+                          min={1}
+                          max={5}
+                          placeholder="Quantity"
+                          value={tier2AddOnsQuantity}
+                          onChange={(e) => {
+                            setTier2AddOnsQuantity(e.target.value);
+                          }}
+                        ></Input>
+                      </div>
 
-                  <div className="col-span-1 my-auto text-center">
-                    <Label className="text-primary font-bold text-xl">
-                      ₱{tier2AddOnsTotal}.00
+                      <div className="col-span-1 my-auto text-center">
+                        <Label className="text-ring font-bold text-xl">
+                          {formatter.format(tier2AddOnsTotal)}
+                        </Label>
+                      </div>
+                      <div className="col-span-1 w-full">
+                        <Button
+                          variant="outline"
+                          disabled={
+                            !tier2AddOns.addOnsId || tier2AddOnsQuantity <= 0
+                          }
+                          className="mt-1 h-10 w-fit items-center rounded-full active:bg-white"
+                          onClick={() => {
+                            const randomNum = Math.random();
+
+                            tier2AddOnsList.push({
+                              ...tier2AddOns,
+                              cartId: cartProduct.cartId,
+                              customerId: cartProduct.customerId,
+                              addOnsQuantity: tier2AddOnsQuantity,
+                              addOnsTotal: tier2AddOnsTotal,
+                              cartAddOnsId: randomNum,
+                            });
+
+                            setTier2AddOns({
+                              addOnsId: 0,
+                              addOnsName: "",
+                              addOnsPrice: 0,
+                            });
+                            setTier2AddOnsQuantity(0);
+                            setTier2AddOnsTotal(0);
+                          }}
+                        >
+                          Add
+                        </Button>
+                      </div>
+                      {!tier2AddOnsList.length ? null : (
+                        <>
+                          <Label className="col-span-6 mt-1 text-center text-lg font-bold">
+                            List of Add Ons :
+                          </Label>
+                          <h1 className="col-span-1 text-md font-semibold">
+                            {" "}
+                            Name
+                          </h1>
+                          <h1 className="col-span-1 text-md font-semibold text-center">
+                            {" "}
+                            Price
+                          </h1>
+                          <h1 className="col-span-1 text-md font-semibold text-center ">
+                            {" "}
+                            Qty
+                          </h1>
+                          <h1 className="col-span-1 text-md font-semibold text-center text-primary">
+                            Subtotal
+                          </h1>
+                          <h1 className="col-span-2 text-md font-semibold text-center text-primary mr-7">
+                            Action
+                          </h1>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-full flex">
+                    <Label className="col-span-6 mt-1 text-center text-lg font-bold mx-auto">
+                      List of Add Ons :
                     </Label>
                   </div>
-                  <div className="col-span-1 w-full">
-                    <Button
-                      variant="outline"
-                      disabled={!tier2AddOns.addOnsId}
-                      className="mt-1 h-10 w-fit items-center rounded-full active:bg-white"
-                      onClick={() => {
-                        const randomNum = Math.random();
+                )}
+                {tier2AddOnsList.map((i, index) => {
+                  return (
+                    <div key={index} className="col-span-7 grid grid-cols-6">
+                      <Separator className="my-1 col-span-6" />
 
-                        tier2AddOnsList.push({
-                          ...tier2AddOns,
-                          cartId: cartProduct.cartId,
-                          customerId: cartProduct.customerId,
-                          addOnsQuantity: tier2AddOnsQuantity,
-                          addOnsTotal: tier2AddOnsTotal,
-                          cartAddOnsId: randomNum,
-                        });
+                      <h1 className="col-span-1 text-sm"> {i.addOnsName}</h1>
+                      <h1 className="col-span-1 text-sm text-center">
+                        {formatter.format(i.addOnsPrice)}
+                      </h1>
+                      <h1 className="col-span-1 text-sm text-center">
+                        {i.addOnsQuantity}
+                      </h1>
+                      <h1 className="col-span-1 text-sm font-bold text-center text-primary">
+                        {formatter.format(i.addOnsTotal)}
+                      </h1>
+                      <Button
+                        variant="ghost"
+                        className="col-span-2 text-md font-semibold text-center text-muted-foreground  h-[20px] w-fit mx-auto hover:text-black active:bg-slate-200"
+                        onClick={() => {
+                          const updatedAddOnsList = tier2AddOnsList.filter(
+                            (j) => j.cartAddOnsId != i.cartAddOnsId
+                          );
 
-                        setTier2AddOns({
-                          addOnsId: 0,
-                          addOnsName: "",
-                          addOnsPrice: 0,
-                        });
-                        setTier2AddOnsQuantity(0);
-                        setTier2AddOnsTotal(0);
-                      }}
-                    >
-                      <IoAdd className="w-5 h-5 text-muted-foreground" />
-                    </Button>
-                  </div>
-                  {!tier2AddOnsList.length ? null : (
-                    <>
-                      <Label className="col-span-6 mt-1 text-center text-lg font-bold">
-                        List of Add Ons :
-                      </Label>
-                      <h1 className="col-span-1 text-md font-semibold">
-                        {" "}
-                        Name
-                      </h1>
-                      <h1 className="col-span-1 text-md font-semibold text-center">
-                        {" "}
-                        Price
-                      </h1>
-                      <h1 className="col-span-1 text-md font-semibold text-center ">
-                        {" "}
-                        Qty
-                      </h1>
-                      <h1 className="col-span-1 text-md font-semibold text-center text-primary">
-                        Subtotal
-                      </h1>
-                      <h1 className="col-span-2 text-md font-semibold text-center text-primary mr-7">
-                        Action
-                      </h1>
-
-                      {tier2AddOnsList.map((i, index) => {
-                        return (
-                          <div
-                            key={index}
-                            className="col-span-6 grid grid-cols-6"
-                          >
-                            <Separator className="my-1 col-span-6" />
-
-                            <h1 className="col-span-1 text-sm">
-                              {" "}
-                              {i.addOnsName}
-                            </h1>
-                            <h1 className="col-span-1 text-sm text-center">
-                              {" "}
-                              ₱{i.addOnsPrice}.00
-                            </h1>
-                            <h1 className="col-span-1 text-sm text-center">
-                              {i.addOnsQuantity}
-                            </h1>
-                            <h1 className="col-span-1 text-sm font-bold text-center text-primary">
-                              ₱{i.addOnsTotal}.00
-                            </h1>
-                            <Button
-                              variant="ghost"
-                              className="col-span-2 text-md font-semibold text-center text-muted-foreground  h-[20px] w-fit mx-auto hover:text-black active:bg-slate-200"
-                              onClick={() => {
-                                const updatedAddOnsList =
-                                  tier2AddOnsList.filter(
-                                    (j) => j.cartAddOnsId != i.cartAddOnsId
-                                  );
-
-                                setTier2AddOnsList(updatedAddOnsList);
-                              }}
-                            >
-                              <IoIosClose />
-                            </Button>
-                          </div>
-                        );
-                      })}
-                    </>
-                  )}
-                </div>
-              </>
+                          setTier2AddOnsList(updatedAddOnsList);
+                        }}
+                      >
+                        <IoIosClose />
+                      </Button>
+                    </div>
+                  );
+                })}
+              </div>
             ) : null}
 
             {selectedProduct.cakeTypeId == 6 ? (
-              <>
+              <div className="col-span-2 mt-4">
                 <Label className="font-extrabold text-2xl col-span-2 mt-2">
                   Tier 3 Add Ons
                 </Label>
                 <Separator className="my-2 col-span-2" />
-                <div className="grid grid-cols-6 gap-x-2 col-span-2 w-full">
-                  <div className="col-span-3">
-                    <Select
-                      asChild
-                      value={tier3AddOns}
-                      onValueChange={(value) => {
-                        setTier3AddOns(value);
-                      }}
-                    >
-                      <SelectTrigger className="w-full mt-1">
-                        {/* <SelectValue placeholder="Select a sprinkle" /> */}
-                        <div>
-                          {!tier3AddOns.addOnsId
-                            ? "Select add ons"
-                            : tier3AddOns.addOnsName}
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {addOnsArray.map((i) => {
-                            return (
-                              <SelectItem key={i.addOnsId} value={i}>
-                                {i.addOnsName}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="col-span-1">
-                    <Input
-                      type="number"
-                      min={1}
-                      max={5}
-                      placeholder="Quantity"
-                      value={tier3AddOnsQuantity}
-                      onChange={(e) => {
-                        setTier3AddOnsQuantity(e.target.value);
-                      }}
-                    ></Input>
-                  </div>
+                {tier3AddOnsList.length <= 1 ? (
+                  <div className="col-span-2">
+                    <div className="grid grid-cols-6 gap-x-2 col-span-2 w-full">
+                      <div className="col-span-3">
+                        <Select
+                          asChild
+                          value={tier3AddOns}
+                          onValueChange={(value) => {
+                            setTier3AddOns(value);
+                          }}
+                        >
+                          <SelectTrigger className="w-full mt-1">
+                            <div>
+                              {!tier3AddOns.addOnsId
+                                ? "Select add ons"
+                                : tier3AddOns.addOnsName}
+                            </div>
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              {addOnsArray.map((i) => {
+                                return (
+                                  <SelectItem key={i.addOnsId} value={i}>
+                                    {i.addOnsName}
+                                  </SelectItem>
+                                );
+                              })}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="col-span-1">
+                        <Input
+                          type="number"
+                          min={1}
+                          max={5}
+                          placeholder="Quantity"
+                          value={tier3AddOnsQuantity}
+                          onChange={(e) => {
+                            setTier3AddOnsQuantity(e.target.value);
+                          }}
+                        ></Input>
+                      </div>
 
-                  <div className="col-span-1 my-auto text-center">
-                    <Label className="text-primary font-bold text-xl">
-                      ₱{tier3AddOnsTotal}.00
+                      <div className="col-span-1 my-auto text-center">
+                        <Label className="text-ring font-bold text-xl">
+                          {formatter.format(tier3AddOnsTotal)}
+                        </Label>
+                      </div>
+                      <div className="col-span-1 w-full">
+                        <Button
+                          variant="outline"
+                          disabled={
+                            !tier3AddOns.addOnsId || tier3AddOnsQuantity <= 0
+                          }
+                          className="mt-1 h-10 w-fit items-center rounded-full active:bg-white"
+                          onClick={() => {
+                            const randomNum = Math.random();
+
+                            tier3AddOnsList.push({
+                              ...tier3AddOns,
+                              cartId: cartProduct.cartId,
+                              customerId: cartProduct.customerId,
+                              addOnsQuantity: tier3AddOnsQuantity,
+                              addOnsTotal: tier3AddOnsTotal,
+                              cartAddOnsId: randomNum,
+                            });
+
+                            setTier3AddOns({
+                              addOnsId: 0,
+                              addOnsName: "",
+                              addOnsPrice: 0,
+                            });
+                            setTier3AddOnsQuantity(0);
+                            setTier3AddOnsTotal(0);
+                          }}
+                        >
+                          Add
+                        </Button>
+                      </div>
+                      {!tier3AddOnsList.length ? null : (
+                        <>
+                          <Label className="col-span-6 mt-1 text-center text-lg font-bold">
+                            List of Add Ons :
+                          </Label>
+                          <h1 className="col-span-1 text-md font-semibold">
+                            Name
+                          </h1>
+                          <h1 className="col-span-1 text-md font-semibold text-center">
+                            Price
+                          </h1>
+                          <h1 className="col-span-1 text-md font-semibold text-center ">
+                            Qty
+                          </h1>
+                          <h1 className="col-span-1 text-md font-semibold text-center text-primary">
+                            Subtotal
+                          </h1>
+                          <h1 className="col-span-2 text-md font-semibold text-center text-primary mr-7">
+                            Action
+                          </h1>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-full flex">
+                    <Label className="col-span-6 mt-1 text-center text-lg font-bold mx-auto">
+                      List of Add Ons :
                     </Label>
                   </div>
-                  <div className="col-span-1 w-full">
-                    <Button
-                      variant="outline"
-                      disabled={!tier3AddOns.addOnsId}
-                      className="mt-1 h-10 w-fit items-center rounded-full active:bg-white"
-                      onClick={() => {
-                        const randomNum = Math.random();
+                )}
+                {tier3AddOnsList.map((i, index) => {
+                  return (
+                    <div key={index} className="col-span-7 grid grid-cols-6">
+                      <Separator className="my-1 col-span-6" />
 
-                        tier3AddOnsList.push({
-                          ...tier3AddOns,
-                          cartId: cartProduct.cartId,
-                          customerId: cartProduct.customerId,
-                          addOnsQuantity: tier3AddOnsQuantity,
-                          addOnsTotal: tier3AddOnsTotal,
-                          cartAddOnsId: randomNum,
-                        });
+                      <h1 className="col-span-1 text-sm"> {i.addOnsName}</h1>
+                      <h1 className="col-span-1 text-sm text-center">
+                        {formatter.format(i.addOnsPrice)}
+                      </h1>
+                      <h1 className="col-span-1 text-sm text-center">
+                        {i.addOnsQuantity}
+                      </h1>
+                      <h1 className="col-span-1 text-sm font-bold text-center text-primary">
+                        {formatter.format(i.addOnsTotal)}
+                      </h1>
+                      <Button
+                        variant="ghost"
+                        className="col-span-2 text-md font-semibold text-center text-muted-foreground  h-[20px] w-fit mx-auto hover:text-black active:bg-slate-200"
+                        onClick={() => {
+                          const updatedAddOnsList = tier3AddOnsList.filter(
+                            (j) => j.cartAddOnsId != i.cartAddOnsId
+                          );
 
-                        setTier3AddOns({
-                          addOnsId: 0,
-                          addOnsName: "",
-                          addOnsPrice: 0,
-                        });
-                        setTier3AddOnsQuantity(0);
-                        setTier3AddOnsTotal(0);
-                      }}
-                    >
-                      <IoAdd className="w-5 h-5 text-muted-foreground" />
-                    </Button>
-                  </div>
-                  {!tier3AddOnsList.length ? null : (
-                    <>
-                      {tier3AddOnsList.map((i, index) => {
-                        return (
-                          <div
-                            key={index}
-                            className="col-span-6 grid grid-cols-6"
-                          >
-                            <Separator className="my-1 col-span-6" />
-
-                            <h1 className="col-span-1 text-sm">
-                              {" "}
-                              {i.addOnsName}
-                            </h1>
-                            <h1 className="col-span-1 text-sm text-center">
-                              {" "}
-                              ₱{i.addOnsPrice}.00
-                            </h1>
-                            <h1 className="col-span-1 text-sm text-center">
-                              {i.addOnsQuantity}
-                            </h1>
-                            <h1 className="col-span-1 text-sm font-bold text-center text-primary">
-                              ₱{i.addOnsTotal}.00
-                            </h1>
-                            <Button
-                              variant="ghost"
-                              className="col-span-2 text-md font-semibold text-center text-muted-foreground  h-[20px] w-fit mx-auto hover:text-black active:bg-slate-200"
-                              onClick={() => {
-                                const updatedAddOnsList =
-                                  tier3AddOnsList.filter(
-                                    (j) => j.cartAddOnsId != i.cartAddOnsId
-                                  );
-
-                                setTier3AddOnsList(updatedAddOnsList);
-                              }}
-                            >
-                              <IoIosClose />
-                            </Button>
-                          </div>
-                        );
-                      })}
-                    </>
-                  )}
-                </div>
-              </>
+                          setTier3AddOnsList(updatedAddOnsList);
+                        }}
+                      >
+                        <IoIosClose />
+                      </Button>
+                    </div>
+                  );
+                })}
+              </div>
             ) : null}
 
             <Label className="font-extrabold my-2 text-2xl col-span-2">
-              Message and Image Reference
+              Message and Instructions
             </Label>
-            <Separator className="my-2 col-span-2" />
-            <Label className="col-span-2">Message / Instructions</Label>
+            <Separator className="my-1 col-span-2" />
             <Textarea
               className="mt-1 col-span-2"
-              placeholder="Type your message here."
+              placeholder="Type your message and instructions here."
               onChange={(e) => setMessage(e.target.value)}
             />
 
-            <Label className="col-span-2 mt-2">Attach Image Reference</Label>
-            <Input
-              id="image"
-              type="file"
-              className="col-span-2"
-              onChange={(e) => {
-                setFile(e.target.files?.[0]);
+            {isCakeCustomized ? (
+              <>
+                <Label className="font-extrabold my-2 text-2xl col-span-2">
+                  Image Reference
+                </Label>
+                <Separator className="my-1 col-span-2" />
 
-                const reader = new FileReader();
-                reader.readAsDataURL(e.target.files?.[0]);
-                reader.onload = () => {
-                  setImage(reader.result);
-                };
-              }}
-            />
-            {image && (
-              <div className="h-full w-fit col-span-2 mx-auto">
-                <div
-                  style={{
-                    width: "250px",
-                    height: "150px",
-                    backgroundImage: `url('${image}')`,
-                    backgroundSize: "contain",
-                    backgroundPosition: "center",
-                    backgroundRepeat: "no-repeat",
+                <Label className="col-span-2 mt-2">Attach Image</Label>
+                <Input
+                  id="image"
+                  type="file"
+                  className="col-span-2"
+                  onChange={(e) => {
+                    setFile(e.target.files?.[0]);
+
+                    const reader = new FileReader();
+                    reader.readAsDataURL(e.target.files?.[0]);
+                    reader.onload = () => {
+                      setImage(reader.result);
+                    };
                   }}
-                  className="mx-auto"
-                ></div>
-              </div>
+                />
+                {image && (
+                  <div className="h-full w-fit col-span-2 mx-auto">
+                    <div
+                      style={{
+                        width: "250px",
+                        height: "150px",
+                        backgroundImage: `url('${image}')`,
+                        backgroundSize: "contain",
+                        backgroundPosition: "center",
+                        backgroundRepeat: "no-repeat",
+                      }}
+                      className="mx-auto"
+                    ></div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                <Label className="font-extrabold my-2 text-2xl col-span-2">
+                  Image Reference
+                </Label>
+                <Separator className="my-1 col-span-2" />
+
+                <Label className="col-span-2 mt-2">Attach Image</Label>
+                <Input
+                  id="image"
+                  type="file"
+                  disabled={!isCakeCustomized}
+                  className="col-span-2 mt-2"
+                  onChange={(e) => {
+                    setFile(e.target.files?.[0]);
+
+                    const reader = new FileReader();
+                    reader.readAsDataURL(e.target.files?.[0]);
+                    reader.onload = () => {
+                      setImage(reader.result);
+                    };
+                  }}
+                />
+                {image && (
+                  <div className="h-full w-fit col-span-2 mx-auto">
+                    <div
+                      style={{
+                        width: "250px",
+                        height: "150px",
+                        backgroundImage: `url('${image}')`,
+                        backgroundSize: "contain",
+                        backgroundPosition: "center",
+                        backgroundRepeat: "no-repeat",
+                      }}
+                      className="mx-auto"
+                    ></div>
+                  </div>
+                )}
+              </>
             )}
 
             <Separator className="my-4 col-span-2" />
             <div className="col-span-2 flex flex-row justify-between">
-              <div className="flex items-center space-x-2"></div>
+              {!totalPrice ? null : (
+                <h1 className="text-primary text-xl my-auto font-extrabold">
+                  Estimated Price: {formatter.format(totalPrice)}
+                </h1>
+              )}
 
               <Button
-                className="hover:bg-ring active:bg-primary-foreground duration-300"
+                className="hover:bg-ring flex ml-auto active:bg-primary-foreground duration-300"
                 onClick={() => onSubmit()}
               >
                 Add to Cart
@@ -1609,8 +1717,17 @@ const MenuSelectedProduct = ({
               <h1 className="col-span-4">{size.size}</h1>
               <h1 className="col-span-3 font-bold">Flavor :</h1>
               <h1 className="col-span-4">{flavor.flavorName}</h1>
-              <h1 className="col-span-3 font-bold">Color :</h1>
-              <h1 className="col-span-4">{color.colorName}</h1>
+              <h1 className="col-span-3 font-bold">Color : </h1>
+              <div className="col-span-4">
+                <h1>
+                  {color.colorName}
+                  <span
+                    className="py-[2px] px-[10px] ml-3 rounded-sm"
+                    style={{ backgroundColor: `${color.colorHex}` }}
+                  ></span>
+                </h1>
+              </div>
+
               {shape.shapeId ? (
                 <>
                   <h1 className="col-span-3 font-bold">Shape :</h1>
@@ -1627,7 +1744,7 @@ const MenuSelectedProduct = ({
               <h1 className="col-span-4">{quantity}</h1>
               <h1 className="col-span-3 font-bold">Price :</h1>
               <h1 className="col-span-4 font-extrabold text-lg text-primary">
-                ₱{subTotal}.00
+                {formatter.format(subTotal)}
               </h1>
               <h1 className="col-span-7 font-bold">Instructions :</h1>
               <h1
@@ -1654,8 +1771,25 @@ const MenuSelectedProduct = ({
               {selectedProduct.cakeTypeId == 1 ||
               selectedProduct.cakeTypeId == 7 ? (
                 <>
-                  {" "}
                   <h1 className="col-span-7 font-bold my-2">Add Ons :</h1>
+                  <div className="col-span-7 grid grid-cols-6 h-auto">
+                    <Label className="col-span-6 mt-1 text-center text-lg font-bold">
+                      List of Add Ons
+                    </Label>
+                    <h1 className="col-span-2 text-md font-semibold">Name</h1>
+                    <h1 className="col-span-1 text-md font-semibold text-center">
+                      Price
+                    </h1>
+                    <h1 className="col-span-1 text-md font-semibold text-center ">
+                      Qty
+                    </h1>
+                    <h1 className="col-span-1 text-md font-semibold text-center text-primary">
+                      Subtotal
+                    </h1>
+                    <h1 className="col-span-1 text-md font-semibold text-center text-primary mr-7">
+                      Action
+                    </h1>
+                  </div>
                   <div className="col-span-7 h-[105px] overflow-y-scroll">
                     {!addOnsList.length ? (
                       <h1 className="col-span-7 text-center font-extrabold text-xl">
@@ -1675,14 +1809,13 @@ const MenuSelectedProduct = ({
                               {i.addOnsName}
                             </h1>
                             <h1 className="col-span-1 text-sm text-center">
-                              {" "}
-                              ₱{i.addOnsPrice}.00
+                              {formatter.format(i.addOnsPrice)}
                             </h1>
                             <h1 className="col-span-1 text-sm text-center">
                               {i.addOnsQuantity}
                             </h1>
                             <h1 className="col-span-2 text-sm font-bold text-center text-primary">
-                              ₱{i.addOnsTotal}.00
+                              {formatter.format(i.addOnsTotal)}
                             </h1>
                           </div>
                         );
@@ -1720,14 +1853,13 @@ const MenuSelectedProduct = ({
                                   {i.addOnsName}
                                 </h1>
                                 <h1 className="col-span-1 text-sm text-center">
-                                  {" "}
-                                  ₱{i.addOnsPrice}.00
+                                  {formatter.format(i.addOnsPrice)}
                                 </h1>
                                 <h1 className="col-span-1 text-sm text-center">
                                   {i.addOnsQuantity}
                                 </h1>
                                 <h1 className="col-span-2 text-sm font-bold text-center text-primary">
-                                  ₱{i.addOnsTotal}.00
+                                  {formatter.format(i.addOnsTotal)}
                                 </h1>
                               </div>
                             );
@@ -1798,18 +1930,16 @@ const MenuSelectedProduct = ({
                                   <Separator className="my-1 col-span-6" />
 
                                   <h1 className="col-span-2 text-sm">
-                                    {" "}
                                     {i.addOnsName}
                                   </h1>
                                   <h1 className="col-span-1 text-sm text-center">
-                                    {" "}
-                                    ₱{i.addOnsPrice}.00
+                                    {formatter.format(i.addOnsPrice)}
                                   </h1>
                                   <h1 className="col-span-1 text-sm text-center">
                                     {i.addOnsQuantity}
                                   </h1>
                                   <h1 className="col-span-2 text-sm font-bold text-center text-primary">
-                                    ₱{i.addOnsTotal}.00
+                                    {formatter.format(i.addOnsTotal)}
                                   </h1>
                                 </div>
                               );
@@ -1827,14 +1957,13 @@ const MenuSelectedProduct = ({
                                     {i.addOnsName}
                                   </h1>
                                   <h1 className="col-span-1 text-sm text-center">
-                                    {" "}
-                                    ₱{i.addOnsPrice}.00
+                                    {formatter.format(i.addOnsPrice)}
                                   </h1>
                                   <h1 className="col-span-1 text-sm text-center">
                                     {i.addOnsQuantity}
                                   </h1>
                                   <h1 className="col-span-2 text-sm font-bold text-center text-primary">
-                                    ₱{i.addOnsTotal}.00
+                                    {formatter.format(i.addOnsTotal)}
                                   </h1>
                                 </div>
                               );
@@ -1852,14 +1981,13 @@ const MenuSelectedProduct = ({
                                     {i.addOnsName}
                                   </h1>
                                   <h1 className="col-span-1 text-sm text-center">
-                                    {" "}
-                                    ₱{i.addOnsPrice}.00
+                                    {formatter.format(i.addOnsPrice)}
                                   </h1>
                                   <h1 className="col-span-1 text-sm text-center">
                                     {i.addOnsQuantity}
                                   </h1>
                                   <h1 className="col-span-2 text-sm font-bold text-center text-primary">
-                                    ₱{i.addOnsTotal}.00
+                                    {formatter.format(i.addOnsTotal)}
                                   </h1>
                                 </div>
                               );
@@ -1973,28 +2101,7 @@ const MenuSelectedProduct = ({
           </DialogContent>
         </Dialog>
       )}
-
-      {/* {responseSuccess ? (
-        <div>
-          <AlertDialog
-            title={"Success!"}
-            description={`${selectedProduct.productName} added to cart. Redirecting to menu page, please wait.`}
-            pathName={`/customer/menu/${user.customerId}`}
-            variant={"success"}
-            userId={user.customerId}
-          />
-        </div>
-      ) : null}
-      {responseError ? (
-        <AlertDialog
-          title={`Uh oh! Something went wrong.`}
-          description={`There was a problem with your request.`}
-          pathName={`/customer/menu/${user.customerId}`}
-          variant={"destructive"}
-          userId={user.customerId}
-        />
-      ) : null} */}
-    </>
+    </div>
   );
 };
 

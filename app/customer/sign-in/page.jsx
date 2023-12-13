@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import LandingPageNavbar from "../components/LandingPageNavbar";
 import CustomerSignIn from "../components/CustomerSignIn";
-import Footer from "../components/Footer";
+import signIn from "../../../public/images/signIn.svg";
 
 const SignInPage = () => {
   const [customerAccounts, setCustomerAccounts] = useState([]);
@@ -42,7 +42,7 @@ const SignInPage = () => {
 
   return (
     <div
-      className="bg-accent h-auto flex flex-col"
+      className="bg-accent h-[800px] flex flex-col"
       style={{
         zIndex: "-1",
       }}
@@ -56,11 +56,26 @@ const SignInPage = () => {
         <LandingPageNavbar />
       </div>
       <div className="relative" style={{ paddingTop: "250px", height: "90vh" }}>
+        <div
+          style={{
+            width: "650px",
+            height: "100%",
+            backgroundImage: `url('${signIn.src}')`,
+            backgroundSize: "contain",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            position: "absolute",
+            top: 0.5,
+          }}
+          className="mt-20"
+        ></div>
         {/* PASS THE ARRAY OF EXISTING CUSTOMER ACCOUNTS INTO COMPONENT */}
-        <CustomerSignIn
-          customerAccounts={customerAccounts}
-          tableCustomerAccounts={tableCustomerAccounts}
-        />
+        <div className="relative left-0 w-full">
+          <CustomerSignIn
+            customerAccounts={customerAccounts}
+            tableCustomerAccounts={tableCustomerAccounts}
+          />
+        </div>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import MiniAdminSidebar from "../components/MiniAdminSidebar";
-import MenuTableTabs from "../components/MenuTableTabs";
+import MenuTableTabs from "../components/pages/Menu/MenuTableTabs";
 
 // ALL GOODS
 

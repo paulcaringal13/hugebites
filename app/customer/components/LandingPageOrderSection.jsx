@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import CategoryIconCake from "../../../public/images/categories/CategoryIconCake.png";
 import CategoryIconCupcake from "../../../public/images/categories/CategoryIconCupcake.png";
 import CategoryIconDog from "../../../public/images/categories/CategoryIconDog.png";
-import CategoryIconCustomized from "../../../public/images/categories/CategoryIconCustomized.png";
 import CategoryIconAll from "../../../public/images/categories/CategoryIconAll.png";
 
 import MenuCart from "../components/MenuCart";

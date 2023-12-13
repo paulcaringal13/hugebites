@@ -69,47 +69,47 @@ export default function Menu(path) {
   };
 
   // GET ALL FLAVORS
-  // const getFlavor = async () => {
-  //   const res = await fetch(`http://localhost:3000/api/customization/flavor`, {
-  //     cache: "no-store",
-  //   });
+  const getFlavor = async () => {
+    const res = await fetch(`http://localhost:3000/api/customization/flavor`, {
+      cache: "no-store",
+    });
 
-  //   const flavors = await res.json();
+    const flavors = await res.json();
 
-  //   setFlavors(flavors);
-  // };
+    setFlavors(flavors);
+  };
 
   // // GET ALL ADD ONS
-  // const getAddOns = async () => {
-  //   const res = await fetch(`http://localhost:3000/api/customization/addOns`, {
-  //     cache: "no-store",
-  //   });
+  const getAddOns = async () => {
+    const res = await fetch(`http://localhost:3000/api/customization/addOns`, {
+      cache: "no-store",
+    });
 
-  //   const addOns = await res.json();
+    const addOns = await res.json();
 
-  //   setAddOnsArray(addOns);
-  // };
+    setAddOnsArray(addOns);
+  };
 
-  // // GET ALL SHAPES
-  // const getShape = async () => {
-  //   const res = await fetch(`http://localhost:3000/api/customization/shape`, {
-  //     cache: "no-store",
-  //   });
+  // GET ALL SHAPES
+  const getShape = async () => {
+    const res = await fetch(`http://localhost:3000/api/customization/shape`, {
+      cache: "no-store",
+    });
 
-  //   const shape = await res.json();
+    const shape = await res.json();
 
-  //   setShapes(shape);
-  // };
+    setShapes(shape);
+  };
 
-  // const getColor = async () => {
-  //   const res = await fetch(`http://localhost:3000/api/customization/color`, {
-  //     cache: "no-store",
-  //   });
+  const getColor = async () => {
+    const res = await fetch(`http://localhost:3000/api/customization/color`, {
+      cache: "no-store",
+    });
 
-  //   const color = await res.json();
+    const color = await res.json();
 
-  //   setColors(color);
-  // };
+    setColors(color);
+  };
 
   // GET ALL SIZES TO OFFER ON CUSTOMIZED PROD
   const getSizes = async () => {
@@ -174,12 +174,12 @@ export default function Menu(path) {
   useEffect(() => {
     getUserData();
     getAllCategories();
-    // getAddOns();
+    getAddOns();
     getAllProducts();
     getSizes();
-    // getFlavor();
-    // getColor();
-    // getShape();
+    getFlavor();
+    getColor();
+    getShape();
     getSpecificProductOffers();
   }, []);
 

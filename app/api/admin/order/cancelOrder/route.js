@@ -12,6 +12,8 @@ async function con() {
   return connection;
 }
 
+export const dynamic = "force-dynamic";
+
 export async function PUT(request) {
   try {
     const connection = await con();

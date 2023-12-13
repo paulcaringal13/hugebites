@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import MiniAdminSidebar from "../components/MiniAdminSidebar";
-import CustomizationTableTabs from "../components/CustomizationTableTabs";
+import CustomizationTableTabs from "../components/pages/Customization/CustomizationTableTabs";
 
 const AdminCustomization = () => {
   const [sizesData, setSizesData] = useState([]);
@@ -10,6 +10,7 @@ const AdminCustomization = () => {
   const [addOnsData, setAddOnsData] = useState([]);
   const [shapesData, setShapesData] = useState([]);
   const [productsData, setProductsData] = useState([]);
+  const [categoryList, setCategoryList] = useState([]);
 
   // HINDI FILTERED YUNG DATA (FOR SIZE ADD AND UPDATE PURPOSES)
   const getProducts = async () => {
@@ -22,7 +23,23 @@ const AdminCustomization = () => {
 
     const data = await res.json();
 
-    setProductsData(data);
+    const products = data.filter((i) => i.productName != "Customized");
+
+    console.log(products);
+
+    setProductsData(products);
+  };
+
+  const getAllCategories = async () => {
+    const res = await fetch(`http://localhost:3000/api/admin/menu/categories`);
+
+    const data = await res.json();
+
+    const { results } = data;
+
+    const categories = results[0];
+
+    setCategoryList(categories);
   };
 
   const getFlavor = async () => {
@@ -85,6 +102,7 @@ const AdminCustomization = () => {
     getFlavor();
     getColor();
     getAddOns();
+    getAllCategories();
   }, []);
 
   return (
@@ -99,6 +117,7 @@ const AdminCustomization = () => {
         flavorsData={flavorsData}
         addOnsData={addOnsData}
         productsData={productsData}
+        categoryList={categoryList}
       />
     </div>
   );

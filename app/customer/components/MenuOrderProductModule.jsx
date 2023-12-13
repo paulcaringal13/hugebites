@@ -47,7 +47,6 @@ const MenuOrderProductModule = ({
   const [productPrices, setProductPrices] = useState([]);
   const [addOnsList, setAddOnsList] = useState([]);
   const [specialPropertyList, setSpecialPropertyList] = useState([]);
-
   const [openMenuCheckOut, setOpenMenuCheckOut] = useState(false);
   const [openAddToCartConfirmation, setOpenAddToCartConfirmation] =
     useState(false);
@@ -246,17 +245,16 @@ const MenuOrderProductModule = ({
         (prop) => prop.cartId == cartId
       );
 
-      let sum = subTotal;
-      addOns.forEach((j) => {
-        sum += j.addOnsTotal * quantity;
-      });
+      // let sum = subTotal;
+      // addOns.forEach((j) => {
+      //   sum += j.addOnsTotal * quantity;
+      // });
 
       return {
         ...i,
         addOns,
         specialProperty: specialProp,
         subTotal: subTotal,
-        totalPrice: sum,
       };
     });
 
@@ -351,20 +349,6 @@ const MenuOrderProductModule = ({
     const data = await res.json();
     setSpecificProductOffers(data);
   };
-
-  // const getSpecificProduct = async () => {
-  //   const res = await fetch(
-  //     `http://localhost:3000/api/customer/menu/product/specificProduct?` +
-  //       new URLSearchParams({ productId: prodId }),
-  //     {
-  //       cache: "no-store",
-  //     }
-  //   );
-
-  //   const product = await res.json();
-
-  //   setSelectedProduct(product);
-  // };
 
   const uploadImage = async (file) => {
     const data = new FormData();
@@ -643,7 +627,7 @@ const MenuOrderProductModule = ({
   const updateTotal = () => {
     let totalPrice = 0;
     cartList.forEach((i) => {
-      userId == i.customerId ? (totalPrice = totalPrice + i.totalPrice) : null;
+      userId == i.customerId ? (totalPrice = totalPrice + i.subTotal) : null;
     });
     setTotalPrice(totalPrice);
   };
@@ -664,10 +648,10 @@ const MenuOrderProductModule = ({
   }, []);
 
   return (
-    <div>
+    <div className="h-auto">
       <HomePageNavbar userId={user.customerId} />
-      <div className="w-full h-full flex flex-row px-10 py-4 gap-6">
-        <div className="w-[70%]">
+      <div className="w-full h-fit flex flex-row px-10 py-4 gap-6">
+        <div className="w-[70%] h-fit">
           <MenuSelectedProduct
             user={user}
             addToCart={addToCart}
@@ -699,6 +683,7 @@ const MenuOrderProductModule = ({
             getAddOnsPrices={getAddOnsPrices}
             totalPrice={totalPrice}
             setOpenMenuCheckOut={setOpenMenuCheckOut}
+            page={"order"}
           />
         </div>
       </div>
@@ -750,6 +735,10 @@ const MenuOrderProductModule = ({
                 );
 
                 setCartList(newCartList);
+                setAlertMessage("Product removed to cart.");
+                setAlertTitle("Success!");
+                setAlertType("success");
+                openRequestAlert();
                 setOpenRemoveCartProduct(false);
               }}
             >

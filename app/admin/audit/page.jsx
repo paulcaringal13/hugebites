@@ -1,5 +1,5 @@
 import MiniAdminSidebar from "../components/MiniAdminSidebar";
-import AuditTableTabs from "../components/AuditTableTabs";
+import AuditTableTabs from "../components/pages/Audit/AuditTableTabs";
 import * as React from "react";
 
 const AdminAccounts = async () => {

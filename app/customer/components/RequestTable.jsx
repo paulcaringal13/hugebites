@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, MailCheck } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import {
   DropdownMenu,
@@ -29,10 +29,13 @@ import {
 } from "../../../components/ui/table";
 import { BiChevronDown } from "react-icons/bi";
 import { FaRegEye } from "react-icons/fa6";
-import { RiAttachment2 } from "react-icons/ri";
-import { TbMailX, TbMailCancel, TbMail } from "react-icons/tb";
+import { TbMailCancel, TbMail } from "react-icons/tb";
 
 const RequestTable = ({ data, openViewRequest, openCancelRequest }) => {
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "PHP",
+  });
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -108,17 +111,14 @@ const RequestTable = ({ data, openViewRequest, openCancelRequest }) => {
       },
     },
     {
-      accessorKey: "totalPrice",
-      header: ({ column }) => {
+      header: "Total Price",
+      id: "totalPrice",
+      cell: ({ row }) => {
+        const rowData = row.original;
         return (
-          <Button
-            className="mx-auto my-auto hover:bg-primary hover:text-white transform transition-all hover:scale-105 duration-100"
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Total Price
-            <ArrowUpDown className="h-3 w-3" />
-          </Button>
+          <div className="h-fit w-fit text-md mx-auto">
+            {rowData.totalPrice}
+          </div>
         );
       },
     },
@@ -152,19 +152,15 @@ const RequestTable = ({ data, openViewRequest, openCancelRequest }) => {
         );
       },
     },
-
     {
-      accessorKey: "moneyRefunded",
-      header: ({ column }) => {
+      header: "Money Returned",
+      id: "moneyRefunded",
+      cell: ({ row }) => {
+        const rowData = row.original;
         return (
-          <Button
-            variant="ghost"
-            className="mx-auto my-auto hover:bg-primary hover:text-white transform transition-all hover:scale-105 duration-100"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Money Returned
-            <ArrowUpDown className="h-3 w-3" />
-          </Button>
+          <div className="h-fit w-fit text-md mx-auto">
+            {formatter.format(rowData.moneyRefunded)}
+          </div>
         );
       },
     },
@@ -199,165 +195,6 @@ const RequestTable = ({ data, openViewRequest, openCancelRequest }) => {
           placeholder="Search"
           className="w-2/6"
         />
-        {/* filter specific column */}
-        {/* if nothing is selected */}
-        {!columnSelected && (
-          <Input
-            placeholder="Select column to filter"
-            value={table.getColumn("orderId")?.getFilterValue() ?? ""}
-            onChange={(event) =>
-              table.getColumn("orderId")?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm w-1/6 ml-4"
-          />
-        )}
-        {/* if EMPLOYEE ID is selected */}
-        {columnSelected == "orderId" ? (
-          <Input
-            placeholder="Filter order id..."
-            value={table.getColumn("orderId")?.getFilterValue() ?? ""}
-            onChange={(event) =>
-              table.getColumn("orderId")?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm w-1/6 ml-4"
-          />
-        ) : null}{" "}
-        {/* if EMPLOYEE ID is selected */}
-        {columnSelected == "dateOrdered" ? (
-          <Input
-            placeholder="Filter order date..."
-            value={table.getColumn("dateOrdered")?.getFilterValue() ?? ""}
-            onChange={(event) =>
-              table.getColumn("dateOrdered")?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm w-1/6 ml-4"
-          />
-        ) : null}{" "}
-        {/* if userRole is selected */}
-        {columnSelected == "categoryName" ? (
-          <Input
-            placeholder="Filter category..."
-            value={table.getColumn("categoryName")?.getFilterValue() ?? ""}
-            onChange={(event) =>
-              table
-                .getColumn("categoryName")
-                ?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm w-1/6 ml-4"
-          />
-        ) : null}
-        {/* if name is selected */}
-        {columnSelected == "datePickUp" ? (
-          <Input
-            placeholder="Filter pick up date..."
-            value={table.getColumn("datePickUp")?.getFilterValue() ?? ""}
-            onChange={(event) =>
-              table.getColumn("datePickUp")?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm w-1/6 ml-4"
-          />
-        ) : null}
-        {/* if time in is selected */}
-        {columnSelected == "paymentDeadline" ? (
-          <Input
-            placeholder="Filter payment deadlne..."
-            value={table.getColumn("paymentDeadline")?.getFilterValue() ?? ""}
-            onChange={(event) =>
-              table
-                .getColumn("paymentDeadline")
-                ?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm w-1/6 ml-4"
-          />
-        ) : null}
-        {/* if time in is selected */}
-        {columnSelected == "refundDeadline" ? (
-          <Input
-            placeholder="Filter refund deadlne..."
-            value={table.getColumn("refundDeadline")?.getFilterValue() ?? ""}
-            onChange={(event) =>
-              table
-                .getColumn("refundDeadline")
-                ?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm w-1/6 ml-4"
-          />
-        ) : null}
-        {/* if time in is selected */}
-        {columnSelected == "orderStatus" ? (
-          <Input
-            placeholder="Filter status..."
-            value={table.getColumn("orderStatus")?.getFilterValue() ?? ""}
-            onChange={(event) =>
-              table.getColumn("orderStatus")?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm w-1/6 ml-4"
-          />
-        ) : null}
-        {/* if time in is selected */}
-        {columnSelected == "methodOFPayment" ? (
-          <Input
-            placeholder="Filter payment method..."
-            value={table.getColumn("methodOFPayment")?.getFilterValue() ?? ""}
-            onChange={(event) =>
-              table
-                .getColumn("methodOFPayment")
-                ?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm w-1/6 ml-4"
-          />
-        ) : null}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <BiChevronDown className="h-5 w-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              id="productId"
-              onClick={(e) => {
-                setColumnSelected(e.target.id);
-              }}
-            >
-              Product Id
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              id="productName"
-              onClick={(e) => {
-                setColumnSelected(e.target.id);
-              }}
-            >
-              Product Name
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              id="category"
-              onClick={(e) => {
-                setColumnSelected(e.target.id);
-              }}
-            >
-              Category
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              id="cakeType"
-              onClick={(e) => {
-                setColumnSelected(e.target.id);
-              }}
-            >
-              Cake Type
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              id="status"
-              onClick={(e) => {
-                setColumnSelected(e.target.id);
-
-                console.log(columnSelected);
-              }}
-            >
-              Status
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
         {/* hide columns */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

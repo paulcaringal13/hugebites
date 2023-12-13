@@ -27,11 +27,10 @@ export default function AdminLayout({ children }) {
   }, []);
 
   return (
-    // style={{ zIndex: "-1", position: "relative" }}
-    <main className="bg-accent">
-      <div>{loggedInUserId && <AdminNavbar />}</div>
+    <main className="bg-accent w-full">
+      <div className="w-full">{loggedInUserId && <AdminNavbar />}</div>
 
-      <div>{children}</div>
+      <div className="w-full">{children}</div>
     </main>
   );
 }

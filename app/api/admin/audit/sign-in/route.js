@@ -11,6 +11,8 @@ async function con() {
   return connection;
 }
 
+export const dynamic = "force-dynamic";
+
 // GET THE DATA OF THE USER LOGGING IN TO TBL_EMPLOYEES
 export async function GET(request) {
   const connection = await con();
@@ -18,7 +20,7 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const accountId = searchParams.get("accountId");
 
-  const query = `SELECT accounts.isDeactivated, accounts.accountId, accounts.accountType, accounts.email, accounts.username, accounts.password, accounts.userRole, tbl_employee.employeeId, tbl_employee.firstName, tbl_employee.lastName FROM accounts INNER JOIN tbl_employee ON accounts.accountId = tbl_employee.accountId WHERE accounts.accountId = ${accountId}`;
+  const query = `SELECT accounts.isDeactivated, accounts.avatar, accounts.accountId, accounts.accountType, accounts.email, accounts.username, accounts.password, accounts.userRole, tbl_employee.employeeId, tbl_employee.firstName, tbl_employee.lastName FROM accounts INNER JOIN tbl_employee ON accounts.accountId = tbl_employee.accountId WHERE accounts.accountId = ${accountId}`;
   const res = await connection.execute(query);
   connection.end();
 

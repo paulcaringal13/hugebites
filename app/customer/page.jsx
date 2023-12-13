@@ -8,8 +8,11 @@ import { Button } from "@/components/ui/button";
 import LandingPageNavbar from "./components/LandingPageNavbar";
 import Footer from "./components/Footer";
 import LandingPageMenu from "./components/LandingPageMenu";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
+  const router = useRouter();
+
   // PRODUCTS
   const [productsData, setProductsData] = useState([]);
   // CATEGORIES
@@ -22,7 +25,7 @@ const Page = () => {
 
   const getAllProducts = async () => {
     const res = await fetch(
-      `http://localhost:3000/api/customer/menu/product/products`,
+      `http://localhost:3000/api/customer/menu/product/landingPageProducts`,
       {
         cache: "no-store",
       }
@@ -59,10 +62,6 @@ const Page = () => {
     const sizes = await res.json();
 
     setPackagingSizes(sizes);
-  };
-  console.log(categoriesData);
-  const x = () => {
-    handleProducts();
   };
 
   const handleProducts = () => {
@@ -143,7 +142,7 @@ const Page = () => {
         </div>
       </section>
 
-      <section
+      {/* <section
         id="directOrder"
         className="mx-20 flex flex-row"
         style={{
@@ -174,11 +173,11 @@ const Page = () => {
             View Menu
           </Button>
         </div>
-      </section>
+      </section> */}
 
-      <section
+      {/* <section
         id="productCategories"
-        className="flex flex-col bg-primary drop-shadow-md shadow-2xl"
+        className="flex flex-col bg-primary drop-shadow-md mt-16"
         style={{
           width: "100vw",
           paddingTop: "40px",
@@ -320,7 +319,7 @@ const Page = () => {
             </Button>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <section
         id="productsOffered"
@@ -344,6 +343,12 @@ const Page = () => {
             prodArray={prodArray}
             categoryArray={categoriesData}
           />
+          <Button
+            variant="ghost"
+            className="p-6 text-4xl font-extrabold hover:bg-ring hover:text-white ml-auto flex mr-5"
+          >
+            See more...
+          </Button>
         </div>
       </section>
 
@@ -370,7 +375,10 @@ const Page = () => {
             }}
           >
             <div style={{ marginTop: "10%" }} className="flex flex-col">
-              <Button className="mb-5 font-medium text-2xl hover:bg-ring w-5/12 h-16 mx-auto duration-500">
+              <Button
+                className="mb-5 font-medium text-2xl hover:bg-ring w-5/12 h-16 mx-auto duration-500"
+                onClick={() => router.push("/customer/sign-in")}
+              >
                 CREATE ACCOUNT
               </Button>
               <h1 className="font-bold text-md p-3 ps-2 pe-2 rounded-lg w-3/6 mx-auto mb-3">
@@ -443,11 +451,6 @@ const Page = () => {
             layout="fill"
             objectFit="contain"
           />
-        </div>
-      </section>
-      <section>
-        <div className="h-fit" style={{ width: "100vw" }}>
-          <Footer />
         </div>
       </section>
     </>

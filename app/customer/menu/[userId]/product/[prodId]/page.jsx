@@ -49,21 +49,6 @@ export default function Product({ params }) {
     setSelectedProduct(product);
   };
 
-  // GET THE PRODUCT SELECTED SIZES
-  // const getSpecificProductSizes = async () => {
-  //   const res = await fetch(
-  //     `http://localhost:3000/api/customer/menu/product/specificProductSizes?` +
-  //       new URLSearchParams({ productId: prodId }),
-  //     {
-  //       cache: "no-store",
-  //     }
-  //   );
-
-  //   const sizes = await res.json();
-
-  //   setSelectedProductSizes(sizes);
-  // };
-
   // GET ALL FLAVORS
   const getFlavor = async () => {
     const res = await fetch(`http://localhost:3000/api/customization/flavor`, {
@@ -130,19 +115,14 @@ export default function Product({ params }) {
     getColor();
     getShape();
     getSpecificProduct();
-    // getSpecificProductSizes();
   }, []);
 
-  // useEffect(() => {
-  //   setSelectedProduct({ ...selectedProduct, sizes: selectedProductSizes });
-  // }, [selectedProductSizes]);
-
   return (
-    <main className="Home flex flex-row h-screen">
+    <div className="flex flex-row">
       <div className="z-10">
         <CustomerSidebar account={userData} />
       </div>
-      <div style={{ height: "fit", width: "100%", overflowY: "scroll" }}>
+      <div className="w-full">
         <MenuOrderProductModule
           user={userData}
           selectedProduct={selectedProduct}
@@ -153,6 +133,6 @@ export default function Product({ params }) {
           shapes={shapes}
         />
       </div>
-    </main>
+    </div>
   );
 }

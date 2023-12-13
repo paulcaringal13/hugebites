@@ -11,6 +11,8 @@ async function con() {
   return connection;
 }
 
+export const dynamic = "force-dynamic";
+
 // FOR EMPLOYEE
 export async function PUT(req, path) {
   try {

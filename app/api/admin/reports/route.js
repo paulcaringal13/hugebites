@@ -42,6 +42,20 @@ export async function GET(request) {
     totalAmountOrdered DESC;`)
     : null;
 
+  reportType == "customizedCake"
+    ? (query = `SELECT
+    op.isCakeCustomized,
+    COUNT(*) AS rowCount
+FROM
+    ordered_products op
+JOIN
+    orders o ON op.orderId = o.orderId
+WHERE
+o.dateOrdered BETWEEN '${startDate}' AND '${endDate}'
+GROUP BY
+    op.isCakeCustomized;`)
+    : null;
+
   reportType == "common"
     ? (query = `SELECT
     op.productId,
@@ -171,7 +185,7 @@ ORDER BY
     FROM
     ordered_products op
     JOIN
-    customization_colors cc ON cc.colorId = op.colorId
+    customization_color cc ON cc.colorId = op.colorId
     JOIN
     orders o ON o.orderId = op.orderId
     WHERE
@@ -181,8 +195,6 @@ o.dateOrdered BETWEEN '${startDate}' AND '${endDate}'
     ORDER BY
     totalOrders DESC`)
     : null;
-
-  console.log(query);
 
   const res = await connection.execute(query);
   connection.end();

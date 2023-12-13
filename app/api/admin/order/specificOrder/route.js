@@ -12,6 +12,8 @@ async function con() {
   return connection;
 }
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request) {
   const connection = await con();
 
@@ -19,30 +21,21 @@ export async function GET(request) {
   const orderId = searchParams.get("orderId");
 
   const query = `SELECT 
-    orders.orderId,
-    orders.customerId,
-    orders.totalPrice,
-    orders.dateOrdered,
-    orders.datePickUp,
-    orders.paymentDeadline,
-    orders.refundDeadline,
-    orders.orderStatus,
-    orders.proofOfPaymentImage,
-    orders.methodOfPayment,
-    orders.amountPaid,
-    orders.hasRequest,
-    orders.isPaid,
-    orders.isPriceFinal,
-    orders.isRefunded,
-    tbl_customer.accountId,
-    tbl_customer.firstName,
-    tbl_customer.lastName,
-    accounts.email,
-    accounts.contact
-    FROM orders 
-    LEFT JOIN tbl_customer ON tbl_customer.customerId = orders.customerId
-    LEFT JOIN accounts ON accounts.accountId = tbl_customer.accountId
-    WHERE orders.orderId = ${orderId}`;
+  orders.*,
+  tbl_customer.accountId,
+  tbl_customer.firstName,
+  tbl_customer.lastName,
+  accounts.email,
+  accounts.contact,
+  customer_voucher.voucherId,
+  vouchers.discount,
+  vouchers.voucherName
+  FROM orders 
+  LEFT JOIN tbl_customer ON tbl_customer.customerId = orders.customerId
+  LEFT JOIN accounts ON accounts.accountId = tbl_customer.accountId
+  LEFT JOIN customer_voucher ON orders.customerVoucherId = customer_voucher.customerVoucherId
+  LEFT JOIN vouchers ON vouchers.voucherId = customer_voucher.voucherId
+  WHERE orders.orderId = ${orderId}`;
   const res = await connection.execute(query);
   connection.end();
 

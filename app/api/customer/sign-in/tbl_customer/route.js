@@ -13,11 +13,16 @@ async function con() {
   return connection;
 }
 
-// GET ALL CUSTOMER ACCOUNTS FROM ACCOUNTS TABLE FOR SIGN IN PURPOSES REFERENCE
+export const dynamic = "force-dynamic";
+
 export async function GET(request) {
   const connection = await con();
 
-  const query = `SELECT * FROM tbl_customer`;
+  const { searchParams } = new URL(request.url);
+  const username = searchParams.get("username");
+  const password = searchParams.get("password");
+
+  const query = `SELECT accounts.*, tbl_customer.* FROM accounts JOIN tbl_customer ON accounts.accountId = tbl_customer.accountId WHERE accounts.username = '${username}' OR accounts.email = '${username}' AND accounts.password = PASSWORD('${password}') AND accounts.accountType = '1';`;
   const res = await connection.execute(query);
   connection.end();
 

@@ -12,6 +12,8 @@ async function con() {
   return connection;
 }
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request) {
   const connection = await con();
 
@@ -36,7 +38,7 @@ export async function PUT(request) {
     const reqBody = await request.json();
     const { orderId, orderStatus, isPaid, amountPaid, totalPrice } = reqBody;
 
-    const query = `UPDATE orders SET orderStatus ='${orderStatus}', totalPrice ='${totalPrice}', isPaid ='${isPaid}', amountPaid ='${amountPaid}' WHERE orderId = ${orderId}`;
+    const query = `UPDATE orders SET orderStatus ='${orderStatus}', isPaid ='${isPaid}', totalPrice ='${totalPrice}', amountPaid ='${amountPaid}' WHERE orderId = ${orderId}`;
     const results = await connection.execute(query);
     connection.end();
 

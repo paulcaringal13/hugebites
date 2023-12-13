@@ -11,6 +11,8 @@ async function con() {
   return connection;
 }
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request) {
   const connection = await con();
 
@@ -41,7 +43,7 @@ export async function GET(request) {
   FROM orders 
   LEFT JOIN tbl_customer ON tbl_customer.customerId = orders.customerId
   LEFT JOIN accounts ON accounts.accountId = tbl_customer.accountId
-  WHERE orders.customerId = ${customerId}`;
+  WHERE orders.customerId = ${customerId} ORDER BY orders.orderId DESC;`;
   const res = await connection.execute(query);
   connection.end();
 

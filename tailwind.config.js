@@ -73,6 +73,7 @@ module.exports = {
     },
     fontFamily: {
       gluten: ["Gluten", "cursive"],
+      lilita: ["Russo One", "sans-serif"],
     },
   },
   plugins: [require("tailwindcss-animate")],

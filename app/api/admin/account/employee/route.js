@@ -11,13 +11,15 @@ async function con() {
   return connection;
 }
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const connection = await con();
 
   const query =
-    "SELECT accounts.accountId, tbl_employee.employeeId, tbl_employee.firstName, tbl_employee.lastName, accounts.email, accounts.username, accounts.contact, accounts.accountType, accounts.userRole, accounts.accStatus FROM tbl_employee LEFT JOIN accounts ON tbl_employee.accountId = accounts.accountId";
+    "SELECT accounts.accountId, accounts.avatar, tbl_employee.employeeId, tbl_employee.firstName, tbl_employee.lastName, accounts.email, accounts.username, accounts.contact, accounts.accountType, accounts.userRole, accounts.accStatus FROM tbl_employee LEFT JOIN accounts ON tbl_employee.accountId = accounts.accountId WHERE accounts.userRole IN ('Sub Admin', 'Employee');";
   const results = await connection.execute(query, []);
   connection.end();
 
-  return NextResponse.json({ results: results[0] });
+  return NextResponse.json(results[0]);
 }

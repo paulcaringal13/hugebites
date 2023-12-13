@@ -38,6 +38,8 @@ export async function POST(request) {
   return NextResponse.json(results);
 }
 
+export const dynamic = "force-dynamic";
+
 export async function PUT(request) {
   const connection = await con();
 
@@ -45,19 +47,6 @@ export async function PUT(request) {
   const { totalQuantity, ingredientId } = reqBody;
 
   const query = `UPDATE ingredients SET totalQuantity ='${totalQuantity}' WHERE ingredientId = ${ingredientId}`;
-  const results = await connection.execute(query);
-  connection.end();
-
-  return NextResponse.json(results);
-}
-
-export async function DELETE(request) {
-  const connection = await con();
-
-  const reqBody = await request.json();
-  const { ingredientId } = reqBody;
-
-  const query = `DELETE FROM ingredients WHERE ingredientId = ${ingredientId}`;
   const results = await connection.execute(query);
   connection.end();
 

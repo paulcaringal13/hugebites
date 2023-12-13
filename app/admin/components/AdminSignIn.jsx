@@ -44,9 +44,12 @@ const AdminSignIn = () => {
       // RETURNS THE DATA OF THE USER
       const adminRes = await fetch(
         `http://localhost:3000/api/admin/audit/sign-in?` +
-          new URLSearchParams({
-            accountId: account.accountId,
-          })
+          new URLSearchParams(
+            {
+              accountId: account.accountId,
+            },
+            { cache: "no-store" }
+          )
       );
 
       const response = await adminRes.json();
@@ -59,6 +62,13 @@ const AdminSignIn = () => {
         loggedInUser.password &&
         loggedInUser.isDeactivated != 1
           ? localStorage.setItem("accountId", loggedInUser.employeeId)
+          : null;
+      }
+      {
+        loggedInUser.username &&
+        loggedInUser.password &&
+        loggedInUser.isDeactivated != 1
+          ? localStorage.setItem("employeeId", loggedInUser.accountId)
           : null;
       }
       {
@@ -81,6 +91,14 @@ const AdminSignIn = () => {
         loggedInUser.password &&
         loggedInUser.isDeactivated != 1
           ? localStorage.setItem("userRole", loggedInUser.userRole)
+          : null;
+      }
+
+      {
+        loggedInUser.username &&
+        loggedInUser.password &&
+        loggedInUser.isDeactivated != 1
+          ? localStorage.setItem("avatar", loggedInUser.avatar)
           : null;
       }
 
@@ -120,10 +138,6 @@ const AdminSignIn = () => {
     {
       account.userRole == "Super Admin" && adminButtonRef.current.click();
     }
-    {
-      account.userRole == "Sub Admin" && subAdminButtonRef.current.click();
-    }
-
     {
       account.userRole == "Employee" && employeeButtonRef.current.click();
     }
@@ -189,10 +203,8 @@ const AdminSignIn = () => {
             {isNotExisting == true ? (
               <Label className="errorMessage">{errorMessage}</Label>
             ) : null}
-
-            <a href={"admin/forgot-password"}>Forgot Password?</a>
             <Button
-              className="w-36 ms-auto hover:bg-ring "
+              className="w-36 ms-auto hover:bg-ring mt-2"
               onClick={() => onSubmit()}
             >
               Sign In
@@ -203,12 +215,7 @@ const AdminSignIn = () => {
               ref={adminButtonRef}
             />
             <a
-              href={"/employees/sub-admin/dashboard"}
-              className="hidden"
-              ref={subAdminButtonRef}
-            />
-            <a
-              href={"/employees/employee/dashboard"}
+              href={"/employee/dashboard"}
               className="hidden"
               ref={employeeButtonRef}
             />

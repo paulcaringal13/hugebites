@@ -33,11 +33,21 @@ const MenuCheckOutForm = ({
   cart,
   openMenuCheckOut,
   setOpenMenuCheckOut,
+  totalPrice,
   orderPrice,
+  voucher,
 }) => {
-  const router = useRouter();
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "PHP",
+  });
+
   const params = useParams();
-  const pathname = usePathname();
+
+  const [emailFName, setEmailFName] = useState();
+  const [emailLName, setEmailLName] = useState();
+  const [emailContact, setEmailContact] = useState();
+  const [emailAdd, setEmailAdd] = useState();
 
   const [openConfirmCheckOut, setOpenConfirmCheckOut] = useState(false);
   const [valMop, setValMop] = useState("");
@@ -134,22 +144,67 @@ const MenuCheckOutForm = ({
   };
 
   const checkOut = async () => {
-    const orderPost = {
-      method: "POST",
+    const hasVoucher = !voucher.discount ? 0 : 1;
+    const voucherId = !voucher.discount ? "" : voucher.customerVoucherId;
+
+    let orderPost;
+
+    !voucher.discount
+      ? (orderPost = {
+          method: "POST",
+          header: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            customerId: cart[0].customerId,
+            totalPrice: orderPrice,
+            dateOrdered: dayjs(),
+            orderStatus: "Not Paid",
+            methodOfPayment: methodOfPayment,
+            datePickUp: dayjs(datePickUp),
+            paymentDeadline: dayjs(paymentDeadline),
+            refundDeadline: dayjs(refundDeadline),
+            hasVoucher: hasVoucher,
+          }),
+        })
+      : (orderPost = {
+          method: "POST",
+          header: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            customerId: cart[0].customerId,
+            totalPrice: orderPrice,
+            dateOrdered: dayjs(),
+            orderStatus: "Not Paid",
+            methodOfPayment: methodOfPayment,
+            datePickUp: dayjs(datePickUp),
+            paymentDeadline: dayjs(paymentDeadline),
+            refundDeadline: dayjs(refundDeadline),
+            customerVoucherId: voucherId,
+            hasVoucher: hasVoucher,
+          }),
+        });
+
+    const voucherPut = {
+      method: "PUT",
       header: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        customerId: cart[0].customerId,
-        totalPrice: orderPrice,
-        dateOrdered: dayjs(),
-        orderStatus: "Not Paid",
-        methodOfPayment: methodOfPayment,
-        datePickUp: dayjs(datePickUp),
-        paymentDeadline: dayjs(paymentDeadline),
-        refundDeadline: dayjs(refundDeadline),
+        customerVoucherId: voucher.customerVoucherId,
       }),
     };
+
+    let voucherRes;
+
+    !voucher.discount
+      ? null
+      : (voucherRes = await fetch(
+          `http://localhost:3000/api/customer/voucher`,
+          voucherPut
+        ));
+
     try {
       const res = await fetch(
         `http://localhost:3000/api/customer/orders/checkOut`,
@@ -161,6 +216,146 @@ const MenuCheckOutForm = ({
 
       const { insertId } = response[0];
       const orderId = insertId;
+      const emailPost = {
+        method: "POST",
+        header: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: "admin",
+          to: emailAdd,
+          subject: `Place Order Id: ${orderId}`,
+          html: `
+          <div
+          style="width: 100%; height: auto"
+        >
+          <h1
+            style="
+              width: fit-content;
+              height: fit-content;
+              font-size: 0.875rem;
+              line-height: 1.25rem;
+              font-weight: 300;
+            "
+          >
+            Greetings, 
+            <span style="font-weight: 700">${emailFName}</span>!
+          </h1>
+          <p
+            style="
+              font-size: 0.75rem;
+              line-height: 1rem;
+              font-weight: 300;
+              text-align: justify;
+              text-indent: 2rem;
+            "
+          >
+            We hope this message finds you in good spirits! At Huge Bites, we truly
+            appreciate your continued support and the opportunity to be a part of
+            your special moments.
+          </p>
+          <p
+          style="
+            font-size: 0.75rem;
+            line-height: 1rem;
+            font-weight: 300;
+            text-align: justify;
+            text-indent: 2rem;
+          "
+        >
+          Rest assured, once we have the final price ready, we'll promptly send you another email with all the
+          details. If you have any questions or specific requests in the meantime, feel free to reach out to our
+          customer service team at <span style="font-weight: 700">hugebitesofficial@gmail.com</span> or <span style="font-weight: 700">0927 662 3221</span>.
+        </p>
+        <p
+        style="
+          font-size: 0.75rem;
+          line-height: 1rem;
+          font-weight: 300;
+          text-align: justify;
+          text-indent: 2rem;
+        "
+        >
+        Thank you for choosing Huge Bites! We're excited to create a delicious and beautiful cake for your
+        celebration
+        </p>
+        <p
+          style="
+            font-size: 0.75rem;
+            line-height: 1rem;
+            font-weight: 300;
+            text-align: justify;
+          "
+        >
+        <br>
+        Best regards,<br>
+        <br>
+        <span style="font-weight:700">HugeBites</span>
+       
+        </p>
+        </div>
+          `,
+        }),
+      };
+      try {
+        const emailNotifRes = await fetch(
+          `http://localhost:3000/api/email`,
+          emailPost,
+          { cache: "no-store" }
+        );
+      } catch (e) {
+        console.log(e);
+      }
+
+      const emailAdminPost = {
+        method: "POST",
+        header: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: "CS",
+          subject: `Customer ${cart[0].customerId}, Order Id: ${orderId}`,
+          html: `
+          <div
+          style="width: 100%; height: auto"
+        >
+          <h1
+            style="
+              width: fit-content;
+              height: fit-content;
+              font-size: 0.875rem;
+              line-height: 1.25rem;
+              font-weight: 300;
+            "
+          >
+            Greetings!
+          </h1>
+          <p
+            style="
+            font-size: 0.875rem;
+            line-height: 1.25rem; 
+              font-weight: 300;
+              text-align: justify;
+              text-indent: 2rem;
+            "
+          >
+          You've got a new order! Please review and provide the final price confirmation at your earliest
+          convenience.
+          </p>
+        </div>
+          `,
+        }),
+      };
+      try {
+        const emailAdminNotifRes = await fetch(
+          `http://localhost:3000/api/email`,
+          emailAdminPost,
+          { cache: "no-store" }
+        );
+      } catch (e) {
+        console.log(e);
+      }
+
       cart.forEach(async (i) => {
         const addOns = [...i.addOns];
         const specialProperty = [...i.specialProperty];
@@ -259,6 +454,39 @@ const MenuCheckOutForm = ({
     setRefundDeadline(refundDate);
   }, [datePickUp]);
 
+  useEffect(() => {
+    const contact =
+      typeof window !== "undefined" && window.localStorage
+        ? localStorage.getItem("contact")
+        : "";
+    const firstName =
+      typeof window !== "undefined" && window.localStorage
+        ? localStorage.getItem("firstName")
+        : "";
+    const lastName =
+      typeof window !== "undefined" && window.localStorage
+        ? localStorage.getItem("lastName")
+        : "";
+    const email =
+      typeof window !== "undefined" && window.localStorage
+        ? localStorage.getItem("email")
+        : "";
+
+    {
+      !!cart && setEmailAdd(email);
+    }
+
+    {
+      !!cart && setEmailFName(firstName);
+    }
+    {
+      !!cart && setEmailLName(lastName);
+    }
+    {
+      !!cart && setEmailContact(contact);
+    }
+  }, []);
+
   return (
     <div className="h-screen w-[1000px] absolute top-0">
       <Dialog
@@ -285,19 +513,12 @@ const MenuCheckOutForm = ({
                   <DayPicker
                     mode="single"
                     captionLayout="dropdown"
-                    //   fromMonth={dayjs().month()}
                     fromYear={fromYear}
                     toYear={toYear}
                     selected={datePickUp}
                     onSelect={setDatePickUp}
                     className="rounded-md border shadow w-fit p-5"
-                    disabled={[
-                      // {
-                      //   from: new Date(2023, 11, 3),
-                      //   to: new Date(2023, 11, 10),
-                      // },
-                      { before: new Date(dayjs().add(3, "day")) },
-                    ]}
+                    disabled={[{ before: new Date(dayjs().add(3, "day")) }]}
                   />
                 </div>
                 {!valDatePickUp ? null : (
@@ -354,25 +575,33 @@ const MenuCheckOutForm = ({
                   className="w-[45%] border-solid border-muted border-2 border-b-black px-2 py-2 text-sm font-extrabold"
                   style={{ borderTopRightRadius: "5px" }}
                 >
-                  Total (Cake Price x Qty + Add Ons)
+                  Total (Cake Price x Qty)
                 </h1>
               </div>
 
               {cart.map((i) => {
                 const add = "+";
-
                 return (
                   <div className="flex flex-row" key={i.cartId}>
                     <h1 className="w-[55%] border-solid border-muted border-2  px-5 py-2 text-sm text-muted-foreground">
                       {i.productName}
                     </h1>
                     <h1 className="w-[45%] border-solid border-muted border-2  px-5 py-2 text-sm text-muted-foreground">
-                      ₱{i.subTotal / i.quantity}
-                      .00 x {i.quantity} {add} {i.totalPrice - i.subTotal}
+                      {formatter.format(i.subTotal / i.quantity)} x {i.quantity}
                     </h1>
                   </div>
                 );
               })}
+              {!voucher.discount ? null : (
+                <div className="flex flex-row">
+                  <h1 className="w-[55%] border-solid border-muted border-2  px-5 py-2 text-sm font-bold">
+                    Discount
+                  </h1>
+                  <h1 className="w-[45%] border-solid border-muted border-2  px-5 py-2 text-sm text-muted-foreground">
+                    {formatter.format(totalPrice)} - {voucher.discount}%
+                  </h1>
+                </div>
+              )}
               <div className="flex flex-row justify-between w-full h-fit">
                 <h1
                   className="w-[55%] border-solid border-muted border-2  px-5 py-2 text-sm font-bold"
@@ -384,18 +613,10 @@ const MenuCheckOutForm = ({
                   className="w-[45%] border-solid border-muted border-2  px-5 py-2 text-sm font-bold text-ring"
                   style={{ borderBottomRightRadius: "5px" }}
                 >
-                  = ₱{orderPrice}
-                  .00
+                  = {formatter.format(orderPrice)}
                 </h1>
               </div>
-
-              {/* method of payment */}
-              <div
-                className="w-full h-fit mt-4 rounded-md border shadow-sm"
-                // style={{
-                //   boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
-                // }}
-              >
+              <div className="w-full h-fit mt-4 rounded-md border shadow-sm">
                 <RadioGroup className="m-4">
                   <h1 className="text-sm font-bold">
                     Method of Payment{" "}

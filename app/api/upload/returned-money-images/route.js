@@ -3,6 +3,8 @@ import { join } from "path";
 import { writeFile } from "fs/promises";
 import dayjs from "dayjs";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request) {
   const data = await request.formData();
   const file = data.get("file");

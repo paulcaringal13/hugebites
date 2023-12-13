@@ -9,19 +9,20 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "../../../components/ui/popover";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "../../../components/ui/button";
 import { Label } from "../../../components/ui/label";
 import { BiChevronDown } from "react-icons/bi";
-import * as Avatar from "@radix-ui/react-avatar";
 
 const AdminNavbar = () => {
   const router = useRouter();
 
-  const buttonRef = useRef(null);
+  const buttonRef = useRef();
 
   const [loggedInUserName, setLoggedInUserName] = useState("");
   const [loggedInUserId, setLoggedInUserId] = useState("");
   const [userInitials, setUserInitials] = useState("");
+  const [avatar, setAvatar] = useState();
 
   const handleLogout = async () => {
     // GET THE AUDIT ID FROM THE LOCAL STORAGE FOR FINDING THE RIGHT ROW TO EDIT
@@ -75,9 +76,18 @@ const AdminNavbar = () => {
         ? localStorage.getItem("lastName")
         : "";
 
+    const avatar =
+      typeof window !== "undefined" && window.localStorage
+        ? localStorage.getItem("avatar")
+        : "";
+
     // SET THE STATE TO THE LOCAL STORAGE ID VALUE
     {
       userId && setLoggedInUserId(userId);
+    }
+
+    {
+      localStorage.getItem("avatar") && setAvatar(avatar);
     }
 
     // CONCATINATE THE FIRST AND LAST NAME TO GET THE FULLNAME
@@ -96,7 +106,7 @@ const AdminNavbar = () => {
     }
   }, []);
   return (
-    <div className="w-full h-1/6 z-10 ">
+    <div className="w-auto h-1/6 z-10 bg-red-500">
       <div className="flex h-1/6 items-center bg-white border">
         <Image
           src="/images/Logo.png"
@@ -108,11 +118,12 @@ const AdminNavbar = () => {
         <Label className="my-auto text-3xl ms-10">HugeBites</Label>
         <Popover>
           <PopoverTrigger className="ms-auto me-16 flex flex-row">
-            <Avatar.Root className="bg-blackA3 inline-flex h-[35px] w-[35px] select-none items-center justify-center my-auto overflow-hidden rounded-full align-middle">
-              <Avatar.Fallback className="text-violet11 leading-1 flex h-full w-full items-center justify-center bg-primary text-white text-[15px] font-medium">
+            <Avatar className="mx-auto">
+              <AvatarImage src={avatar} alt="profile-picture" />
+              <AvatarFallback className="bg-primary text-white">
                 {userInitials}
-              </Avatar.Fallback>
-            </Avatar.Root>
+              </AvatarFallback>
+            </Avatar>
             <div className="flex flex-col ms-2 text-sm">
               {loggedInUserName}
               <div className="flex flex-row text-sm">

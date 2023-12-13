@@ -1,5 +1,5 @@
 import MiniAdminSidebar from "../components/MiniAdminSidebar";
-import InventoryTableTabs from "../components/InventoryTableTabs";
+import InventoryTableTabs from "../components/pages/Inventory/InventoryTableTabs";
 import * as React from "react";
 
 const AdminInventory = async () => {

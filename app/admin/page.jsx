@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Button } from "../../components/ui/button";
 import AdminSignIn from "./components/AdminSignIn";
 
 const page = () => {
