@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import MiniAdminSidebar from "../components/MiniAdminSidebar";
 import CustomizationTableTabs from "../components/pages/Customization/CustomizationTableTabs";
 
+// NOT COMPLETED
 const AdminCustomization = () => {
   const [sizesData, setSizesData] = useState([]);
   const [colorsData, setColorsData] = useState([]);

@@ -5,6 +5,8 @@ import CustomerSidebar from "../../components/CustomerSidebar";
 import HomePage from "../../components/Home/HomePage";
 import TermsAndConditions from "../../components/Home/TermsAndConditions";
 
+// COMPLETED
+
 export default function Home(path) {
   const { params } = path;
   const { id } = params;
@@ -13,7 +15,6 @@ export default function Home(path) {
   const [openTermsAndConditions, setOpenTermsAndConditions] = useState(false);
   const [isFirstTime, setIsFirstTime] = useState();
 
-  // GET ALL USER DATA NEEDED
   async function getUserData() {
     const res = await fetch(
       `http://localhost:3000/api/customer/home?` +

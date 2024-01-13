@@ -5,7 +5,7 @@ import YearlyForecast from "../components/pages/Forecast/YearlyForecast";
 
 export default function AdminRequest() {
   const [loggedInUserId, setLoggedInUserId] = useState("");
-
+  // NOT COMPLETED
   useEffect(() => {
     const userId =
       typeof window !== "undefined" && window.localStorage

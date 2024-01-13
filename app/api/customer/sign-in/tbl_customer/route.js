@@ -1,7 +1,7 @@
 import mysql from "mysql2/promise";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-// CUSTOMER
+// COMPLETED
 
 async function con() {
   const connection = await mysql.createConnection({
@@ -22,7 +22,16 @@ export async function GET(request) {
   const username = searchParams.get("username");
   const password = searchParams.get("password");
 
-  const query = `SELECT accounts.*, tbl_customer.* FROM accounts JOIN tbl_customer ON accounts.accountId = tbl_customer.accountId WHERE accounts.username = '${username}' OR accounts.email = '${username}' AND accounts.password = PASSWORD('${password}') AND accounts.accountType = '1';`;
+  const query = `SELECT selected_accounts.*, selected_accounts.accountId AS account_accountId, selected_accounts.customer_accountId AS customer_accountId
+  FROM (
+      SELECT accounts.*, tbl_customer.totalSpent, tbl_customer.firstName, tbl_customer.lastName, tbl_customer.customerId, tbl_customer.accountId AS customer_accountId, accounts.isVerified AS customer_isVerified
+      FROM accounts
+      JOIN tbl_customer ON accounts.accountId = tbl_customer.accountId
+      WHERE (accounts.email = '${username}' OR accounts.username = '${username}')
+        AND accounts.password = PASSWORD('${password}')
+        AND accounts.accountType = '1'
+  ) AS selected_accounts
+  WHERE selected_accounts.customer_isVerified = 1 AND selected_accounts.isDeactivated = 0;`;
   const res = await connection.execute(query);
   connection.end();
 

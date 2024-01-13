@@ -1,6 +1,7 @@
 "use client";
 import "../../../../styles/globals.css";
-import { useEffect, useState, useRef } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import * as React from "react";
 import { Button } from "../../../../../components/ui/button";
@@ -11,31 +12,19 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "../../../../../components/ui/dialog";
 import { Input } from "../../../../../components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Toaster } from "@/components/ui/toaster";
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import { X } from "lucide-react";
-import {
-  Toast,
-  ToastClose,
-  ToastDescription,
-  ToastProvider,
-  ToastTitle,
-  ToastViewport,
-} from "@/components/ui/toast";
-import { useToast } from "@/components/ui/use-toast";
 
+// NOT COMPLETED
 const CustomizationAddSizeForm = ({
   addSizeOpen,
   setAddSizeOpen,
@@ -49,6 +38,7 @@ const CustomizationAddSizeForm = ({
     defaultValues: {
       size: "",
       packagingPrice: 100,
+      sizeDescription: "",
     },
     mode: "onTouched",
   });
@@ -82,7 +72,7 @@ const CustomizationAddSizeForm = ({
   };
 
   const addSize = async (data) => {
-    const { size, packagingPrice } = data;
+    const { size, packagingPrice, sizeDescription } = data;
 
     const sizePost = {
       method: "POST",
@@ -94,6 +84,7 @@ const CustomizationAddSizeForm = ({
         size: size,
         packagingStatus: "Available",
         packagingPrice: packagingPrice,
+        sizeDescription: sizeDescription,
       }),
     };
 
@@ -112,9 +103,10 @@ const CustomizationAddSizeForm = ({
         productId: product.productId,
         packagingStatus: "Available",
         packagingPrice: packagingPrice,
+        sizeDescription: sizeDescription,
       };
 
-      setSizesTable([...oldTable, newSize]);
+      setSizesTable([newSize, ...oldTable]);
       closeAddSize();
     } catch (error) {
       console.log(error);
@@ -200,6 +192,36 @@ const CustomizationAddSizeForm = ({
               {!errors.packagingPrice?.message ? null : (
                 <Label className="errorMessage mb-1">
                   {errors.packagingPrice?.message}
+                </Label>
+              )}
+            </div>
+            <div className="flex flex-col">
+              <Label htmlFor="flavorPrice" className="text-left mb-1 mt-2">
+                Description:
+              </Label>
+              <Textarea
+                id="sizeDescription"
+                className="form-control w-full"
+                name="sizeDescription"
+                min={1}
+                multiline={3}
+                type="text"
+                placeholder="Input size description"
+                {...register("sizeDescription", {
+                  required: "Please fill out the field!",
+                  maxLength: {
+                    value: 80,
+                    message: "Please enter a valid description!",
+                  },
+                  minLength: {
+                    value: 5,
+                    message: "Please enter a valid description!",
+                  },
+                })}
+              />
+              {!errors.sizeDescription?.message ? null : (
+                <Label className="errorMessage mb-1">
+                  {errors.sizeDescription?.message}
                 </Label>
               )}
             </div>

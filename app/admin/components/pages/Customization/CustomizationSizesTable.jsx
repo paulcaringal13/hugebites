@@ -33,6 +33,7 @@ import { MdOutlineDeleteOutline } from "react-icons/md";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 import { Label } from "@/components/ui/label";
 
+// NOT COMPLETED
 const CustomizationSizesTable = ({
   data,
   openEditSize,
@@ -86,6 +87,22 @@ const CustomizationSizesTable = ({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Size
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
+          </Button>
+        );
+      },
+    },
+    {
+      accessorKey: "sizeDescription",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            className="mx-auto my-auto"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Size Description
             <span className="text-xs ml-2">Sort</span>
             <ArrowUpDown className="h-3 w-3" />
           </Button>

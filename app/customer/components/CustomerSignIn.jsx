@@ -2,7 +2,6 @@
 import "../../styles/globals.css";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import "../../styles/globals.css";
 import { Button } from "../../../components/ui/button";
 import { Label } from "../../../components/ui/label";
 import { Input } from "../../../components/ui/input";
@@ -13,15 +12,13 @@ import {
   CardTitle,
 } from "../../../components/ui/card";
 
-const CustomerSignIn = ({ customerAccounts, tableCustomerAccounts }) => {
-  // ROUTER
+// COMPLETED
+
+const CustomerSignIn = () => {
   const router = useRouter();
 
-  // USER FIELDS
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
-  // STATE FOR VALIDATION
   const [isNotExisting, setIsNotExisting] = useState(false);
 
   const onSubmit = async () => {
@@ -38,14 +35,12 @@ const CustomerSignIn = ({ customerAccounts, tableCustomerAccounts }) => {
 
     !results ? null : (account = results);
 
-    // IF NOTHING IS FOUND, SET ERROR MESSAGE TO TRUE
     {
       account.length == 0 ? setIsNotExisting(true) : redirectPage(account[0]);
     }
   };
 
   const redirectPage = (account) => {
-    // REDIRECT TO HOMEPAGE WITH THE USER ID
     localStorage.setItem("accountId", account.accountId);
     localStorage.setItem("customerId", account.customerId);
     localStorage.setItem("firstName", account.firstName);

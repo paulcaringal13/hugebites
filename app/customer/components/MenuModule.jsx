@@ -61,6 +61,7 @@ const MenuModule = ({
   const [openEditCartProduct, setOpenEditCartProduct] = useState(false);
   const [openRemoveCartProduct, setOpenRemoveCartProduct] = useState(false);
   const [openMenuCheckOut, setOpenMenuCheckOut] = useState(false);
+  const [openRulesAndRegulations, setOpenRulesAndRegulations] = useState(false);
   const [specificProductSizes, setSpecificProductSizes] = useState([]);
 
   const [voucher, setVoucher] = useState({});
@@ -68,7 +69,7 @@ const MenuModule = ({
   const openCheckOutForm = (voucherSelected, total) => {
     setVoucher(voucherSelected);
     setOrderPrice(total);
-    setOpenMenuCheckOut(true);
+    setOpenRulesAndRegulations(true);
   };
 
   // alert state
@@ -458,6 +459,127 @@ const MenuModule = ({
           </div>
         </DialogContent>
       </Dialog>
+
+      <Dialog
+        open={openRulesAndRegulations}
+        onOpenChange={setOpenRulesAndRegulations}
+        onClose
+      >
+        <DialogContent className="flex flex-col max-w-full max-h-full md:w-[95%] md:h-fit">
+          <div className="h-full w-full flex flex-col">
+            <h1 className="font-extrabold text-3xl mx-auto mb-4">
+              Terms and Conditions
+            </h1>
+            <p className="text-sm font-light indent-10 text-justify">
+              Welcome to Huge Bites! We&apos;re delighted to serve you and
+              provide you with delicious cakes for your special occasions.
+              Please take a moment to review our terms and conditions for
+              ordering cakes through our website:
+            </p>
+            <ol type="1">
+              <li className="text-start" style={{ lineHeight: "3" }}>
+                <h1 className="text-md font-bold">1. Order Placement</h1>
+                <p className="text-sm font-light indent-10 text-justify">
+                  All cake orders must be placed a minimum of 3 days in advance
+                  before your desired pick-up or delivery date.
+                </p>
+              </li>
+              <li className="text-start" style={{ lineHeight: "3" }}>
+                <h1 className="text-md font-bold">2. Rescheduling</h1>
+                <p className="text-sm font-light indent-10 text-justify">
+                  Rescheduling of cake orders is strictly prohibited once the
+                  order has been placed. Please double-check your schedule and
+                  requirements before confirming your order.
+                </p>
+              </li>
+              <li className="text-start" style={{ lineHeight: "3" }}>
+                <h1 className="text-md font-bold"> 3. Payment</h1>
+                <p className="text-sm font-light indent-10 text-justify">
+                  At Huge Bites, we operate on a payment-first basis before
+                  confirming your order. We offer various payment methods and
+                  have established specific rules for your convenience. Here are
+                  the details:
+                </p>
+                <div className="container w-[100%] ml-auto h-fit mt-3">
+                  <p className="text-sm font-light indent-10 text-justify mb-3">
+                    • &emsp;&emsp;
+                    <span className="font-extrabold">In-Store Payment:</span> To
+                    complete your order, payment must be made in person at our
+                    physical store located at Phase 1 Block 73 Lot 32 Mabuhay
+                    City, Baclaran, City of Cabuyao, Laguna within 2 days after
+                    placing your order.
+                  </p>
+                  <p className="text-sm font-light indent-10 text-justify">
+                    • &emsp;&emsp;
+                    <span className="font-extrabold">GCash Payment:</span> For
+                    GCash payments, you have two options: you can pay for your
+                    order at the time of checkout, or you can complete the
+                    payment within 2 days by sending it to our GCash Account
+                    #09956520909.
+                  </p>
+                </div>
+                <p
+                  className="italic text-sm font-extrabold mt-3"
+                  style={{ color: "#ff0000" }}
+                >
+                  *Note: Failure to make the payment within 2 days will result
+                  in the cancellation of your order.
+                </p>
+              </li>
+              <li className="text-start" style={{ lineHeight: "3" }}>
+                <h1 className="text-md font-bold"> 4. Delivery Options</h1>
+                <p className="text-sm font-light indent-10 text-justify">
+                  You have the option to receive your cake order through one of
+                  the following methods:
+                </p>
+                <div className="container w-[100%] ml-auto h-fit mt-3">
+                  <p className="text-sm font-light indent-10 text-justify">
+                    • &emsp;&emsp;
+                    <span className="font-extrabold">
+                      Personal Pick-Up:
+                    </span>{" "}
+                    You may choose to pick up your cake order from our physical
+                    location at the agreed-upon time.
+                  </p>
+                  <p className="text-sm font-light indent-10 text-justify mb-3">
+                    • &emsp;&emsp;
+                    <span className="font-extrabold">
+                      Third-Party Services:
+                    </span>{" "}
+                    Alternatively, you can arrange for delivery through
+                    third-party services like Lalamove, Toktok, or other similar
+                    platforms. The delivery fees and scheduling are the
+                    responsibility of the customer.
+                  </p>
+                </div>
+                <p
+                  className="italic text-sm font-extrabold mt-3"
+                  style={{ color: "#ff0000" }}
+                >
+                  *Note: We are not accountable if the cake has been damaged
+                  upon delivery.
+                </p>
+              </li>
+            </ol>
+          </div>
+          <div className="flex flex-row justify-end gap-3">
+            <Button
+              variant="outline"
+              className="hover:bg-primary hover:text-white active:bg-primary-foreground duration-300 w-fit"
+              onClick={() => setOpenRulesAndRegulations(false)}
+            >
+              Disagree
+            </Button>
+            <Button
+              className="hover:bg-ring active:bg-primary-foreground duration-300 w-fit"
+              onClick={async () => setOpenMenuCheckOut(true)}
+            >
+              Agree
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {openEditCartProduct ? (
         <MenuEditCartProduct
           cartProduct={cartProduct}

@@ -33,6 +33,7 @@ import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { Label } from "@/components/ui/label";
 
+// NOT COMPLETED
 const CustomizationShapesTable = ({
   data,
   openEditShape,

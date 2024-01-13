@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 
+// NOT COMPLETED
 const YearlyForecast = () => {
   const [yearlySales, setYearlySales] = useState([]);
   const [year, setYear] = useState(2027);

@@ -59,6 +59,7 @@ import {
 } from "react-icons/io5";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
+// NOT COMPLETED
 const IngredientsList = ({
   closeIngredientList,
   ingredientListOpen,

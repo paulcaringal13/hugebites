@@ -16,14 +16,15 @@ import Image from "next/image";
 const AdminSignIn = () => {
   const adminButtonRef = useRef(null);
   const employeeButtonRef = useRef(null);
-  const subAdminButtonRef = useRef(null);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isNotExisting, setIsNotExisting] = useState(false);
+  // NOT COMPLETED
   const [errorMessage, setErrorMessage] = useState("Invalid Login Credentials");
 
   const onSubmit = async (event) => {
+    console.log("asdasd");
     // RETURNS ACCOUNT ID OF THE USER. PARA MAKUHA NIYA FROM TBL_EMPLOYEE TABLE YUNG DATA NIYA USING ACCOUNT ID FROM TABLE ACCOUNTS
     const res = await fetch(
       `http://localhost:3000/api/sign-in?` +
@@ -35,9 +36,10 @@ const AdminSignIn = () => {
     const results = await res.json();
 
     const account = results[0];
+    console.log(!account.accountId);
 
     {
-      !account && setIsNotExisting(true);
+      !account.accountId ? setIsNotExisting(true) : setIsNotExisting(false);
     }
 
     try {
@@ -56,50 +58,60 @@ const AdminSignIn = () => {
 
       const loggedInUser = response[0];
 
+      console.log(loggedInUser);
+
       // SET LOCAL STORAGE SA MGA DATA NI USER
       {
-        loggedInUser.username &&
-        loggedInUser.password &&
-        loggedInUser.isDeactivated != 1
-          ? localStorage.setItem("accountId", loggedInUser.employeeId)
-          : null;
+        !loggedInUser.username &&
+        !loggedInUser.password &&
+        loggedInUser.isDeactivated == 1
+          ? null
+          : localStorage.setItem("accountId", loggedInUser.employeeId);
       }
       {
-        loggedInUser.username &&
-        loggedInUser.password &&
-        loggedInUser.isDeactivated != 1
-          ? localStorage.setItem("employeeId", loggedInUser.accountId)
-          : null;
-      }
-      {
-        loggedInUser.username &&
-        loggedInUser.password &&
-        loggedInUser.isDeactivated != 1
-          ? localStorage.setItem("firstName", loggedInUser.firstName)
-          : null;
-      }
-      {
-        loggedInUser.username &&
-        loggedInUser.password &&
-        loggedInUser.isDeactivated != 1
-          ? localStorage.setItem("lastName", loggedInUser.lastName)
-          : null;
+        !loggedInUser.username &&
+        !loggedInUser.password &&
+        loggedInUser.isDeactivated == 1
+          ? null
+          : localStorage.setItem("employeeId", loggedInUser.accountId);
       }
 
       {
-        loggedInUser.username &&
-        loggedInUser.password &&
-        loggedInUser.isDeactivated != 1
-          ? localStorage.setItem("userRole", loggedInUser.userRole)
-          : null;
+        !loggedInUser.username &&
+        !loggedInUser.password &&
+        loggedInUser.isDeactivated == 1
+          ? null
+          : localStorage.setItem("roleId", loggedInUser.roleId);
+      }
+      {
+        !loggedInUser.username &&
+        !loggedInUser.password &&
+        loggedInUser.isDeactivated == 1
+          ? null
+          : localStorage.setItem("firstName", loggedInUser.firstName);
+      }
+      {
+        !loggedInUser.username &&
+        !loggedInUser.password &&
+        loggedInUser.isDeactivated == 1
+          ? null
+          : localStorage.setItem("lastName", loggedInUser.lastName);
       }
 
       {
-        loggedInUser.username &&
-        loggedInUser.password &&
-        loggedInUser.isDeactivated != 1
-          ? localStorage.setItem("avatar", loggedInUser.avatar)
-          : null;
+        !loggedInUser.username &&
+        !loggedInUser.password &&
+        loggedInUser.isDeactivated == 1
+          ? null
+          : localStorage.setItem("userRole", loggedInUser.userRole);
+      }
+
+      {
+        !loggedInUser.username &&
+        !loggedInUser.password &&
+        loggedInUser.isDeactivated == 1
+          ? null
+          : localStorage.setItem("avatar", loggedInUser.avatar);
       }
 
       {
@@ -113,20 +125,19 @@ const AdminSignIn = () => {
 
       // IREDIRECT SA NEXT PAGE IF SUCCESS ANG LOG IN
       {
-        loggedInUser.username &&
-        loggedInUser.password &&
-        loggedInUser.isDeactivated != 1
-          ? redirect(loggedInUser)
-          : null;
+        !loggedInUser.username &&
+        !loggedInUser.password &&
+        loggedInUser.isDeactivated == 1
+          ? null
+          : redirect(loggedInUser);
       }
 
       // IF DI EXISTING OR DEACTIVATED ANG ACCOUNT ISHOW ANG MESSAGE
       {
-        loggedInUser.username &&
-        loggedInUser.password &&
-        loggedInUser.isDeactivated != 1
-          ? null
-          : setIsNotExisting(true);
+        !account.accountId;
+        loggedInUser.isDeactivated == 1
+          ? setIsNotExisting(true)
+          : setIsNotExisting(false);
       }
     } catch (e) {
       setIsNotExisting(true);
@@ -135,11 +146,12 @@ const AdminSignIn = () => {
 
   // REDIRECT THEM TO SPECIFIC PATH
   const redirect = (account) => {
+    console.log("nag redirect");
     {
       account.userRole == "Super Admin" && adminButtonRef.current.click();
     }
     {
-      account.userRole == "Employee" && employeeButtonRef.current.click();
+      account.userRole != "Super Admin" && employeeButtonRef.current.click();
     }
   };
 

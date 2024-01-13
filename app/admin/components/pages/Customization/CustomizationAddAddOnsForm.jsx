@@ -15,6 +15,8 @@ import {
 import { Input } from "../../../../../components/ui/input";
 import { Label } from "@/components/ui/label";
 import { X } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+// NOT COMPLETED
 
 const CustomizationAddAddOnsForm = ({
   addAddOnsOpen,
@@ -27,6 +29,7 @@ const CustomizationAddAddOnsForm = ({
     defaultValues: {
       addOnsName: "",
       addOnsPrice: 0,
+      addOnsDescription: "",
     },
     mode: "onTouched",
   });
@@ -47,7 +50,7 @@ const CustomizationAddAddOnsForm = ({
   };
 
   const addAddOns = async (data) => {
-    const { addOnsName, addOnsPrice } = data;
+    const { addOnsName, addOnsPrice, addOnsDescription } = data;
     const addOnsPost = {
       method: "POST",
       headers: {
@@ -57,6 +60,7 @@ const CustomizationAddAddOnsForm = ({
         addOnsName: addOnsName,
         addOnsStatus: "Available",
         addOnsPrice: addOnsPrice,
+        addOnsDescription: addOnsDescription,
       }),
     };
     try {
@@ -71,8 +75,9 @@ const CustomizationAddAddOnsForm = ({
         addOnsName: addOnsName,
         addOnsStatus: "Available",
         addOnsPrice: addOnsPrice,
+        addOnsDescription: addOnsDescription,
       };
-      setAddOnsTable([...oldTable, newAddOns]);
+      setAddOnsTable([newAddOns, ...oldTable]);
       closeAddAddOns();
     } catch (error) {
       console.log(error);
@@ -158,6 +163,37 @@ const CustomizationAddAddOnsForm = ({
               {!errors.addOnsPrice?.message ? null : (
                 <Label className="errorMessage mb-1">
                   {errors.addOnsPrice?.message}
+                </Label>
+              )}
+            </div>
+
+            <div className="flex flex-col">
+              <Label htmlFor="flavorPrice" className="text-left mb-1 mt-2">
+                Description:
+              </Label>
+              <Textarea
+                id="addOnsDescription"
+                className="form-control w-full"
+                name="addOnsDescription"
+                min={1}
+                multiline={3}
+                type="text"
+                placeholder="Input add ons description"
+                {...register("addOnsDescription", {
+                  required: "Please fill out the field!",
+                  maxLength: {
+                    value: 50,
+                    message: "Please enter a valid description!",
+                  },
+                  minLength: {
+                    value: 5,
+                    message: "Please enter a valid description!",
+                  },
+                })}
+              />
+              {!errors.addOnsDescription?.message ? null : (
+                <Label className="errorMessage mb-1">
+                  {errors.addOnsDescription?.message}
                 </Label>
               )}
             </div>

@@ -27,9 +27,10 @@ export async function POST(request, path) {
     userRole,
     isDeactivated,
     accStatus,
+    roleId,
   } = reqBody;
   try {
-    const query = `INSERT INTO accounts ( email, password, username, contact, accountType, userRole, isDeactivated, accStatus) VALUES ('${email}', '${password}', '${username}', '${contact}', '${accountType}', '${userRole}', '${isDeactivated}', '${accStatus}')`;
+    const query = `INSERT INTO accounts ( roleId, email, password, username, contact, accountType, userRole, isDeactivated, accStatus) VALUES ('${roleId}',  '${email}', '${password}', '${username}', '${contact}', '${accountType}', '${userRole}', '${isDeactivated}', '${accStatus}')`;
     const results = await connection.execute(query, []);
     connection.end();
     return NextResponse.json(results);

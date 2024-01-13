@@ -36,6 +36,7 @@ import {
   MdOutlineDeleteOutline,
 } from "react-icons/md";
 
+// NOT COMPLETED
 const DefaultProductsTable = ({
   data,
   openEditOfferedProducts,

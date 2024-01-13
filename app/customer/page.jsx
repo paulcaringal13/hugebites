@@ -142,185 +142,6 @@ const Page = () => {
         </div>
       </section>
 
-      {/* <section
-        id="directOrder"
-        className="mx-20 flex flex-row"
-        style={{
-          height: "100vh",
-          width: "100vw",
-          paddingTop: "25px",
-          paddingBottom: "25px",
-          alignItems: "center",
-        }}
-      >
-        <div style={{ width: "55%", height: "95%", position: "relative" }}>
-          <Image
-            src="/images/directOrderImage.svg"
-            alt="bg"
-            layout="fill"
-            objectFit="contain"
-          />
-        </div>
-        <div className="grid grid-cols-3 gap-y-8" style={{ width: "30%" }}>
-          <h1 className="font-extrabold text-5xl col-span-3 text-primary">
-            Order <span className="text-black">Now</span>
-          </h1>
-          <h3 className="col-span-3 text-xl font-bold">
-            Unlock the Ultimate Experience Place Your Order Now and Satisfy your
-            cravings!
-          </h3>
-          <Button className="hover:bg-ring duration-500 w-auto col-span-3">
-            View Menu
-          </Button>
-        </div>
-      </section> */}
-
-      {/* <section
-        id="productCategories"
-        className="flex flex-col bg-primary drop-shadow-md mt-16"
-        style={{
-          width: "100vw",
-          paddingTop: "40px",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "white",
-          // backgroundImage: `url('${homebg.src}')`,
-          // backgroundSize: "cover",
-        }}
-      >
-        <h1 style={{ fontSize: "40px" }}>PRODUCT CATEGORY</h1>
-        <div
-          className="flex flex-row"
-          style={{
-            width: "100vw",
-            paddingTop: "30px",
-            paddingBottom: "40px",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <div
-            className="bg-transparent"
-            style={{
-              width: "25%",
-              textAlign: "center",
-            }}
-          >
-            <div
-              style={{
-                width: "100px",
-                height: "100px",
-                border: "solid white 2px",
-                borderRadius: "9999px",
-                marginLeft: "auto",
-                marginRight: "auto",
-                padding: "22px",
-              }}
-            >
-              <Image
-                src="/images/categoryCake.svg"
-                alt="bg"
-                width={100}
-                height={100}
-              />
-            </div>
-            <h1 className="font-extrabold italic mb-3 mt-1"> Human Cake </h1>
-            <h4 className="font-extralight text-xs ">
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-              Veritatis laudantium, recusandae ad nobis pariatur autem culpa
-              vel, repellat dolor quisquam dolorem, sapiente error minus
-              assumenda?
-            </h4>
-            <Button
-              className="hover:bg-white hover:text-primary hover:font-bold mt-5"
-              style={{ border: "solid white 2px", borderRadius: "50px" }}
-            >
-              View Category
-            </Button>
-          </div>
-          <div
-            className="bg-transparent"
-            style={{
-              width: "25%",
-              textAlign: "center",
-              color: "white",
-            }}
-          >
-            <div
-              style={{
-                width: "100px",
-                height: "100px",
-                border: "solid white 2px",
-                borderRadius: "9999px",
-                marginLeft: "auto",
-                marginRight: "auto",
-                padding: "22px",
-              }}
-            >
-              <Image
-                src="/images/dogCakeImage.svg"
-                alt="bg"
-                width={100}
-                height={100}
-              />
-            </div>
-            <h1 className="font-extrabold italic mb-3 mt-1"> Dog Cake </h1>
-            <h4 className="font-extralight text-xs ">
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-              Veritatis laudantium, recusandae ad nobis pariatur autem culpa
-              vel, repellat dolor quisquam dolorem, sapiente error minus
-              assumenda?
-            </h4>
-            <Button
-              className="hover:bg-white hover:text-primary hover:font-bold mt-5"
-              style={{ border: "solid white 2px", borderRadius: "50px" }}
-            >
-              View Category
-            </Button>
-          </div>
-          <div
-            className="bg-transparent"
-            style={{
-              width: "25%",
-              textAlign: "center",
-              color: "white",
-            }}
-          >
-            <div
-              style={{
-                width: "100px",
-                height: "100px",
-                border: "solid white 2px",
-                borderRadius: "9999px",
-                marginLeft: "auto",
-                marginRight: "auto",
-                padding: "22px",
-              }}
-            >
-              <Image
-                src="/images/cupcakeCategoryIcon.svg"
-                alt="bg"
-                width={90}
-                height={90}
-              />
-            </div>
-            <h1 className="font-extrabold italic mb-3 mt-1"> Cupcake </h1>
-            <h4 className="font-extralight text-xs ">
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-              Veritatis laudantium, recusandae ad nobis pariatur autem culpa
-              vel, repellat dolor quisquam dolorem, sapiente error minus
-              assumenda?
-            </h4>
-            <Button
-              className="hover:bg-white hover:text-primary hover:font-bold mt-5"
-              style={{ border: "solid white 2px", borderRadius: "50px" }}
-            >
-              View Category
-            </Button>
-          </div>
-        </div>
-      </section> */}
-
       <section
         id="productsOffered"
         className="flex flex-row pt-20 bg-accent"
@@ -346,6 +167,7 @@ const Page = () => {
           <Button
             variant="ghost"
             className="p-6 text-4xl font-extrabold hover:bg-ring hover:text-white ml-auto flex mr-5"
+            onClick={() => router.push(`/customer/sign-in`)}
           >
             See more...
           </Button>
@@ -377,7 +199,7 @@ const Page = () => {
             <div style={{ marginTop: "10%" }} className="flex flex-col">
               <Button
                 className="mb-5 font-medium text-2xl hover:bg-ring w-5/12 h-16 mx-auto duration-500"
-                onClick={() => router.push("/customer/sign-in")}
+                onClick={() => router.push("/customer/sign-up")}
               >
                 CREATE ACCOUNT
               </Button>

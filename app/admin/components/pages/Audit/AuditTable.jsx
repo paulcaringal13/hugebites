@@ -30,6 +30,7 @@ import {
 import { BiChevronDown } from "react-icons/bi";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { Label } from "@/components/ui/label";
+// NOT COMPLETED
 
 const AuditTable = ({ data, handleEditModal, handleActivationModal }) => {
   const [sorting, setSorting] = useState([]);

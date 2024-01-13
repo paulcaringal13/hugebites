@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 
+// NOT COMPLETED
 const TotalEarnings = () => {
   const [orderDatas, setOrderDatas] = useState([]);
 

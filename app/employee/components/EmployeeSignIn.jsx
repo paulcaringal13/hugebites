@@ -54,8 +54,6 @@ const EmployeeSignIn = () => {
 
       const loggedInUser = response[0];
 
-      console.log(response);
-
       // SET LOCAL STORAGE SA MGA DATA NI USER
       {
         loggedInUser.username &&

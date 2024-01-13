@@ -96,6 +96,7 @@ const CustomerVouchers = ({ data }) => {
           <Button
             className="my-auto mx-auto"
             variant="ghost"
+            // NOT COMPLETED
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Email

@@ -27,6 +27,8 @@ import {
   ToastViewport,
 } from "@/components/ui/toast";
 
+// NOT COMPLETED
+
 const AccountsTableTabs = () => {
   const [employeeArray, setEmployeeArray] = useState([]);
   const [customerArray, setCustomerArray] = useState([]);
@@ -50,7 +52,9 @@ const AccountsTableTabs = () => {
 
     const data = await adminRes.json();
 
-    setEmployeeArray(data);
+    const x = data.filter((i) => i.userRole != "Super Admin");
+
+    setEmployeeArray(x);
   };
 
   const getAllCustomerAccounts = async () => {

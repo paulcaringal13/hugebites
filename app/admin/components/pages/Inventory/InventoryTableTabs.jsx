@@ -28,6 +28,7 @@ import {
 import dayjs from "dayjs";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
+// NOT COMPLETED
 const InventoryTableTabs = () => {
   function formatString(str) {
     let words = str.split(" ");

@@ -17,9 +17,9 @@ export async function POST(req, res) {
   const connection = await con();
 
   const reqBody = await req.json();
-  const { accountId, firstName, lastName, accStatus } = reqBody;
+  const { accountId, firstName, lastName } = reqBody;
   try {
-    const query = `INSERT INTO tbl_customer (accountId, firstName, lastName,  accStatus ) VALUES ('${accountId}', '${firstName}', '${lastName}', '${accStatus}')`;
+    const query = `INSERT INTO tbl_customer (accountId, firstName, lastName, totalSpent ) VALUES ('${accountId}', '${firstName}', '${lastName}', 0)`;
     const results = await connection.execute(query, []);
     connection.end();
 

@@ -1,22 +1,17 @@
 "use client";
-import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
+import { useState } from "react";
+import { useParams, useRouter, usePathname } from "next/navigation";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useParams, useRouter, usePathname, Router } from "next/navigation";
 import { Button } from "@/components/ui/button";
+
+// COMPLETED
 
 const TermsAndConditions = ({
   openTermsAndConditions,
   setOpenTermsAndConditions,
 }) => {
-  const formatter = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "PHP",
-  });
-
   const router = useRouter();
-  const params = useParams();
-  const pathname = usePathname();
 
   const [isAccepted, setIsAccepted] = useState(false);
 
@@ -53,7 +48,7 @@ const TermsAndConditions = ({
               <li className="text-start" style={{ lineHeight: "3" }}>
                 <h1 className="text-md font-bold">1. Order Placement</h1>
                 <p className="text-sm font-light indent-10 text-justify">
-                  All cake orders must be placed a minimum of 2 days in advance
+                  All cake orders must be placed a minimum of 3 days in advance
                   before your desired pick-up or delivery date.
                 </p>
               </li>
@@ -165,14 +160,13 @@ const TermsAndConditions = ({
               <li className="text-start" style={{ lineHeight: "3" }}>
                 <h1 className="text-md font-bold"> 8. Refund Guidelines:</h1>
                 <p className="text-sm font-light indent-10 text-justify">
-                  Here are our refund guidelines that you need to know:
+                  Here are our redo & refund guidelines that you need to know:
                 </p>
                 <div className="container w-[100%] ml-auto h-fit mt-3">
                   <p className="text-sm font-light indent-10 text-justify">
                     • &emsp; If there are errors in the order fulfillment
                     process, such as delivering the wrong cake flavor, size, or
-                    design, you will receive a refund based on the price of the
-                    cake details and a 20% voucher for our shop.
+                    design.
                   </p>
                   <p className="text-sm font-light indent-10 text-justify mb-3">
                     • &emsp;If you receive a cake that is damaged, spoiled, or

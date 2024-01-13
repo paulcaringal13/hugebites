@@ -71,7 +71,8 @@ const RequestTable = ({ data, openViewRequest, openCancelRequest }) => {
           <>
             {rowData.isCancelled == 0 &&
             rowData.isRejected == 0 &&
-            rowData.isAccepted == 0 ? (
+            rowData.isAccepted == 0 &&
+            rowData.requestStatus != "Cake Re-do" ? (
               <div
                 className="h-fit w-fit border-2 p-2 rounded-full text-md mx-auto cursor-pointer transform transition-all hover:scale-125 active:bg-white active:scale-110  duration-100"
                 variant="outline"

@@ -1,9 +1,9 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import howToOrderImage from "../../../../public/images/howToOrderImage.svg";
 import { GiMoneyStack, GiCakeSlice } from "react-icons/gi";
 import { FaWalking } from "react-icons/fa";
 
+//COMPLETED
 const HowToOrder = () => {
   return (
     <div className="h-[800px] w-[95%] items-center flex flex-row">

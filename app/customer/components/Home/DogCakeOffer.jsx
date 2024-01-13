@@ -1,7 +1,7 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import React, { useEffect, useState } from "react";
 import dogBday from "../../../../public/images/dogBday.svg";
+
+// COMPLETED
 
 const DogCakeOffer = () => {
   return (

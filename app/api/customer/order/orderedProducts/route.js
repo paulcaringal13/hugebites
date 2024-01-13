@@ -33,6 +33,8 @@ export async function GET(request) {
   ordered_products.subTotal,
   ordered_products.message,
   ordered_products.isCakeCustomized,
+  ordered_products.productId,
+  ordered_products.isReviewed,
   products.cakeTypeId,
   ordered_products.imageReference
   FROM ordered_products 

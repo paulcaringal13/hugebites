@@ -120,6 +120,22 @@ const OrderModule = ({ userData }) => {
     setViewOrderOpen(false);
   };
 
+  // commen state
+  const [reviewOrderOpen, setReviewOrderOpen] = useState(false);
+  const [productReview, setProductReview] = useState(false);
+  const [reviewComment, setReviewComment] = useState("");
+  const [starRating, setStarRating] = useState("");
+
+  const orderReviewOpen = (product) => {
+    setAlertMessage("");
+    setAlertTitle("You already sent a feedback.");
+    setAlertType("success");
+
+    product.isReviewed == 0 ? setReviewOrderOpen(true) : openRequestAlert();
+
+    setProductReview(product);
+  };
+
   // proof of payment states
   const [attachImageOpen, setAttachImageOpen] = useState(false);
   const [viewPaymentOpen, setViewPaymentOpen] = useState(false);
@@ -127,6 +143,77 @@ const OrderModule = ({ userData }) => {
   const [viewMessageAttached, setViewMessageAttached] = useState(false);
   const [file, setFile] = useState();
   const [image, setImage] = useState("");
+
+  const sendReview = async (e) => {
+    e.preventDefault();
+
+    try {
+      const data = new FormData();
+      data.set("file", file);
+      let res;
+
+      !!file
+        ? (res = await fetch("/api/upload/review", {
+            method: "POST",
+            body: data,
+          }))
+        : null;
+
+      let results;
+
+      !res ? null : (results = await res.json());
+
+      !res ? setImage("") : setImage(`/review/${results}`);
+
+      let imageReview;
+
+      !results ? null : (imageReview = `/review/${results}`);
+      const imagePut = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customerId: userId,
+          productId: productReview.productId,
+          comment: reviewComment,
+          rating: starRating,
+          commentImage: imageReview,
+        }),
+      };
+
+      const reviewPut = {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          orderedProductId: productReview.orderedProductId,
+        }),
+      };
+
+      try {
+        const res = await fetch(
+          `http://localhost:3000/api/customer/review`,
+          imagePut
+        );
+
+        const revRes = await fetch(
+          `http://localhost:3000/api/customer/review`,
+          reviewPut
+        );
+
+        setAlertMessage("Thank you for sending a feedback.");
+        setAlertTitle("Review submitted!");
+        setAlertType("success");
+        openRequestAlert();
+      } catch (error) {
+        console.log(error);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const uploadImage = async (e) => {
     e.preventDefault();
@@ -175,6 +262,58 @@ const OrderModule = ({ userData }) => {
 
           return { ...i };
         });
+
+        let emailNotifRes;
+        const emailPost = {
+          method: "POST",
+          header: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from: "CS",
+            subject: `Order ${selectedOrder.orderId}, Order Payment Pending`,
+            html: `<div
+          style="width: 100%; height: auto; color: #000000;"
+        >
+          <p
+            style="
+            font-size: 0.875rem;
+            line-height: 1.25rem; 
+            
+              font-weight: 300;
+              text-align: justify;
+              text-indent: 2rem;
+              color: #000000;
+            "
+          >
+          A customer send a payment, please see attached proof of payment image.
+          </p>
+
+        <p
+          style="
+          font-size: 0.875rem;
+line-height: 1.25rem; 
+
+            font-weight: 300;
+            text-align: justify;
+          "
+        >
+        <br>
+        Best regards,<br>
+        <br>
+        <span style="font-weight:700">HugeBites</span>
+        </p>
+        </div>`,
+          }),
+        };
+        try {
+          emailNotifRes = await fetch(
+            `http://localhost:3000/api/email`,
+            emailPost
+          );
+        } catch (e) {
+          console.log(e);
+        }
 
         setOrdersTable(newTable);
         setAlertMessage("Proof of Payment sent successfully.");
@@ -427,7 +566,6 @@ const OrderModule = ({ userData }) => {
     setSendRequest(false);
     setRequestMessage("");
   };
-
   // alert state
   const [alertMessageOpen, setAlertMessageOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState(false);
@@ -452,7 +590,7 @@ const OrderModule = ({ userData }) => {
   useEffect(() => {
     setLoggedInUser(userData);
   }, []);
-
+  console.log(orderedProducts);
   return (
     <div className="h-full w-full">
       <OrderTable
@@ -536,6 +674,26 @@ const OrderModule = ({ userData }) => {
                               Size:
                               <span className=" ml-4">{i.size}</span>
                             </div>
+
+                            {selectedOrder.amountPaid ==
+                              selectedOrder.totalPrice &&
+                            dayjs() >= dayjs(selectedOrder.datePickUp) ? (
+                              <div
+                                className="flex flex-row text-xs cursor-pointer font-extrabold text-ring h-fit transition-all"
+                                onClick={() => orderReviewOpen(i)}
+                              >
+                                Rate Product
+                                <svg
+                                  className={`w-4 h-4 text-primary ml-2`}
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="currentColor"
+                                  viewBox="0 0 22 20"
+                                >
+                                  <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+                                </svg>
+                              </div>
+                            ) : null}
                           </div>
                           <div
                             className={`flex flex-col m-2 pr-5 h-full ${
@@ -873,6 +1031,188 @@ const OrderModule = ({ userData }) => {
               >
                 Close
               </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* COMMENT MODAL */}
+      {!reviewOrderOpen ? null : (
+        <Dialog
+          open={reviewOrderOpen}
+          onOpenChange={setReviewOrderOpen}
+          onClose
+        >
+          <DialogContent className="max-w-full max-h-full md:w-[60%] md:h-fit flex flex-col p-0">
+            <div className="h-auto w-full px-4 py-6">
+              <div className="h-fit w-full p-1 border-[1px] border-zinc-200">
+                <div className="flex flex-row gap-3 w-full h-fit">
+                  <div className="flex ml-5 m-0 w-16 h-18 max-h-20 my-2">
+                    <img src={productReview.image} alt="bg" />
+                  </div>
+                  <div className="flex flex-col gap-1 w-auto my-2">
+                    <Label className="font-extrabold text-sm">
+                      Order Product Id:
+                      <span className="text-ring ml-1">
+                        {productReview.orderedProductId}
+                      </span>
+                    </Label>
+                    <Label className="font-extrabold text-sm">
+                      Product Name: {productReview.productName} (
+                      {productReview.categoryName})
+                      {productReview.isCakeCustomized == 1 ? (
+                        <span className="italic ml-1">Customized</span>
+                      ) : (
+                        ""
+                      )}
+                    </Label>
+                    <Label className="font-extralight text-xs text-muted-foreground">
+                      Variation: {productReview.size},{" "}
+                      {productReview.flavorName}, {productReview.colorName},{" "}
+                      {productReview.shapeName}
+                    </Label>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col items-center">
+                <Label className="font-extrabold text-md my-2">
+                  Rate this product:
+                </Label>
+                <div className="flex items-center">
+                  <svg
+                    className={`w-4 h-4 ${
+                      starRating >= 1 ? "text-primary" : "text-gray-300"
+                    } me-1 cursor-pointer`}
+                    onClick={() => setStarRating(1)}
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 22 20"
+                  >
+                    <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+                  </svg>
+                  <svg
+                    className={`w-4 h-4 ${
+                      starRating >= 2 ? "text-primary" : "text-gray-300"
+                    } me-1 cursor-pointer`}
+                    onClick={() => setStarRating(2)}
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 22 20"
+                  >
+                    <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+                  </svg>
+                  <svg
+                    className={`w-4 h-4 ${
+                      starRating >= 3 ? "text-primary" : "text-gray-300"
+                    } me-1 cursor-pointer`}
+                    onClick={() => setStarRating(3)}
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 22 20"
+                  >
+                    <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+                  </svg>
+                  <svg
+                    className={`w-4 h-4 ${
+                      starRating >= 4 ? "text-primary" : "text-gray-300"
+                    } me-1 cursor-pointer`}
+                    onClick={() => setStarRating(4)}
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 22 20"
+                  >
+                    <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+                  </svg>
+                  <svg
+                    className={`w-4 h-4 ${
+                      starRating >= 5 ? "text-primary" : "text-gray-300"
+                    } me-1 cursor-pointer`}
+                    onClick={() => setStarRating(5)}
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 22 20"
+                  >
+                    <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+                  </svg>
+                </div>
+              </div>
+              <div className="flex flex-col my-1">
+                <Label className="my-1 w-fit h-full text-center font-extrabold">
+                  Comment:
+                </Label>
+                <Textarea
+                  id="addOnsDescription"
+                  className="form-control w-full"
+                  name="addOnsDescription"
+                  min={1}
+                  multiline={3}
+                  type="text"
+                  placeholder="Share your thoughts and experience to help other customers."
+                  onChange={(e) => setReviewComment(e.target.value)}
+                />
+                {/* {!errors.addOnsDescription?.message ? null : (
+                  <Label className="errorMessage mb-1">
+                    {errors.addOnsDescription?.message}
+                  </Label>
+                )} */}
+              </div>
+              <Label className="my-auto w-fit h-full text-center font-extrabold">
+                Add photo:
+              </Label>
+              <Input
+                id="image"
+                type="file"
+                onChange={(e) => {
+                  setFile(e.target.files?.[0]);
+
+                  const reader = new FileReader();
+                  reader.readAsDataURL(e.target.files?.[0]);
+                  reader.onload = () => {
+                    setImage(reader.result);
+                  };
+                }}
+              />
+              {image && (
+                <div className="h-full w-full">
+                  <div className="flex mx-auto items-center relative overflow-hidden m-0 w-44 h-fit max-h-56my-2 rounded-lg">
+                    <img src={image} alt="bg" />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <DialogFooter className="border-t-2 pr-2 border-gray-200">
+              <Button
+                className="bg-primary hover:bg-ring text-white active:bg-primary-foreground my-2"
+                onClick={() => {
+                  setReviewOrderOpen(false);
+                  setStarRating(0);
+                  setReviewComment("");
+                  setImage("");
+                }}
+              >
+                Close
+              </Button>
+              {starRating > 0 ? (
+                <Button
+                  className="bg-primary hover:bg-ring text-white active:bg-primary-foreground my-2"
+                  onClick={sendReview}
+                >
+                  Send
+                </Button>
+              ) : (
+                <Button
+                  className="bg-primary hover:bg-ring text-white active:bg-primary-foreground my-2"
+                  disabled
+                >
+                  Send
+                </Button>
+              )}
             </DialogFooter>
           </DialogContent>
         </Dialog>

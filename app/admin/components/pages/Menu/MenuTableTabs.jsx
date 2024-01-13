@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import AddCategoryForm from "./AddCategoryForm";
 import EditCategoryForm from "./EditCategoryForm";
 import EditProductForm from "./EditProductForm";
+import ViewFeedbacks from "./ViewFeedbacks";
 import AddProductForm from "./AddProductForm";
 import DefaultProductsTable from "./DefaultProductsTable";
 import {
@@ -47,6 +48,7 @@ import {
 } from "react-icons/io5";
 import { GrFormClose } from "react-icons/gr";
 
+// NOT COMPLETED
 const MenuTableTabs = ({
   productList,
   categoryList,
@@ -507,6 +509,7 @@ const MenuTableTabs = ({
   // PRODUCT
   const [addProductOpen, setAddProductOpen] = useState(false);
   const [editProductOpen, setEditProductOpen] = useState(false);
+  const [viewFeedbacksOpen, setViewFeedbacksOpen] = useState(false);
   const [removeProductOpen, setRemoveProductOpen] = useState(false);
   const [relaunchProductOpen, setRelaunchProductOpen] = useState(false);
 
@@ -521,6 +524,16 @@ const MenuTableTabs = ({
 
   const closeAddProduct = () => {
     setAddProductOpen(false);
+  };
+
+  const openViewFeedbacks = (rowData) => {
+    setViewFeedbacksOpen(true);
+    // PASS THE SELECTED ROW FROM MENU TABLE TO THIS PAGE
+    setSelectedRow(rowData);
+  };
+
+  const closeViewFeedbacks = () => {
+    setViewFeedbacksOpen(false);
   };
 
   const openEditProduct = (rowData) => {
@@ -759,9 +772,8 @@ const MenuTableTabs = ({
       (i) => selectedRow.categoryId == i.categoryId
     );
 
-    const cupcakeFlavors = flavors.filter(
-      (i) => i.flavorId == 300401 || i.flavorId == 300402
-    );
+    const cupcakeFlavors = flavors.filter((i) => i.categoryId == 8003);
+    console.log("====>", flavors);
 
     {
       selectedRow.categoryId == 8003
@@ -816,6 +828,7 @@ const MenuTableTabs = ({
                 productTable={productTable}
                 // OPEN EDIT FORM
                 openEditProduct={openEditProduct}
+                openViewFeedbacks={openViewFeedbacks}
                 // UPDATING TABLE IN FRONT END
                 updateProductTable={updateProductTable}
                 // FOR GETTING SELECTED ROW VALUES
@@ -896,6 +909,15 @@ const MenuTableTabs = ({
           categoryTable={categoryTable}
           // FOR CAKE TYPE SELECTION CREATE AND EDIT PURPOSES
           cakeTypes={cakeTypes}
+        />
+      ) : null}
+
+      {viewFeedbacksOpen ? (
+        <ViewFeedbacks
+          viewFeedbacksOpen={viewFeedbacksOpen}
+          setViewFeedbacksOpen={setViewFeedbacksOpen}
+          selectedRow={selectedRow}
+          closeViewFeedbacks={closeViewFeedbacks}
         />
       ) : null}
 

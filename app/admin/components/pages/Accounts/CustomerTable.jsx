@@ -50,6 +50,8 @@ import {
 } from "../../../../../components/ui/table";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
+// NOT COMPLETED
+
 const CustomerTable = ({ data }) => {
   const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",

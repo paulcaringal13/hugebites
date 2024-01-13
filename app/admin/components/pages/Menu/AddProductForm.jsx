@@ -24,6 +24,7 @@ import {
 import { X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 
+// NOT COMPLETED
 const AddProductForm = ({
   addProductOpen,
   setAddProductOpen,

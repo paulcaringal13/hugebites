@@ -27,9 +27,9 @@ export async function POST(req, res) {
   const connection = await con();
 
   const reqBody = await req.json();
-  const { colorName, colorPrice, colorStatus } = reqBody;
+  const { colorName, colorPrice, colorStatus, colorHex } = reqBody;
   try {
-    const query = `INSERT INTO customization_color (colorName, colorPrice, colorStatus) VALUES ('${colorName}', '${colorPrice}',  '${colorStatus}')`;
+    const query = `INSERT INTO customization_color (colorName, colorPrice, colorStatus, colorHex) VALUES ('${colorName}', '${colorPrice}',  '${colorStatus}', '${colorHex}')`;
     const results = await connection.execute(query);
     connection.end();
 
@@ -44,9 +44,9 @@ export async function PUT(request) {
     const connection = await con();
 
     const reqBody = await request.json();
-    const { colorId, colorPrice, colorStatus, colorName } = reqBody;
+    const { colorId, colorPrice, colorStatus, colorName, colorHex } = reqBody;
 
-    const query = `UPDATE customization_color SET colorStatus ='${colorStatus}', colorPrice='${colorPrice}', colorName='${colorName}' WHERE colorId = ${colorId}`;
+    const query = `UPDATE customization_color SET colorStatus ='${colorStatus}', colorPrice='${colorPrice}', colorName='${colorName}', colorHex='${colorHex}' WHERE colorId = ${colorId}`;
 
     const results = await connection.execute(query);
     connection.end();

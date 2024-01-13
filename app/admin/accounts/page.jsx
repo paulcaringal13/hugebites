@@ -2,6 +2,8 @@ import MiniAdminSidebar from "../components/MiniAdminSidebar";
 import AccountsTableTabs from "../components/pages/Accounts/AccountsTableTabs";
 import * as React from "react";
 
+// NOT COMPLETED
+
 const AdminAccounts = async () => {
   return (
     <div className="flex flex-row w-full">

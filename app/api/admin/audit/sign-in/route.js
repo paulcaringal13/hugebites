@@ -20,9 +20,11 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const accountId = searchParams.get("accountId");
 
-  const query = `SELECT accounts.isDeactivated, accounts.avatar, accounts.accountId, accounts.accountType, accounts.email, accounts.username, accounts.password, accounts.userRole, tbl_employee.employeeId, tbl_employee.firstName, tbl_employee.lastName FROM accounts INNER JOIN tbl_employee ON accounts.accountId = tbl_employee.accountId WHERE accounts.accountId = ${accountId}`;
+  const query = `SELECT accounts.isDeactivated, accounts.roleId, accounts.avatar, accounts.accountId, accounts.accountType, accounts.email, accounts.username, accounts.password, accounts.userRole, tbl_employee.employeeId, tbl_employee.firstName, tbl_employee.lastName FROM accounts INNER JOIN tbl_employee ON accounts.accountId = tbl_employee.accountId WHERE accounts.accountId = ${accountId}`;
   const res = await connection.execute(query);
   connection.end();
+
+  console.log(query);
 
   const results = res[0];
 

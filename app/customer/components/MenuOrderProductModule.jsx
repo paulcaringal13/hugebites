@@ -39,6 +39,9 @@ const MenuOrderProductModule = ({
   const router = useRouter();
 
   const [cartList, setCartList] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
+
+  const [feedback, setFeedback] = useState([]);
   const [cartProduct, setCartProduct] = useState({});
   const [specificProductSizes, setSpecificProductSizes] = useState([]);
   // const [selectedProduct, setSelectedProduct] = useState([]);
@@ -232,7 +235,6 @@ const MenuOrderProductModule = ({
       {
         cache: "no-store",
       }
-      // { next: { revalidate: 10 } }
     );
     const data = await res.json();
 
@@ -273,6 +275,38 @@ const MenuOrderProductModule = ({
     const addOns = await addOnsRes.json();
 
     setAddOnsList(addOns[0]);
+  };
+
+  const getCustomerFeedback = async () => {
+    const feedbackRes = await fetch(
+      `http://localhost:3000/api/feedback?` +
+        new URLSearchParams({ prodId: params.prodId }),
+      {
+        cache: "no-store",
+      }
+    );
+
+    const feedback = await feedbackRes.json();
+
+    const oneStarRating = feedback.filter((i) => i.rating == 1);
+
+    const twoStarRating = feedback.filter((i) => i.rating == 2);
+
+    const threeStarRating = feedback.filter((i) => i.rating == 3);
+
+    const fourStarRating = feedback.filter((i) => i.rating == 4);
+
+    const fiveStarRating = feedback.filter((i) => i.rating == 5);
+
+    const averageRating =
+      oneStarRating.length * 1 +
+      twoStarRating.length * 2 +
+      threeStarRating.length * 3 +
+      fourStarRating.length * 4 +
+      fiveStarRating.length * 5;
+
+    setAverageRating(averageRating / feedback.length);
+    setFeedback(feedback);
   };
 
   const getSpecialProperty = async () => {
@@ -352,12 +386,14 @@ const MenuOrderProductModule = ({
 
   const uploadImage = async (file) => {
     const data = new FormData();
+
     data.set("file", file);
 
     const res = await fetch("/api/upload/image-reference", {
       method: "POST",
       body: data,
     });
+
     const results = await res.json();
 
     // setImage(`/response-images/${results}`);
@@ -506,7 +542,6 @@ const MenuOrderProductModule = ({
         cartProduct.cakeTypeId == 6 && specialProperty.length != 0
           ? specialProperty.forEach(async (i, index) => {
               let specialPropertyName;
-              console.log("special prop======>", i);
 
               i.length == 2
                 ? (specialPropertyName = i[1].specialPropertyName)
@@ -644,6 +679,7 @@ const MenuOrderProductModule = ({
     getAddOns();
     getSpecificProductOffers();
     getSpecialProperty();
+    getCustomerFeedback();
     // getSpecificProduct();
   }, []);
 
@@ -666,6 +702,8 @@ const MenuOrderProductModule = ({
             responseSuccess={responseSuccess}
             responseError={responseError}
             specificProductOffers={specificProductOffers}
+            feedback={feedback}
+            averageRating={averageRating}
           />
         </div>
         <div className="w-[30%] mt-4">

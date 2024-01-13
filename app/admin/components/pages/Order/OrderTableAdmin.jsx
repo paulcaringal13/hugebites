@@ -29,6 +29,7 @@ import {
 import { FaRegEye } from "react-icons/fa6";
 import { IoCloseOutline } from "react-icons/io5";
 import dayjs from "dayjs";
+// NOT COMPLETED
 
 const OrderTableAdmin = ({
   data,
@@ -409,6 +410,7 @@ const OrderTableAdmin = ({
                               ) : (
                                 <>
                                   {row.original.orderStatus == "Cancelled" &&
+                                  row.original.orderStatus == "Cake Re-do" &&
                                   !row.original.proofOfPaymentImage ? (
                                     <button
                                       className="opacity-[0.5] h-fit w-fit my-auto border-2 p-2 rounded-full text-md ml-auto"

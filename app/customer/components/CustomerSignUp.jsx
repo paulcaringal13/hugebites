@@ -1,22 +1,43 @@
 "use client";
 import "../../styles/globals.css";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import "../../styles/globals.css";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "../../../components/ui/card";
+import {
+  Toast,
+  ToastClose,
+  ToastDescription,
+  ToastProvider,
+  ToastTitle,
+  ToastViewport,
+} from "@/components/ui/toast";
+import {
+  IoInformationCircleOutline,
+  IoCheckmarkCircleOutline,
+  IoWarningOutline,
+} from "react-icons/io5";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
-import { useForm } from "react-hook-form";
+// COMPLETED
 
 const CustomerSignUp = () => {
   const router = useRouter();
+
+  const [alertMessageOpen, setAlertMessageOpen] = useState(false);
+  const [alertTitle, setAlertTitle] = useState(false);
+  const [alertType, setAlertType] = useState(false);
+  const [alertMessage, setAlertMessage] = useState(false);
+
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const form = useForm({
     defaultValues: {
@@ -34,8 +55,7 @@ const CustomerSignUp = () => {
   const { errors, isDirty, isValid } = formState;
 
   const onSubmit = async (data) => {
-    const { email, username, password, contact, address, firstName, lastName } =
-      data;
+    const { email, username, password, contact, firstName, lastName } = data;
 
     const newAccountPost = {
       method: "POST",
@@ -82,15 +102,98 @@ const CustomerSignUp = () => {
         );
         const empRes = await employeeResponse.json();
 
-        const { insertId } = empRes[0];
+        setIsSuccess(true);
 
-        router.replace("/customer/sign-in");
+        const emailPost = {
+          method: "POST",
+          header: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from: "admin",
+            to: `${email}`,
+            subject: `Account Verification`,
+            html: `<div
+              style="width: 100%; height: auto; color: #000000;"
+            >
+            <h1
+              style="
+                width: fit-content;
+                height: fit-content;
+                font-size: 0.875rem;
+                line-height: 1.25rem;
+                font-weight: 300;
+                color: #000000;
+              "
+            >
+              Greetings, 
+              <span style="font-weight: 700">${firstName}</span>!
+            </h1>
+            <p
+              style="
+              font-size: 0.875rem;
+              line-height: 1.25rem; 
+              
+                font-weight: 300;
+                text-align: justify;
+                text-indent: 2rem;
+                color: #000000;
+              "
+            >
+            Thank you for signing up with HugeBites! We're excited to have you on board.
+            By verifying your email, you'll have full access to all the features and benefits of HugeBites, including order tracking and personalized recommendations.
+            If you did not sign up for HugeBites, please disregard this email.
+            </p>
+
+            <a href="http://localhost:3000/customer/verify/${insertId}">Click here to verify your email!</a>
+
+            <p
+              style="
+              font-size: 0.875rem;
+              line-height: 1.25rem; 
+    
+                font-weight: 300;
+                text-align: justify;
+              "
+            >
+            <br>
+            Best regards,<br>
+            <br>
+            <span style="font-weight:700">HugeBites</span>
+          
+            </p>
+            </div>`,
+          }),
+        };
+
+        const emailVerifyRes = await fetch(
+          `http://localhost:3000/api/email`,
+          emailPost
+        );
+
+        setAlertMessage(
+          `Please verify your email to use your account sent to ${email}.`
+        );
+        setAlertTitle("Sign up successfully!");
+        setAlertType("success");
+        openRequestAlert();
+
+        setTimeout(() => {
+          router.replace("/customer/sign-in");
+        }, 8000);
       } catch (error) {
         console.log(error);
       }
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const openRequestAlert = () => {
+    setAlertMessageOpen(true);
+    setTimeout(() => {
+      setAlertMessageOpen(false);
+    }, 3000);
   };
 
   return (
@@ -108,7 +211,7 @@ const CustomerSignUp = () => {
                     htmlFor="firstName"
                     className="text-right my-auto me-2 font-semibold"
                   >
-                    First Name*
+                    First Name<span className="ml-1 text-ring">*</span>
                   </Label>
                   <Input
                     id="firstName"
@@ -139,7 +242,7 @@ const CustomerSignUp = () => {
                     htmlFor="lastName"
                     className="text-right font-semibold"
                   >
-                    Last Name*
+                    Last Name<span className="ml-1 text-ring">*</span>
                   </Label>
                   <Input
                     className="form-control w-full"
@@ -170,7 +273,7 @@ const CustomerSignUp = () => {
                     htmlFor="email"
                     className="text-right my-auto me-2 font-semibold"
                   >
-                    Email*
+                    Email<span className="ml-1 text-ring">*</span>
                   </Label>
                   <Input
                     className="form-control w-full"
@@ -204,7 +307,7 @@ const CustomerSignUp = () => {
                 </div>
                 <div className="flex-1">
                   <Label htmlFor="contact" className="text-right font-semibold">
-                    Contact Number*
+                    Contact Number<span className="ml-1 text-ring">*</span>
                   </Label>
                   <Input
                     className="form-control w-full"
@@ -251,7 +354,7 @@ const CustomerSignUp = () => {
                     htmlFor="password"
                     className="text-right font-semibold"
                   >
-                    Password*
+                    Password<span className="ml-1 text-ring">*</span>
                   </Label>
                   <Input
                     className="form-control w-full"
@@ -285,7 +388,7 @@ const CustomerSignUp = () => {
                     htmlFor="checkPass"
                     className="text-right font-semibold"
                   >
-                    Confirm Password*
+                    Confirm Password<span className="ml-1 text-ring">*</span>
                   </Label>
                   <Input
                     className="form-control w-full"
@@ -313,7 +416,7 @@ const CustomerSignUp = () => {
                     htmlFor="username"
                     className="text-right font-semibold"
                   >
-                    Username*
+                    Username<span className="ml-1 text-ring">*</span>
                   </Label>
                   <Input
                     className="form-control w-full"
@@ -373,17 +476,53 @@ const CustomerSignUp = () => {
                   Sign In here!
                 </a>
               </span>
-              <Button
-                className="w-36 ms-auto hover:bg-ring "
-                disabled={!isDirty || !isValid}
-                type="submit"
-              >
-                Sign Up
-              </Button>
+
+              {!isSuccess ? (
+                <Button
+                  className="w-36 ms-auto hover:bg-ring "
+                  disabled={!isDirty || !isValid}
+                  type="submit"
+                >
+                  Sign Up
+                </Button>
+              ) : (
+                <Button className="w-36 ms-auto hover:bg-ring " disabled={true}>
+                  <AiOutlineLoading3Quarters className="animate-spin" />
+                </Button>
+              )}
             </div>
           </form>
         </CardContent>
       </Card>
+
+      {alertMessageOpen ? (
+        <ToastProvider swipeDirection="up" duration={6000}>
+          <Toast className="w-fit h-fit mr-5" variant={alertType}>
+            <div className="flex flex-row gap-2">
+              <div className=" mt-2">
+                {alertType == "warning" && (
+                  <IoWarningOutline className="w-[45px] h-[30px]" />
+                )}
+                {alertType == "info" && (
+                  <IoInformationCircleOutline className="w-[45px] h-[30px]" />
+                )}
+                {alertType == "success" && (
+                  <IoCheckmarkCircleOutline className="w-[45px] h-[30px]" />
+                )}
+              </div>
+              <div className="flex flex-col gap-1">
+                <ToastTitle className="text-lg">{alertTitle}</ToastTitle>
+                <ToastDescription className="text-sm font-light">
+                  {alertMessage}
+                </ToastDescription>
+              </div>
+            </div>
+
+            <ToastClose />
+          </Toast>
+          <ToastViewport />
+        </ToastProvider>
+      ) : null}
     </div>
   );
 };

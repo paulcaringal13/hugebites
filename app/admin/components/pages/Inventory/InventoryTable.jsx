@@ -35,6 +35,7 @@ import EditStockForm from "./EditStockForm";
 import { ButtonLoading } from "../../ButtonLoading";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
+// NOT COMPLETED
 const InventoryTable = ({
   data,
   updateStocks,

@@ -121,6 +121,7 @@ const VoucherTable = ({ data, setVoucherArray }) => {
     {
       header: "Delete Voucher",
       id: "remove",
+      // NOT COMPLETED
       cell: ({ row }) => {
         const rowData = row.original;
         return (

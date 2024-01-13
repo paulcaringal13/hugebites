@@ -1,6 +1,6 @@
 "use client";
 import "../../../../styles/globals.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as React from "react";
 import { Button } from "../../../../../components/ui/button";
@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -32,12 +33,33 @@ import {
   ToastViewport,
 } from "@/components/ui/toast";
 
+// NOT COMPLETED
+
 const CreateAccountForm = ({ refreshTable }) => {
   const [openCreate, setOpenCreate] = useState(false);
-  const [accountType, setAccountType] = useState("");
+  // const [roleId, setRoleId] = useState(0);
+  const [userRole, setUserRole] = useState("");
   const [createSuccess, setCreateSuccess] = useState(false);
   const [createFail, setCreateFail] = useState(false);
 
+  const [roles, setRoles] = useState([]);
+
+  const getRoles = async () => {
+    const adminRes = await fetch(
+      `http://localhost:3000/api/admin/account/role`,
+      {
+        cache: "no-store",
+      }
+    );
+
+    // get
+    // <a href="http://localhost:3000/api/admin/userAccess">Click Here!</a>;
+
+    const data = await adminRes.json();
+
+    setRoles(data);
+  };
+  console.log(roles);
   const openCreateDialog = () => {
     setOpenCreate(true);
     reset();
@@ -66,6 +88,8 @@ const CreateAccountForm = ({ refreshTable }) => {
   const createAccount = async (data) => {
     const { firstName, lastName, email, password, contact } = data;
 
+    const roleId = roles.filter((i) => i.roleName == userRole);
+
     const accountRow = {
       method: "POST",
       headers: {
@@ -77,7 +101,8 @@ const CreateAccountForm = ({ refreshTable }) => {
         username: "",
         contact: contact,
         accountType: 0,
-        userRole: accountType,
+        userRole: userRole,
+        roleId: roleId[0].roleId,
         isDeactivated: 0,
         accStatus: "Active",
       }),
@@ -89,9 +114,7 @@ const CreateAccountForm = ({ refreshTable }) => {
         accountRow
       );
       const response = await res.json();
-
       const { insertId } = response[0];
-
       const tblEmployeeRow = {
         method: "POST",
         headers: {
@@ -103,21 +126,18 @@ const CreateAccountForm = ({ refreshTable }) => {
           accountId: insertId,
         }),
       };
-
       try {
         const employeeResponse = await fetch(
           `http://localhost:3000/api/admin/account/employee/create-account/tbl_employee`,
           tblEmployeeRow
         );
         const empRes = await employeeResponse.json();
-
         {
           empRes ? setCreateSuccess(true) : setCreateFail(true);
         }
       } catch (error) {
         console.log(error);
       }
-
       refreshTable();
     } catch (error) {
       console.log(error);
@@ -129,6 +149,10 @@ const CreateAccountForm = ({ refreshTable }) => {
     refreshTable;
     closeCreateDialog();
   };
+
+  useEffect(() => {
+    getRoles();
+  }, []);
 
   return (
     <>
@@ -356,24 +380,29 @@ const CreateAccountForm = ({ refreshTable }) => {
                 </div>
               </div>
               <div>
-                <Label htmlFor="accountType" className="text-right">
-                  Account Type
-                </Label>
+                <Label className="text-right">Account Type</Label>
                 <Select
                   asChild
-                  value={accountType}
-                  onValueChange={setAccountType}
+                  value={userRole}
+                  onValueChange={(value) => {
+                    setUserRole(value);
+                  }}
                 >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Account Type" />
+                  <SelectTrigger className="w-full mt-1">
+                    <SelectValue placeholder="Select account type">
+                      {userRole}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem id="accountType" value="Sub Admin">
-                      Sub Admin
-                    </SelectItem>
-                    <SelectItem id="employee" value="Employee">
-                      Employee
-                    </SelectItem>
+                    <SelectGroup>
+                      {roles.map((i) => {
+                        return (
+                          <SelectItem key={i.roleId} value={i.roleName}>
+                            {i.roleName}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectGroup>
                   </SelectContent>
                 </Select>
               </div>

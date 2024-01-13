@@ -24,8 +24,10 @@ import {
   TooltipTrigger,
 } from "../../../components/ui/tooltip";
 import { ChevronDown, ChevronUp } from "lucide-react";
+// NOT COMPLETED
 import { BsGraphUp } from "react-icons/bs";
 import { MdOutlineDashboard } from "react-icons/md";
+import { IoAccessibilitySharp } from "react-icons/io5";
 
 const MiniAdminSidebar = ({ props }) => {
   const router = useRouter();
@@ -98,6 +100,12 @@ const MiniAdminSidebar = ({ props }) => {
       name: "Account",
       icon: <FiUsers className="text-lg font-extrabold mx-auto" />,
       route: "accounts",
+    },
+    {
+      id: 12,
+      name: "User Access",
+      icon: <IoAccessibilitySharp className="text-lg font-extrabold mx-auto" />,
+      route: "userAccess",
     },
   ];
 

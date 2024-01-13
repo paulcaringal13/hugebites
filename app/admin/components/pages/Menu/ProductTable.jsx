@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { VscFeedback } from "react-icons/vsc";
 import * as React from "react";
 import {
   flexRender,
@@ -46,9 +47,11 @@ import {
 } from "react-icons/md";
 import { Label } from "@/components/ui/label";
 
+// NOT COMPLETED
 const ProductTable = ({
   data,
   openEditProduct,
+  openViewFeedbacks,
   openRelaunchProduct,
   openRemoveProduct,
   openOfferedProducts,
@@ -178,6 +181,7 @@ const ProductTable = ({
         );
       },
     },
+
     {
       header: "Offered Products",
       id: "offeredReq",
@@ -263,6 +267,17 @@ const ProductTable = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="p-0">
+                  <DropdownMenuItem className="p-0">
+                    <Button
+                      className="bg-transparent text-black m-0 w-full h-full rounded-none hover:bg-blue-400 hover:text-blue-50"
+                      onClick={() => {
+                        openViewFeedbacks(rowData);
+                      }}
+                    >
+                      <VscFeedback className="text-lg me-1" />
+                      View Feedbacks
+                    </Button>
+                  </DropdownMenuItem>
                   <DropdownMenuItem className="p-0">
                     <Button
                       className="bg-transparent text-black m-0 w-full h-full rounded-none hover:bg-emerald-400 hover:text-emerald-50"

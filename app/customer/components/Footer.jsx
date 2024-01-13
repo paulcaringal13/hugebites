@@ -1,14 +1,16 @@
 "use client";
 import "../../styles/globals.css";
-import { FaPhone, FaHome, FaInfoCircle } from "react-icons/fa";
+import { Separator } from "@/components/ui/separator";
+import { Input } from "../../../components/ui/input";
+import { Button } from "@/components/ui/button";
+import { FaHome } from "react-icons/fa";
 import { MdLocationOn } from "react-icons/md";
 import { LuClock } from "react-icons/lu";
 import { FaPhoneVolume } from "react-icons/fa6";
 import { MdOutlineMail } from "react-icons/md";
 import { FaFacebookF, FaInstagram } from "react-icons/fa";
-import { Separator } from "@/components/ui/separator";
-import { Input } from "../../../components/ui/input";
-import { Button } from "@/components/ui/button";
+
+// COMPLETED
 
 const Footer = () => {
   return (

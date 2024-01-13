@@ -34,6 +34,7 @@ export async function GET(request) {
   customization_shape.shapeName,
   customization_shape.shapePrice,
   customization_packaging.size,
+  customization_packaging.sizeDescription,
   customization_packaging.packagingPrice FROM default_products 
   LEFT JOIN products ON products.productId = default_products.productId
   LEFT JOIN product_categories ON product_categories.categoryId = products.categoryId

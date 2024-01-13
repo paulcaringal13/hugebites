@@ -37,3 +37,20 @@ export async function POST(request, path) {
     console.log(error);
   }
 }
+
+export async function GET(request) {
+  try {
+    const connection = await con();
+
+    const { searchParams } = new URL(request.url);
+    const accountId = searchParams.get("accountId");
+
+    const query = `UPDATE accounts SET isVerified = 1 WHERE accountId = ${accountId}`;
+
+    const results = await connection.execute(query);
+    connection.end();
+    return NextResponse.json(results);
+  } catch (error) {
+    console.log(error);
+  }
+}

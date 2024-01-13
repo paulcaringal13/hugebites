@@ -15,6 +15,8 @@ import {
 import { Input } from "../../../../../components/ui/input";
 import { Label } from "@/components/ui/label";
 import { X } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+// NOT COMPLETED
 
 const CustomizationEditAddOnsForm = ({
   selectedRow,
@@ -28,6 +30,7 @@ const CustomizationEditAddOnsForm = ({
     defaultValues: {
       addOnsName: selectedRow.addOnsName,
       addOnsPrice: selectedRow.addOnsPrice,
+      addOnsDescription: selectedRow.addOnsDescription,
     },
     mode: "onTouched",
   });
@@ -40,14 +43,15 @@ const CustomizationEditAddOnsForm = ({
     const checkVal = addOnsTable.find(
       (item) =>
         item.addOnsName.toLowerCase() == data.addOnsName.toLowerCase() &&
-        item.addOnsPrice == data.addOnsPrice
+        item.addOnsPrice == data.addOnsPrice &&
+        item.addOnsDescription == data.addOnsDescription
     );
 
     !checkVal ? editAddOns(data) : setValAddOns("Add Ons already exist.");
   };
 
   const editAddOns = async (data) => {
-    const { addOnsName, addOnsPrice } = data;
+    const { addOnsName, addOnsPrice, addOnsDescription } = data;
     const putData = {
       method: "PUT",
       headers: {
@@ -58,6 +62,7 @@ const CustomizationEditAddOnsForm = ({
         addOnsName: addOnsName,
         addOnsStatus: selectedRow.addOnsStatus,
         addOnsPrice: addOnsPrice,
+        addOnsDescription: addOnsDescription,
       }),
     };
     try {
@@ -70,6 +75,7 @@ const CustomizationEditAddOnsForm = ({
         addOnsName: addOnsName,
         addOnsStatus: selectedRow.addOnsStatus,
         addOnsPrice: addOnsPrice,
+        addOnsDescription: addOnsDescription,
       };
 
       const newTable = addOnsTable.map((i) => {
@@ -165,6 +171,36 @@ const CustomizationEditAddOnsForm = ({
                 </Label>
               )}
             </div>
+            <div className="flex flex-col">
+              <Label htmlFor="flavorPrice" className="text-left mb-1 mt-2">
+                Description:
+              </Label>
+              <Textarea
+                id="addOnsDescription"
+                className="form-control w-full"
+                name="addOnsDescription"
+                min={1}
+                multiline={3}
+                type="text"
+                placeholder="Input add ons description"
+                {...register("addOnsDescription", {
+                  required: "Please fill out the field!",
+                  maxLength: {
+                    value: 50,
+                    message: "Please enter a valid description!",
+                  },
+                  minLength: {
+                    value: 5,
+                    message: "Please enter a valid description!",
+                  },
+                })}
+              />
+              {!errors.addOnsDescription?.message ? null : (
+                <Label className="errorMessage mb-1">
+                  {errors.addOnsDescription?.message}
+                </Label>
+              )}
+            </div>
             {!valAddOns ? null : (
               <Label htmlFor="unitErr" className="errorMessage mb-2">
                 {valAddOns}
@@ -172,7 +208,7 @@ const CustomizationEditAddOnsForm = ({
             )}
             <DialogFooter>
               <Button
-                disabled={!isDirty || !isValid}
+                disabled={!isValid}
                 type="submit"
                 className="mt-3 hover:bg-ring"
               >

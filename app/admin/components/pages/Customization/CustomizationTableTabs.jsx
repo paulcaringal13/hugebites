@@ -49,6 +49,7 @@ import {
   IoWarningOutline,
 } from "react-icons/io5";
 
+// NOT COMPLETED
 const CustomizationTableTabs = ({
   sizesData,
   shapesData,

@@ -17,7 +17,7 @@ export async function GET() {
   const connection = await con();
 
   const query =
-    "SELECT accounts.accountId, accounts.avatar, tbl_employee.employeeId, tbl_employee.firstName, tbl_employee.lastName, accounts.email, accounts.username, accounts.contact, accounts.accountType, accounts.userRole, accounts.accStatus FROM tbl_employee LEFT JOIN accounts ON tbl_employee.accountId = accounts.accountId WHERE accounts.userRole IN ('Sub Admin', 'Employee');";
+    "SELECT accounts.accountId, accounts.roleId, employee_role.roleName, accounts.avatar, tbl_employee.employeeId, tbl_employee.firstName, tbl_employee.lastName, accounts.email, accounts.username, accounts.contact, accounts.accountType, accounts.userRole, accounts.accStatus FROM tbl_employee LEFT JOIN accounts ON tbl_employee.accountId = accounts.accountId LEFT JOIN employee_role ON employee_role.roleId = accounts.roleId WHERE accounts.accountType = 0 ORDER BY accountId DESC";
   const results = await connection.execute(query, []);
   connection.end();
 

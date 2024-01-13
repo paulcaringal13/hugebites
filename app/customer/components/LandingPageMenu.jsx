@@ -50,62 +50,6 @@ const LandingPageMenu = ({ prodArray, categoryArray }) => {
     <>
       <div className="w-full my-8" style={{ height: "full" }}>
         <div className="h-fit w-full">
-          <Card
-            className={`flex flex-row justify-center gap-4 drop-shadow-md py-4 px-6 rounded-lg mx-auto ${
-              categoryArray.length > 4 ? "overflow-x-scroll w-full" : "w-fit"
-            }`}
-          >
-            <button
-              onClick={() => {
-                setProducts(productList);
-              }}
-            >
-              <Card className="w-fit h-fit p-1 border-accent border-2 cursor-pointer transform transition-all hover:scale-110 duration-700">
-                <div
-                  style={{
-                    width: "100px",
-                    height: "100px",
-                    backgroundImage: `url('/images/categories/CategoryIconAll.png')`,
-                    backgroundSize: "cover",
-                  }}
-                >
-                  <p className="w-full font-extralight text-xs text-center">
-                    All Cakes
-                  </p>
-                </div>
-              </Card>
-            </button>
-            {categoryArray.map((ctg) => {
-              return (
-                <button
-                  key={ctg.categoryId}
-                  onClick={() => {
-                    const listOfCakes = productList.filter(
-                      (i) => i.categoryName === ctg.categoryName
-                    );
-
-                    setProducts(listOfCakes);
-                  }}
-                >
-                  <Card className="w-fit h-fit p-1 border-accent border-2 cursor-pointer transform transition-all hover:scale-110 duration-700">
-                    <div
-                      style={{
-                        width: "100px",
-                        height: "100px",
-                        backgroundImage: `url('${ctg.categoryImage}')`,
-                        backgroundSize: "cover",
-                      }}
-                    >
-                      <p className="w-full font-extralight text-xs text-center">
-                        {ctg.categoryName}
-                      </p>
-                    </div>
-                  </Card>
-                </button>
-              );
-            })}
-          </Card>
-
           <div className="h-fit">
             {products.length == 0 ? (
               <div className="h-[500px] w-full mt-5 text-center">
@@ -196,16 +140,6 @@ const LandingPageMenu = ({ prodArray, categoryArray }) => {
                               prod.minPrice
                             )} ~ ${formatter.format(prod.maxPrice)}`}
                           </h1>
-                          <Button
-                            className="bg-ring pb-2 hover:bg-primary h-8 w-9 my-auto text-center active:bg-primary-foreground"
-                            onClick={() =>
-                              router.push(
-                                `${pathname}/product/${prod.productId}`
-                              )
-                            }
-                          >
-                            +
-                          </Button>
                         </div>
                       </CardContent>
                     </Card>

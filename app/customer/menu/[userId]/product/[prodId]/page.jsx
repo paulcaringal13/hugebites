@@ -57,7 +57,10 @@ export default function Product({ params }) {
 
     const flavors = await res.json();
 
-    setFlavors(flavors);
+    const x = flavors.filter((i) => i.isFlavorRemoved == 0);
+
+    setFlavors(x);
+    console.log(x);
   };
 
   // GET ALL ADD ONS
@@ -68,7 +71,8 @@ export default function Product({ params }) {
 
     const addOns = await res.json();
 
-    setAddOnsArray(addOns);
+    const x = addOns.filter((i) => i.isAddOnsRemoved == 0);
+    setAddOnsArray(x);
   };
 
   // GET ALL SHAPES
@@ -78,8 +82,9 @@ export default function Product({ params }) {
     });
 
     const shape = await res.json();
+    const x = shape.filter((i) => i.isShapeRemoved == 0);
 
-    setShapes(shape);
+    setShapes(x);
   };
 
   // GET ALL COLOR
@@ -89,8 +94,9 @@ export default function Product({ params }) {
     });
 
     const color = await res.json();
+    const x = color.filter((i) => i.isColorRemoved == 0);
 
-    setColors(color);
+    setColors(x);
   };
 
   // GET ALL SIZES TO OFFER ON CUSTOMIZED PROD

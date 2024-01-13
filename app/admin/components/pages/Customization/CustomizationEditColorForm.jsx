@@ -15,6 +15,14 @@ import {
 import { Input } from "../../../../../components/ui/input";
 import { Label } from "@/components/ui/label";
 import { X } from "lucide-react";
+import { SketchPicker } from "react-color";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { BiChevronDown } from "react-icons/bi";
+// NOT COMPLETED
 
 const CustomizationEditColorForm = ({
   selectedRow,
@@ -35,12 +43,17 @@ const CustomizationEditColorForm = ({
   const { errors, isDirty, isValid } = formState;
 
   const [valColor, setValColor] = useState("");
+  const [currentColor, setCurrentColor] = useState(selectedRow.colorHex);
+  const handleColorChange = (color) => {
+    setCurrentColor(color.hex);
+  };
 
   const onSubmit = async (data) => {
     const checkVal = colorsTable.find(
       (item) =>
         item.colorName.toLowerCase() == data.colorName.toLowerCase() &&
-        item.colorPrice == data.colorPrice
+        item.colorPrice == data.colorPrice &&
+        currentColor == item.colorHex
     );
 
     !checkVal ? editColor(data) : setValColor("Color already exist.");
@@ -58,6 +71,7 @@ const CustomizationEditColorForm = ({
         colorName: colorName,
         colorStatus: selectedRow.colorStatus,
         colorPrice: colorPrice,
+        colorHex: currentColor,
       }),
     };
     try {
@@ -70,6 +84,7 @@ const CustomizationEditColorForm = ({
         colorName: colorName,
         colorStatus: selectedRow.colorStatus,
         colorPrice: colorPrice,
+        colorHex: currentColor,
       };
 
       const newTable = colorsTable.map((i) => {
@@ -171,9 +186,39 @@ const CustomizationEditColorForm = ({
                 {valColor}
               </Label>
             )}
+            <div className="flex flex-col my-2">
+              <Popover>
+                <PopoverTrigger className="flex flex-row mt-2">
+                  <Label> Choose Cake Color</Label>
+                  <div className="flex flex-row text-sm">
+                    <BiChevronDown className="text-lg my-auto flex ms-2" />
+                  </div>
+                </PopoverTrigger>
+                <PopoverContent className="w-72" side="bottom">
+                  <SketchPicker
+                    color={currentColor}
+                    onChange={handleColorChange}
+                    styles={{
+                      default: {
+                        picker: {
+                          width: "93%",
+                        },
+                      },
+                    }}
+                    id="colorPicker"
+                  />
+                </PopoverContent>
+              </Popover>
+              <div
+                className="h-[80px] w-[80px] ml-5 mt-5 rounded-lg"
+                style={{
+                  backgroundColor: currentColor,
+                }}
+              ></div>
+            </div>
             <DialogFooter>
               <Button
-                disabled={!isDirty || !isValid}
+                disabled={!isValid}
                 type="submit"
                 className="mt-3 hover:bg-ring"
               >

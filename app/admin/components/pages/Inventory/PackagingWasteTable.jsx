@@ -46,6 +46,7 @@ import {
 import { BiChevronDown } from "react-icons/bi";
 import { X } from "lucide-react";
 
+// NOT COMPLETED
 const PackagingWasteTable = ({
   data,
   closeWastePackagingLog,

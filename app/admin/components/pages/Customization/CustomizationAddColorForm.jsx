@@ -15,6 +15,14 @@ import {
 import { Input } from "../../../../../components/ui/input";
 import { Label } from "@/components/ui/label";
 import { X } from "lucide-react";
+import { SketchPicker } from "react-color";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { BiChevronDown } from "react-icons/bi";
+// NOT COMPLETED
 
 const CustomizationAddColorForm = ({
   addColorOpen,
@@ -32,6 +40,7 @@ const CustomizationAddColorForm = ({
   });
   const { register, handleSubmit, formState, reset, getValues } = form;
   const { errors, isDirty, isValid } = formState;
+  const [currentColor, setCurrentColor] = useState("#ffffff");
 
   const [oldTable, setOldTable] = useState(colorsTable);
   const [valColor, setValColor] = useState("");
@@ -46,6 +55,10 @@ const CustomizationAddColorForm = ({
     !checkVal ? addColor(data) : setValColor("Color already exist.");
   };
 
+  const handleColorChange = (color) => {
+    setCurrentColor(color.hex);
+  };
+
   const addColor = async (data) => {
     const { colorName, colorPrice } = data;
     const colorPost = {
@@ -57,6 +70,7 @@ const CustomizationAddColorForm = ({
         colorName: colorName,
         colorStatus: "Available",
         colorPrice: colorPrice,
+        colorHex: currentColor,
       }),
     };
     try {
@@ -71,6 +85,7 @@ const CustomizationAddColorForm = ({
         colorName: colorName,
         colorStatus: "Available",
         colorPrice: colorPrice,
+        colorHex: currentColor,
       };
       setColorsTable([...oldTable, newColor]);
       closeAddColor();
@@ -82,7 +97,7 @@ const CustomizationAddColorForm = ({
   return (
     <>
       <Dialog open={addColorOpen} onOpenChange={setAddColorOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-full max-h-full md:w-[40%] md:h-fit">
           <DialogHeader>
             <DialogTitle className="flex flex-row justify-between">
               <Label className="my-auto text-lg font-semibold leading-none tracking-tight">
@@ -166,6 +181,37 @@ const CustomizationAddColorForm = ({
                 {valColor}
               </Label>
             )}
+            <div className="flex flex-col my-2">
+              <Popover>
+                <PopoverTrigger className="flex flex-row mt-2">
+                  <Label> Choose Cake Color</Label>
+                  <div className="flex flex-row text-sm">
+                    <BiChevronDown className="text-lg my-auto flex ms-2" />
+                  </div>
+                </PopoverTrigger>
+                <PopoverContent className="w-72" side="bottom">
+                  <SketchPicker
+                    color={currentColor}
+                    onChange={handleColorChange}
+                    styles={{
+                      default: {
+                        picker: {
+                          width: "93%",
+                        },
+                      },
+                    }}
+                    id="colorPicker"
+                  />
+                </PopoverContent>
+              </Popover>
+              <div
+                className="h-[80px] w-[80px] ml-5 mt-5 rounded-lg"
+                style={{
+                  backgroundColor: currentColor,
+                }}
+              ></div>
+            </div>
+
             <DialogFooter>
               <Button
                 disabled={!isDirty || !isValid}

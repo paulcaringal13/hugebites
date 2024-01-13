@@ -12,16 +12,10 @@ export default function Menu(path) {
   const [productsData, setProductsData] = useState([]);
   const [prodArray, setProdArray] = useState([]);
   const [addOnsArray, setAddOnsArray] = useState([]);
-  // DEFAULT PRODUCTS WITH OWN SIZE
   const [offeredProducts, setOfferedProducts] = useState([]);
-
-  // FOR CUSTOMIZING. OFFERED SIZES
   const [packagingSizes, setPackagingSizes] = useState([]);
-  // OFFERED FLAVORS
   const [flavors, setFlavors] = useState([]);
-  // OFFERED COLORS
   const [colors, setColors] = useState([]);
-  // OFFERED SHAPES
   const [shapes, setShapes] = useState([]);
 
   // GET ALL USER DATA NEEDED

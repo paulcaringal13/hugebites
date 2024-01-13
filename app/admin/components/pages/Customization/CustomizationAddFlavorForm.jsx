@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+// NOT COMPLETED
 
 const CustomizationAddFlavorForm = ({
   addFlavorOpen,
@@ -175,7 +176,7 @@ const CustomizationAddFlavorForm = ({
                     message: "Please enter a valid price!",
                   },
                   validate: (fieldValue) => {
-                    return fieldValue > 0 || "Invalid Price.";
+                    return fieldValue >= 0 || "Invalid Price.";
                   },
                 })}
               />

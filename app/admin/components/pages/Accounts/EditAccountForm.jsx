@@ -1,6 +1,6 @@
 "use client";
 import "../../../../styles/globals.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as React from "react";
 import { Button } from "../../../../../components/ui/button";
@@ -18,10 +18,13 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectGroup,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { X } from "lucide-react";
+
+// NOT COMPLETED
 
 const EditAccountForm = ({
   editOpen,
@@ -46,27 +49,46 @@ const EditAccountForm = ({
 
   const { register, handleSubmit, formState, reset, getValues } = editForm;
   const { errors, isDirty, isValid } = formState;
+  const [userRole, setUserRole] = useState(user.roleName);
+  const [roles, setRoles] = useState([]);
+
+  const getRoles = async () => {
+    const adminRes = await fetch(
+      `http://localhost:3000/api/admin/account/role`,
+      {
+        cache: "no-store",
+      }
+    );
+
+    // get
+    <a href="http://localhost:3000/api/admin/userAccess">Click Here!</a>;
+
+    const data = await adminRes.json();
+
+    setRoles(data);
+  };
+
+  console.log(userRole);
 
   const onSubmit = async (data) => {
-    const { firstName, lastName, email, contact, userRole } = data;
+    const { firstName, lastName, email, contact } = data;
 
-    let editChanges = {
-      email: email,
-      contact: contact,
-    };
+    const roleId = roles.filter((i) => i.roleName == userRole);
 
-    {
-      !accountType
-        ? (editChanges = { ...editChanges, userRole: userRole })
-        : (editChanges = { ...editChanges, userRole: accountType });
-    }
+    console.log(userRole);
+    console.log(roleId);
 
     const editAccountsData = {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(editChanges),
+      body: JSON.stringify({
+        email: email,
+        contact: contact,
+        userRole: userRole,
+        roleId: roleId[0].roleId,
+      }),
     };
 
     try {
@@ -110,6 +132,10 @@ const EditAccountForm = ({
     handleEditClose();
   };
 
+  useEffect(() => {
+    getRoles();
+  }, []);
+
   return (
     <>
       <Dialog open={editOpen} onOpenChange={handleEditClose}>
@@ -120,7 +146,7 @@ const EditAccountForm = ({
                 Edit Account
               </Label>
               <Button
-                className="bg-t{ransparent text-gray-400"
+                className="bg-transparent text-gray-400"
                 onClick={() => {
                   handleEditClose();
                   reset();
@@ -283,28 +309,31 @@ const EditAccountForm = ({
                   </Label>
                 </div>
               </div>
-              <div>
-                <Label htmlFor="accountType" className="text-right">
-                  Account Type
-                </Label>
-                <Select
-                  asChild
-                  value={accountType}
-                  onValueChange={setAccountType}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={user.userRole} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem id="accountType" value="Sub Admin">
-                      Sub Admin
-                    </SelectItem>
-                    <SelectItem id="employee" value="Employee">
-                      Employee
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <Label className="text-left my-1">Account Type</Label>
+              <Select
+                asChild
+                value={userRole}
+                onValueChange={(value) => {
+                  setUserRole(value);
+                }}
+              >
+                <SelectTrigger className="w-full mt-1">
+                  <SelectValue placeholder="Select account type">
+                    {userRole}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {roles.map((i) => {
+                      return (
+                        <SelectItem key={i.roleId} value={i.roleName}>
+                          {i.roleName}
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
             <DialogFooter>
               <Button type="submit" className="mt-3 hover:bg-ring">

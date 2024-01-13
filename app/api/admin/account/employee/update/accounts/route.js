@@ -21,12 +21,13 @@ export async function PUT(request) {
     const accountId = searchParams.get("accountId");
 
     const reqBody = await request.json();
-    const { email, contact, userRole } = reqBody;
+    const { email, contact, userRole, roleId } = reqBody;
 
-    const query = `UPDATE accounts SET email ='${email}', contact ='${contact}', userRole ='${userRole}' WHERE accountId = ${accountId}`;
+    const query = `UPDATE accounts SET email ='${email}', contact ='${contact}', userRole ='${userRole}', roleId ='${roleId}' WHERE accountId = ${accountId}`;
     const results = await connection.execute(query);
     connection.end();
 
+    console.log(query);
     return NextResponse.json({ results });
   } catch (error) {
     console.log(error);

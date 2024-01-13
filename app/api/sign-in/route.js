@@ -23,11 +23,12 @@ export async function GET(request) {
   const username = searchParams.get("username");
   const password = searchParams.get("password");
 
-  const query = `SELECT accountId FROM accounts WHERE username = '${username}' OR email = '${username}' AND password = PASSWORD('${password}') AND accountType = '0';`;
+  const query = `SELECT accountId FROM accounts WHERE email = '${username}' OR username='${username}' AND password='${password}' AND accountType =0;`;
   const res = await connection.execute(query);
   connection.end();
 
   const results = res[0];
+  console.log(query);
 
   return NextResponse.json(results);
 }

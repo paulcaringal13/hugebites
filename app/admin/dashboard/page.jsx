@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import MiniAdminSidebar from "../components/MiniAdminSidebar";
 import Dashboard from "../components/pages/Dashboard/Dashboard";
+// NOT COMPLETED
 
 const AdminDashboard = () => {
   return (

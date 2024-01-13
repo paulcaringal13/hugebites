@@ -14,7 +14,7 @@ import {
 } from "../../../../../components/ui/dialog";
 import { Input } from "../../../../../components/ui/input";
 import { Label } from "@/components/ui/label";
-
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { X } from "lucide-react";
 
+// NOT COMPLETED
 const CustomizationEditSizeForm = ({
   selectedRow,
   editSizeOpen,
@@ -38,6 +39,7 @@ const CustomizationEditSizeForm = ({
     defaultValues: {
       size: selectedRow.size,
       packagingPrice: selectedRow.packagingPrice,
+      sizeDescription: selectedRow.sizeDescription,
     },
     mode: "onTouched",
   });
@@ -60,7 +62,8 @@ const CustomizationEditSizeForm = ({
       (item) =>
         item.size.toLowerCase() == data.size.toLowerCase() &&
         item.packagingPrice == data.packagingPrice &&
-        item.productId == product.productId
+        item.productId == product.productId &&
+        item.sizeDescription == selectedRow.sizeDescription
     );
 
     !checkVal
@@ -69,7 +72,7 @@ const CustomizationEditSizeForm = ({
   };
 
   const editSize = async (data) => {
-    const { size, packagingPrice } = data;
+    const { size, packagingPrice, sizeDescription } = data;
     const putData = {
       method: "PUT",
       headers: {
@@ -81,6 +84,7 @@ const CustomizationEditSizeForm = ({
         size: size,
         packagingStatus: selectedRow.packagingStatus,
         packagingPrice: packagingPrice,
+        sizeDescription: sizeDescription,
       }),
     };
     try {
@@ -95,6 +99,7 @@ const CustomizationEditSizeForm = ({
         size: size,
         packagingStatus: selectedRow.packagingStatus,
         packagingPrice: packagingPrice,
+        sizeDescription: sizeDescription,
       };
 
       const newTable = sizesTable.map((i) => {
@@ -187,6 +192,36 @@ const CustomizationEditSizeForm = ({
               {!errors.packagingPrice?.message ? null : (
                 <Label className="errorMessage mb-1">
                   {errors.packagingPrice?.message}
+                </Label>
+              )}
+            </div>
+            <div className="flex flex-col">
+              <Label htmlFor="flavorPrice" className="text-left mb-1 mt-2">
+                Description:
+              </Label>
+              <Textarea
+                id="sizeDescription"
+                className="form-control w-full"
+                name="sizeDescription"
+                min={1}
+                multiline={3}
+                type="text"
+                placeholder="Input size description"
+                {...register("sizeDescription", {
+                  required: "Please fill out the field!",
+                  maxLength: {
+                    value: 80,
+                    message: "Please enter a valid description!",
+                  },
+                  minLength: {
+                    value: 5,
+                    message: "Please enter a valid description!",
+                  },
+                })}
+              />
+              {!errors.sizeDescription?.message ? null : (
+                <Label className="errorMessage mb-1">
+                  {errors.sizeDescription?.message}
                 </Label>
               )}
             </div>

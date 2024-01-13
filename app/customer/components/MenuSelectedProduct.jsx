@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import cakeGuide from "../../../public/images/cakeGuide.jpg";
 import {
   Select,
   SelectContent,
@@ -23,8 +24,18 @@ import {
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { IoIosClose } from "react-icons/io";
-import { IoReturnUpBackOutline } from "react-icons/io5";
+import {
+  IoReturnUpBackOutline,
+  IoInformationCircleOutline,
+} from "react-icons/io5";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import lodash from "lodash";
 
 const MenuSelectedProduct = ({
   user,
@@ -38,6 +49,8 @@ const MenuSelectedProduct = ({
   openAddToCartConfirmation,
   setOpenAddToCartConfirmation,
   specificProductOffers,
+  feedback,
+  averageRating,
 }) => {
   const router = useRouter();
   const formatter = new Intl.NumberFormat("en-US", {
@@ -45,6 +58,26 @@ const MenuSelectedProduct = ({
     currency: "PHP",
   });
   // SPECIAL CAKES STATES
+
+  const [feedbacks, setFeedbacks] = useState([]);
+
+  const [pageSize, setPageSize] = useState(4);
+
+  const pagesCount = Math.ceil(feedbacks.length / pageSize);
+
+  const pages = lodash.range(1, pagesCount + 1);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const paginate = () => {
+    const startIndex = (currentPage - 1) * pageSize;
+    return lodash(feedbacks).slice(startIndex).take(pageSize).value();
+  };
+
+  const paginatedList = paginate();
 
   // PAG COMMON CAKE ITO NALANG ANG IPASA PARA NULL AT HINDI NA MAADD SA DATABASE
   const [defaultSpecialProperty, setDefaultSpecialProperty] = useState([
@@ -332,7 +365,6 @@ const MenuSelectedProduct = ({
     addOnsPrice: 0,
   });
   const [addOnsArray, setAddOnsArray] = useState([]);
-
   const [addOnsTotal, setAddOnsTotal] = useState(0);
   const [addOnsQuantity, setAddOnsQuantity] = useState(0);
   const [addOnsList, setAddOnsList] = useState([]);
@@ -385,6 +417,7 @@ const MenuSelectedProduct = ({
   const [file, setFile] = useState();
   const [image, setImage] = useState("");
   const [viewImageAttachment, setViewImageAttachment] = useState(false);
+  const [viewCakeGuide, setViewCakeGuide] = useState(false);
 
   // DIALOG STATE
   const [isCakeCustomized, setIsCakeCustomized] = useState(false);
@@ -428,6 +461,7 @@ const MenuSelectedProduct = ({
       packagingId: i.packagingId,
       packagingPrice: i.packagingPrice,
       size: i.size,
+      sizeDescription: i.sizeDescription,
     });
     setFlavor({
       flavorId: i.flavorId,
@@ -501,6 +535,10 @@ const MenuSelectedProduct = ({
     handleUpdatePrice("color", color.colorPrice);
   }, [color]);
 
+  useEffect(() => {
+    setFeedbacks(feedback);
+  }, [feedback]);
+
   // UPDATES SUBTOTAL PRICE
   useEffect(() => {
     let sum = 0;
@@ -556,13 +594,15 @@ const MenuSelectedProduct = ({
   }, [addOns, addOnsQuantity]);
 
   useEffect(() => {
+    console.log(flavors);
     // FILTER YUNG SELECT NI FLAVOR DEPENDE SA CATEGORY NIYA
     const flavorSelect = flavors.filter(
       (i) => selectedProduct.categoryId == i.categoryId
     );
 
     const cupcakeFlavors = flavors.filter(
-      (i) => i.flavorId == 300400 || i.flavorId == 300401
+      (i) =>
+        i.flavorId == 300400 || i.flavorId == 300401 || i.categoryId == 8003
     );
 
     {
@@ -714,9 +754,36 @@ const MenuSelectedProduct = ({
             <Separator className="my-2 col-span-2" />
             {/* <div className="flex flex-row flex-wrap gap-1"> */}
             <div className="flex flex-col gap-2 col-span-2">
-              <Label className="mt-1">
-                Sizes:<span className="text-ring"> *</span>
-              </Label>
+              <div className="flex flex-row h-fit w-auto">
+                <Label className="mt-1">
+                  Sizes:<span className="text-ring"> *</span>{" "}
+                </Label>
+                <TooltipProvider delayDuration={50}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="font-extrabold my-auto mt-[2px] ml-2 text-lg text-stone-300 col-span-2 cursor-pointer">
+                        <IoInformationCircleOutline className="text-stone-400" />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="right"
+                      className="ms-3 w-[210px
+                      ] h-fit bg-accent text-slate-800 flex flex-col p-3"
+                    >
+                      <Label className="text-justify leading-5">
+                        The cake&apos;s weight is indeterminable due to varying
+                        moisture levels.
+                      </Label>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <div
+                  onClick={() => setViewCakeGuide(true)}
+                  className="text-slate-800 underline text-sm font-extrabold cursor-pointer my-auto ml-3"
+                >
+                  Cake Guide
+                </div>
+              </div>
               <div className="flex flex-row flex-wrap gap-2 ml-10">
                 {specificProductOffers?.map((i, index) => {
                   return i.isDefaultProductRemoved == 0 ? (
@@ -745,10 +812,16 @@ const MenuSelectedProduct = ({
                     </Button>
                   ) : null;
                 })}
+
                 {isSizeInvalid ? (
                   <Label className="errorMessage mb-1">Select size!</Label>
                 ) : null}
               </div>
+              {!size.sizeDescription ? null : (
+                <Label className="mt-1 ml-6 my-3 text-xs font-extrabold text-black text-primary">
+                  {size.sizeDescription}
+                </Label>
+              )}
             </div>
 
             <Label className="col-span-1 mt-1">
@@ -797,21 +870,11 @@ const MenuSelectedProduct = ({
                   asChild
                   value={!color.colorId ? color.colorName : color}
                   onValueChange={(i) => {
-                    let colorHex;
-
-                    i.colorName == "Navy Blue" ? (colorHex = "#0077dd") : null;
-                    i.colorName == "Red" ? (colorHex = "#ff5252") : null;
-                    i.colorName == "Black" ? (colorHex = "#313131") : null;
-                    i.colorName == "Pink" ? (colorHex = "#ff63ca") : null;
-                    i.colorName == "Purple" ? (colorHex = "#be29ec") : null;
-                    i.colorName == "White" ? (colorHex = "#ececec") : null;
-                    i.colorName == "Green" ? (colorHex = "#00ff83") : null;
-
                     setColor({
                       colorName: i.colorName,
                       colorId: i.colorId,
                       colorPrice: i.colorPrice,
-                      colorHex: colorHex,
+                      colorHex: i.colorHex,
                     });
                   }}
                   disabled={!isCakeCustomized}
@@ -1120,6 +1183,18 @@ const MenuSelectedProduct = ({
                   <div className="col-span-2">
                     <div className="grid grid-cols-6 gap-x-2 col-span-2 w-full">
                       <div className="col-span-3">
+                        <Label className="font-extrabold">Name</Label>
+                      </div>
+                      <div className="col-span-1">
+                        <Label className="font-extrabold">Qty.</Label>
+                      </div>
+
+                      <div className="col-span-2 my-auto text-start">
+                        <Label className="font-extrabold">Price</Label>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-6 gap-x-2 col-span-2 w-full">
+                      <div className="col-span-3">
                         <Select
                           asChild
                           value={addOns}
@@ -1128,10 +1203,11 @@ const MenuSelectedProduct = ({
                           }}
                         >
                           <SelectTrigger className="w-full mt-1">
-                            <div className="h-full w-full text-start ml-2 font-extrabold">
+                            <div className="h-full w-full text-start ml-2 text-xs font-extrabold">
                               {!addOns.addOnsId
                                 ? "Select add ons"
-                                : addOns.addOnsName}
+                                : `${addOns.addOnsName} 
+                              (${addOns.addOnsDescription})`}
                             </div>
                           </SelectTrigger>
                           <SelectContent>
@@ -1271,6 +1347,18 @@ const MenuSelectedProduct = ({
                   <div className="col-span-2">
                     <div className="grid grid-cols-6 gap-x-2 col-span-2 w-full">
                       <div className="col-span-3">
+                        <Label className="font-extrabold">Name</Label>
+                      </div>
+                      <div className="col-span-1">
+                        <Label className="font-extrabold">Qty.</Label>
+                      </div>
+
+                      <div className="col-span-2 my-auto text-start">
+                        <Label className="font-extrabold">Price</Label>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-6 gap-x-2 col-span-2 w-full">
+                      <div className="col-span-3">
                         <Select
                           asChild
                           value={tier2AddOns}
@@ -1282,7 +1370,8 @@ const MenuSelectedProduct = ({
                             <div>
                               {!tier2AddOns.addOnsId
                                 ? "Select add ons"
-                                : tier2AddOns.addOnsName}
+                                : `${tier2AddOns.addOnsName} 
+                              (${tier2AddOns.addOnsDescription})`}
                             </div>
                           </SelectTrigger>
                           <SelectContent>
@@ -1425,6 +1514,18 @@ const MenuSelectedProduct = ({
                   <div className="col-span-2">
                     <div className="grid grid-cols-6 gap-x-2 col-span-2 w-full">
                       <div className="col-span-3">
+                        <Label className="font-extrabold">Name</Label>
+                      </div>
+                      <div className="col-span-1">
+                        <Label className="font-extrabold">Qty.</Label>
+                      </div>
+
+                      <div className="col-span-2 my-auto text-start">
+                        <Label className="font-extrabold">Price</Label>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-6 gap-x-2 col-span-2 w-full">
+                      <div className="col-span-3">
                         <Select
                           asChild
                           value={tier3AddOns}
@@ -1436,7 +1537,8 @@ const MenuSelectedProduct = ({
                             <div>
                               {!tier3AddOns.addOnsId
                                 ? "Select add ons"
-                                : tier3AddOns.addOnsName}
+                                : `${tier3AddOns.addOnsName} 
+                              (${tier3AddOns.addOnsDescription})`}
                             </div>
                           </SelectTrigger>
                           <SelectContent>
@@ -1566,9 +1668,39 @@ const MenuSelectedProduct = ({
               </div>
             ) : null}
 
-            <Label className="font-extrabold my-2 text-2xl col-span-2">
-              Message and Instructions
-            </Label>
+            <div className="flex flex-row col-span-2">
+              <Label className="font-extrabold my-2 text-2xl col-span-2">
+                Message and Instructions
+              </Label>
+              <TooltipProvider delayDuration={50}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="font-extrabold my-auto ml-2 text-lg text-stone-300 col-span-2 cursor-pointer">
+                      <IoInformationCircleOutline className="text-stone-400" />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="right"
+                    className="ms-3 w-[280px] h-fit bg-accent text-slate-800 flex flex-col p-5"
+                  >
+                    <Label className="font-extrabold text-lg">
+                      What is Message & Instruction Section?
+                    </Label>
+                    <Label className="text-justify mt-2 leading-5">
+                      This section provides the opportunity to write
+                      instructions or offer additional information for your cake
+                      order. It also acts as a space for your dedication
+                      message. It&apos;s optional; if you wish to add details
+                      about your cake or include a dedication message, feel free
+                      to write a message in this section. However, if you have
+                      no additional information about your cake or don&apos;t
+                      want to include a dedication message, you can leave it
+                      blank and proceed to the payment process.
+                    </Label>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             <Separator className="my-1 col-span-2" />
             <Textarea
               className="mt-1 col-span-2"
@@ -1578,9 +1710,39 @@ const MenuSelectedProduct = ({
 
             {isCakeCustomized ? (
               <>
-                <Label className="font-extrabold my-2 text-2xl col-span-2">
-                  Image Reference
-                </Label>
+                <div className="flex flex-row col-span-2">
+                  <Label className="font-extrabold my-2 text-2xl col-span-2">
+                    Image Reference
+                  </Label>
+                  <TooltipProvider delayDuration={50}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="font-extrabold my-auto ml-2 text-lg text-stone-300 col-span-2 cursor-pointer">
+                          <IoInformationCircleOutline className="text-stone-400" />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="right"
+                        className="ms-3 w-[280px] h-fit bg-accent text-slate-800 flex flex-col p-5"
+                      >
+                        <Label className="font-extrabold text-lg">
+                          What is Image Reference Section?
+                        </Label>
+                        <Label className="text-justify mt-2 leading-5">
+                          Once you customized your order, you can use this
+                          section to attach an image for reference in designing
+                          your cake. It&apos;s optional; if you want to further
+                          enhance your cake&apos;s design, feel free to attach
+                          an image. However, if you&apos;re satisfied with the
+                          current design and don&apos;t wish to make further
+                          changes, you can skip attaching photos and proceed to
+                          the payment process.
+                        </Label>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+
                 <Separator className="my-1 col-span-2" />
 
                 <Label className="col-span-2 mt-2">Attach Image</Label>
@@ -1616,9 +1778,39 @@ const MenuSelectedProduct = ({
               </>
             ) : (
               <>
-                <Label className="font-extrabold my-2 text-2xl col-span-2">
-                  Image Reference
-                </Label>
+                <div className="flex flex-row col-span-2">
+                  <Label className="font-extrabold my-2 text-2xl col-span-2">
+                    Image Reference
+                  </Label>
+                  <TooltipProvider delayDuration={50}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="font-extrabold my-auto ml-2 text-lg text-stone-300 col-span-2 cursor-pointer">
+                          <IoInformationCircleOutline className="text-stone-400" />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="right"
+                        className="ms-3 w-[280px] h-fit bg-accent text-slate-800 flex flex-col p-5"
+                      >
+                        <Label className="font-extrabold text-lg">
+                          What is Image Reference Section?
+                        </Label>
+                        <Label className="text-justify mt-2 leading-5">
+                          Once you customized your order, you can use this
+                          section to attach an image for reference in designing
+                          your cake. It&apos;s optional; if you want to further
+                          enhance your cake&apos;s design, feel free to attach
+                          an image. However, if you&apos;re satisfied with the
+                          current design and don&apos;t wish to make further
+                          changes, you can skip attaching photos and proceed to
+                          the payment process.
+                        </Label>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+
                 <Separator className="my-1 col-span-2" />
 
                 <Label className="col-span-2 mt-2">Attach Image</Label>
@@ -1670,6 +1862,207 @@ const MenuSelectedProduct = ({
                 Add to Cart
               </Button>
             </div>
+          </div>
+        </div>
+
+        {/* for revisions */}
+        <div className="h-[1000px] w-auto mt-6">
+          <Label className="font-extrabold text-2xl">
+            Comments and Feedback
+          </Label>
+          <Separator className="my-2 col-span-2" />
+          <div className="flex items-center">
+            <Label className="font-extrabold text-lg mr-5">
+              Product Rating
+            </Label>
+            <svg
+              className={`w-4 h-4 ${
+                averageRating >= 1 ? "text-primary" : "text-gray-300"
+              } me-1`}
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              viewBox="0 0 22 20"
+            >
+              <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+            </svg>
+            <svg
+              className={`w-4 h-4 ${
+                averageRating >= 2 ? "text-primary" : "text-gray-300"
+              } me-1`}
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              viewBox="0 0 22 20"
+            >
+              <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+            </svg>
+            <svg
+              className={`w-4 h-4 ${
+                averageRating >= 3 ? "text-primary" : "text-gray-300"
+              } me-1`}
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              viewBox="0 0 22 20"
+            >
+              <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+            </svg>
+            <svg
+              className={`w-4 h-4 ${
+                averageRating >= 4 ? "text-primary" : "text-gray-300"
+              } me-1`}
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              viewBox="0 0 22 20"
+            >
+              <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+            </svg>
+            <svg
+              className={`w-4 h-4 ${
+                averageRating >= 5 ? "text-primary" : "text-gray-300"
+              } me-1`}
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              viewBox="0 0 22 20"
+            >
+              <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+            </svg>
+            <p className="ms-2 text-sm font-bold text-gray-900 dark:text-white">
+              {!averageRating ? "0" : averageRating.toFixed(2)}
+            </p>
+            <span className="w-1 h-1 mx-1.5 bg-gray-500 rounded-full dark:bg-gray-400"></span>
+            <a className="text-sm font-medium my-auto text-gray-900 underline hover:no-underline dark:text-white">
+              {feedbacks.length} reviews
+            </a>
+          </div>
+          <Separator className="my-2 col-span-2" />
+          {feedbacks.length == 0 ? (
+            <div className="h-[300px] w-full flex">
+              <Label className="my-auto mx-auto text-xl font-extrabold">
+                No reviews
+              </Label>
+            </div>
+          ) : (
+            <>
+              {paginatedList.map((i) => {
+                return (
+                  <div className="flex flex-col" key={i.feedbackId}>
+                    <div className="flex items-center mb-4">
+                      {!i.avatar ? (
+                        <img
+                          className="w-10 h-10 me-4 rounded-full"
+                          src={`/avatar/default-avatar.jpg`}
+                          alt=""
+                        />
+                      ) : (
+                        <img
+                          className="w-10 h-10 me-4 rounded-full"
+                          src={i.avatar}
+                          alt=""
+                        />
+                      )}
+
+                      <div className="font-medium dark:text-white">
+                        <p>{i.customerFullName}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center mb-1 space-x-1 rtl:space-x-reverse">
+                      <svg
+                        className={`w-4 h-4 ${
+                          i.rating >= 1 ? "text-primary" : "text-gray-300"
+                        }`}
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 22 20"
+                      >
+                        <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+                      </svg>
+                      <svg
+                        className={`w-4 h-4 ${
+                          i.rating >= 2 ? "text-primary" : "text-gray-300"
+                        }`}
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 22 20"
+                      >
+                        <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+                      </svg>
+                      <svg
+                        className={`w-4 h-4 ${
+                          i.rating >= 3 ? "text-primary" : "text-gray-300"
+                        }`}
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 22 20"
+                      >
+                        <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+                      </svg>
+                      <svg
+                        className={`w-4 h-4 ${
+                          i.rating >= 4 ? "text-primary" : "text-gray-300"
+                        }`}
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 22 20"
+                      >
+                        <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+                      </svg>
+                      <svg
+                        className={`w-4 h-4 ${
+                          i.rating >= 5 ? "text-primary" : "text-gray-300"
+                        }`}
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 22 20"
+                      >
+                        <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+                      </svg>
+                    </div>
+                    <p className="my-2 text-gray-500 dark:text-gray-400">
+                      {i.comment}
+                    </p>
+                    {!i.commentImage ? null : (
+                      <div className="flex ml-5 m-0 w-32 h-36 max-h-36 my-2">
+                        <img src={i.commentImage} alt="bg" />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </>
+          )}
+
+          <div className="w-fit mx-auto flex my-4">
+            {pagesCount === 1 ? null : (
+              <nav
+                className="isolate inline-flex -space-x-px rounded-md shadow-sm h-14 w-9"
+                aria-label="Pagination"
+              >
+                {pages.map((page) => (
+                  <a
+                    href="#"
+                    aria-current="page"
+                    className={`relative z-10 inline-flex items-center hover:text-text-decoration-none  border-zinc-200 border-[1px] px-4 py-2 text-sm font-semibold  ${
+                      currentPage === page
+                        ? "bg-ring text-white "
+                        : "bg-transparent text-black"
+                    }`}
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                  >
+                    {page}
+                  </a>
+                ))}
+              </nav>
+            )}
           </div>
         </div>
       </div>
@@ -2101,85 +2494,25 @@ const MenuSelectedProduct = ({
           </DialogContent>
         </Dialog>
       )}
+      {/* VIEW IMAGE ATTACHMENT */}
+      {!viewCakeGuide ? null : (
+        <Dialog open={viewCakeGuide} onOpenChange={setViewCakeGuide} onClose>
+          <DialogContent className="max-w-fit max-h-full md:w-fit md:h-fit flex flex-col p-0">
+            <div
+              style={{
+                width: "400px",
+                height: "650px",
+                backgroundImage: `url('${cakeGuide.src}')`,
+                backgroundSize: "contain",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+              }}
+              className="mx-auto rounded-sm"
+            ></div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
-
 export default MenuSelectedProduct;
-
-// const [termsAndConditions, setTermsAndConditions] = useState(false);
-// const [isTermsAndConditionInvalid, setIsTermsAndConditionInvalid] =
-// useState(false);
-
-{
-  /* <Button
-                  variant="outline"
-                  disabled={!shape.shapeName || !isCakeCustomized}
-                  className="mt-1 h-10 w-fit items-center"
-                  onClick={() =>
-                    setShape({
-                      shapeId: null,
-                      shapePrice: 0,
-                      shapeName: "",
-                    })
-                  }
-                >
-                  <IoIosClose className="w-5 h-5 text-muted-foreground" />
-                </Button> */
-}
-
-{
-  /* {isTermsAndConditionInvalid ? (
-                  <Label className="errorMessage mb-1">
-                    Read and accept terms and condition before adding to cart!
-                  </Label>
-                ) : null} */
-}
-
-// TERMS AND CONDITION
-{
-  /* <
-
-                    <Dialog
-                      open={openTermsAndConditions}
-                      onOpenChange={setOpenTermsAndConditions}
-                    >
-                      <Button
-                        variant="ghost"
-                        className="text-sm font-medium p-0 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 hover:bg-transparent hover:underline hover:text-primary"
-                        onClick={() => {
-                          setOpenTermsAndConditions(true);
-                        }}
-                      >
-                        Accept terms and conditions
-                        <span className="text-ring"> *</span>
-                      </Button>
-                      <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                          <DialogTitle>Terms and Conditions</DialogTitle>
-                          <DialogDescription className="text-justify indent-9">
-                            Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit. Nihil quae vitae distinctio rerum ab quam sit
-                            eligendi, nobis placeat hic officiis dicta neque
-                            illum magnam autem fuga impedit molestiae. A quos,
-                            quo adipisci quidem beatae praesentium sint esse
-                            similique repellendus, ducimus doloremque iste
-                            officiis, ea sit soluta blanditiis iusto odit
-                            reiciendis voluptates eaque? Adipisci, inventore?
-                          </DialogDescription>
-                        </DialogHeader>
-                        <DialogFooter>
-                          <Button
-                            className="hover:bg-ring active:bg-primary-foreground duration-300"
-                            onClick={() => {
-                              setTermsAndConditions(true);
-                              setIsTermsAndConditionInvalid(false);
-                              setOpenTermsAndConditions(false);
-                            }}
-                          >
-                            Accept Terms and Conditions
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog> */
-}

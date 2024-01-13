@@ -206,6 +206,7 @@ const OrderModuleAdmin = ({ userId }) => {
   };
 
   const [finalPrice, setFinalPrice] = useState(selectedProduct?.subTotal || 0);
+
   const [remainingBal, setRemainingBal] = useState(0);
   const [errorVal, setErrorVal] = useState("");
 
@@ -274,6 +275,7 @@ const OrderModuleAdmin = ({ userId }) => {
 
     setRemainingBal(foundOrder.totalPrice - foundOrder.amountPaid);
   };
+  // NOT COMPLETED
 
   const openCancelOrder = (order) => {
     setSelectedOrder(order);

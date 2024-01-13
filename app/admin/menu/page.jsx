@@ -4,7 +4,7 @@ import MiniAdminSidebar from "../components/MiniAdminSidebar";
 import MenuTableTabs from "../components/pages/Menu/MenuTableTabs";
 
 // ALL GOODS
-
+// NOT COMPLETED
 const AdminMenu = () => {
   const [productList, setProductList] = useState([]);
   const [products, setProducts] = useState([]);

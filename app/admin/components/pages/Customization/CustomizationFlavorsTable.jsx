@@ -32,6 +32,7 @@ import { BiEditAlt, BiSolidUserCheck, BiSolidUserX } from "react-icons/bi";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 import { Label } from "@/components/ui/label";
 
+// NOT COMPLETED
 const CustomizationFlavorsTable = ({
   data,
   openEditFlavor,

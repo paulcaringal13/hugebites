@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   const connection = await con();
 
-  const query = `SELECT * FROM customization_addons`;
+  const query = `SELECT * FROM customization_addons ORDER BY customization_addons.addOnsId DESC`;
   const results = await connection.execute(query);
   connection.end();
 
@@ -27,9 +27,9 @@ export async function POST(req, res) {
   const connection = await con();
 
   const reqBody = await req.json();
-  const { addOnsName, addOnsPrice, addOnsStatus } = reqBody;
+  const { addOnsName, addOnsPrice, addOnsStatus, addOnsDescription } = reqBody;
   try {
-    const query = `INSERT INTO customization_addons (addOnsName, addOnsPrice, addOnsStatus) VALUES ('${addOnsName}', '${addOnsPrice}',  '${addOnsStatus}')`;
+    const query = `INSERT INTO customization_addons (addOnsName, addOnsPrice, addOnsStatus, addOnsDescription) VALUES ('${addOnsName}', '${addOnsPrice}',  '${addOnsStatus}',  '${addOnsDescription}')`;
     const results = await connection.execute(query);
     connection.end();
 
@@ -44,9 +44,15 @@ export async function PUT(request) {
     const connection = await con();
 
     const reqBody = await request.json();
-    const { addOnsId, addOnsPrice, addOnsStatus, addOnsName } = reqBody;
+    const {
+      addOnsId,
+      addOnsPrice,
+      addOnsStatus,
+      addOnsName,
+      addOnsDescription,
+    } = reqBody;
 
-    const query = `UPDATE customization_addons SET addOnsStatus ='${addOnsStatus}', addOnsPrice='${addOnsPrice}', addOnsName='${addOnsName}' WHERE addOnsId = ${addOnsId}`;
+    const query = `UPDATE customization_addons SET addOnsStatus ='${addOnsStatus}', addOnsPrice='${addOnsPrice}', addOnsName='${addOnsName}', addOnsDescription='${addOnsDescription}' WHERE addOnsId = ${addOnsId}`;
 
     const results = await connection.execute(query);
     connection.end();

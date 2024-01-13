@@ -31,6 +31,7 @@ import {
 import { BiEditAlt, BiSolidUserCheck, BiSolidUserX } from "react-icons/bi";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 import { Label } from "@/components/ui/label";
+// NOT COMPLETED
 
 const CustomizationAddOnsTable = ({
   data,
@@ -69,6 +70,22 @@ const CustomizationAddOnsTable = ({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Add Ons Name
+            <span className="text-xs ml-2">Sort</span>
+            <ArrowUpDown className="h-3 w-3" />
+          </Button>
+        );
+      },
+    },
+    {
+      accessorKey: "addOnsDescription",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            className="mx-auto my-auto"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Add Ons Description
             <span className="text-xs ml-2">Sort</span>
             <ArrowUpDown className="h-3 w-3" />
           </Button>

@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 
+// NOT COMPLETED
 const RequestModuleAdmin = () => {
   const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -109,11 +110,11 @@ const RequestModuleAdmin = () => {
           },
           body: JSON.stringify({
             customerRequestId: selectedRequest.customerRequestId,
-            moneyRefunded: selectedRequest.amountPaid,
-            isAccepted: 1,
+            moneyRefunded: 0,
             responseMessage: responseMessage,
+            isAccepted: 0,
             responseImage: "",
-            requestStatus: "Refunded",
+            requestStatus: "Cake Re-do",
           }),
         };
         const acceptRes = await fetch(

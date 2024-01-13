@@ -1,8 +1,10 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import React, { useEffect, useState } from "react";
-import bestSellerImage from "../../../../public/images/bestSellerImage.png";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import bestSellerImage from "../../../../public/images/bestSellerImage.png";
+
+// COMPLETED
 
 const BestSellingCake = ({ userData }) => {
   const router = useRouter();

@@ -31,6 +31,7 @@ import {
 import { BiEditAlt, BiSolidUserCheck, BiSolidUserX } from "react-icons/bi";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 import { Label } from "@/components/ui/label";
+// NOT COMPLETED
 
 const CustomizationColorsTable = ({
   data,
@@ -59,19 +60,38 @@ const CustomizationColorsTable = ({
         );
       },
     },
+    // {
+    //   accessorKey: "colorName",
+    //   header: ({ column }) => {
+    //     return (
+    //       <Button
+    //         variant="ghost"
+    //         className="mx-auto my-auto"
+    //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+
+    //       >
+    //         Color Name
+    //         <span className="text-xs ml-2">Sort</span>
+    //         <ArrowUpDown className="h-3 w-3" />
+    //       </Button>
+    //     );
+    //   },
+    // },
     {
-      accessorKey: "colorName",
-      header: ({ column }) => {
+      header: "Color Name",
+      id: "colorName",
+      cell: ({ row }) => {
+        const rowData = row.original;
+
         return (
-          <Button
-            variant="ghost"
-            className="mx-auto my-auto"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          <div
+            className={`h-full w-full p-1 ml-auto mr-4 rounded-sm ${
+              rowData.colorName == "White" ? "text-black" : "text-white"
+            }`}
+            style={{ backgroundColor: `${rowData.colorHex}` }}
           >
-            Color Name
-            <span className="text-xs ml-2">Sort</span>
-            <ArrowUpDown className="h-3 w-3" />
-          </Button>
+            {rowData.colorName}
+          </div>
         );
       },
     },

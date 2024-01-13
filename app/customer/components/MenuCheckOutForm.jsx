@@ -63,7 +63,7 @@ const MenuCheckOutForm = ({
     dayjs(dayjs().add(2, "day")).add(3, "day")
   );
   const fromYear = dayjs().year();
-  const toYear = dayjs().year() + 1;
+  const toYear = dayjs().year() + 7;
 
   const deleteCart = async (orderPrice) => {
     const cartDelete = {
@@ -444,6 +444,14 @@ const MenuCheckOutForm = ({
     }
   };
 
+  console.log("cart", cart);
+  console.log("orderPrice", orderPrice);
+  console.log("methodOfPayment", methodOfPayment);
+  console.log("datePickUp", datePickUp);
+  console.log("paymentDeadline", paymentDeadline);
+  console.log("refundDeadline", refundDeadline);
+  console.log("voucher", voucher);
+
   useEffect(() => {
     const pickUpDate = dayjs(datePickUp);
 
@@ -518,7 +526,12 @@ const MenuCheckOutForm = ({
                     selected={datePickUp}
                     onSelect={setDatePickUp}
                     className="rounded-md border shadow w-fit p-5"
-                    disabled={[{ before: new Date(dayjs().add(3, "day")) }]}
+                    disabled={[
+                      {
+                        before: new Date(dayjs().add(3, "day")),
+                        after: new Date(dayjs().add(1, "year")),
+                      },
+                    ]}
                   />
                 </div>
                 {!valDatePickUp ? null : (
