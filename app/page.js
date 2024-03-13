@@ -3,5 +3,5 @@ import "./styles/globals.css";
 // COMPLETED
 
 export default function Home() {
-  return <></>;
+  return <>TITE</>;
 }
