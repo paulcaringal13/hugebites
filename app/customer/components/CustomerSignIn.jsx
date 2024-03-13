@@ -12,8 +12,6 @@ import {
   CardTitle,
 } from "../../../components/ui/card";
 
-// COMPLETED
-
 const CustomerSignIn = () => {
   const router = useRouter();
 

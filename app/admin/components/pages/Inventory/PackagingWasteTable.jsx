@@ -46,7 +46,6 @@ import {
 import { BiChevronDown } from "react-icons/bi";
 import { X } from "lucide-react";
 
-// NOT COMPLETED
 const PackagingWasteTable = ({
   data,
   closeWastePackagingLog,
@@ -199,9 +198,6 @@ const PackagingWasteTable = ({
                 <X className="h-4 w-4" />
               </Button>
             </DialogTitle>
-            {/* <DialogDescription>
-            Press the 'Save' button to save changes.
-          </DialogDescription> */}
           </div>
           <div className="w-full mt-0">
             <div className="flex items-center py-4">

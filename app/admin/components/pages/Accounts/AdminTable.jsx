@@ -35,8 +35,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
-// NOT COMPLETED
-
 const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -250,7 +248,6 @@ const AdminTable = ({ data, handleEditModal, handleActivationModal }) => {
           placeholder="Search"
           className="w-2/6"
         />
-        {/* HIDE COLUMN */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button

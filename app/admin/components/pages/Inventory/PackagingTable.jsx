@@ -16,7 +16,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -28,20 +27,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { BiChevronDown } from "react-icons/bi";
 import { AiOutlineMinusCircle } from "react-icons/ai";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { MdOutlineModeEditOutline } from "react-icons/md";
 import EditPackagingForm from "./EditPackagingForm";
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
-// NOT COMPLETED
 const PackagingTable = ({
   data,
-  updatePackagingStock,
   openUpdatePackagingStock,
   openEditPackagingStock,
   closeEditPackagingStock,
@@ -192,7 +184,6 @@ const PackagingTable = ({
           placeholder="Search"
           className="w-2/6"
         />
-        {/* hide columns */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -272,7 +263,6 @@ const PackagingTable = ({
             )}
           </TableBody>
         </Table>
-        {/* pagination */}
         <div className="flex items-center justify-end space-x-2 py-4">
           <Button
             variant="outline"

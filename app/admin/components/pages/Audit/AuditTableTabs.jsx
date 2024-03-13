@@ -8,12 +8,10 @@ import {
   CardTitle,
 } from "../../../../../components/ui/card";
 import AuditTable from "./AuditTable";
-// NOT COMPLETED
 
 const AuditTableTabs = () => {
   const [employeeArray, setEmployeeArray] = useState([]);
 
-  // GET ALL DATA TO AUDIT TABLE
   const getAllAudit = async () => {
     const auditRes = await fetch(`http://localhost:3000/api/admin/audit`);
     const data = await auditRes.json();

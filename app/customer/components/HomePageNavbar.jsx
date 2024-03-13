@@ -1,7 +1,6 @@
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState, useEffect } from "react";
-
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -67,7 +66,6 @@ const HomePageNavbar = ({ userId }) => {
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0 mt-2">
             <div className="relative ml-1 mt-1">
               <div>
-                {/* change to dropdown avatar */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button

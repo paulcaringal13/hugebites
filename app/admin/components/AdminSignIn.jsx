@@ -16,16 +16,12 @@ import Image from "next/image";
 const AdminSignIn = () => {
   const adminButtonRef = useRef(null);
   const employeeButtonRef = useRef(null);
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isNotExisting, setIsNotExisting] = useState(false);
-  // NOT COMPLETED
   const [errorMessage, setErrorMessage] = useState("Invalid Login Credentials");
 
   const onSubmit = async (event) => {
-    console.log("asdasd");
-    // RETURNS ACCOUNT ID OF THE USER. PARA MAKUHA NIYA FROM TBL_EMPLOYEE TABLE YUNG DATA NIYA USING ACCOUNT ID FROM TABLE ACCOUNTS
     const res = await fetch(
       `http://localhost:3000/api/sign-in?` +
         new URLSearchParams({
@@ -43,7 +39,6 @@ const AdminSignIn = () => {
     }
 
     try {
-      // RETURNS THE DATA OF THE USER
       const adminRes = await fetch(
         `http://localhost:3000/api/admin/audit/sign-in?` +
           new URLSearchParams(
@@ -58,9 +53,6 @@ const AdminSignIn = () => {
 
       const loggedInUser = response[0];
 
-      console.log(loggedInUser);
-
-      // SET LOCAL STORAGE SA MGA DATA NI USER
       {
         !loggedInUser.username &&
         !loggedInUser.password &&
@@ -123,7 +115,6 @@ const AdminSignIn = () => {
           : null;
       }
 
-      // IREDIRECT SA NEXT PAGE IF SUCCESS ANG LOG IN
       {
         !loggedInUser.username &&
         !loggedInUser.password &&
@@ -132,7 +123,6 @@ const AdminSignIn = () => {
           : redirect(loggedInUser);
       }
 
-      // IF DI EXISTING OR DEACTIVATED ANG ACCOUNT ISHOW ANG MESSAGE
       {
         !account.accountId;
         loggedInUser.isDeactivated == 1
@@ -144,9 +134,7 @@ const AdminSignIn = () => {
     }
   };
 
-  // REDIRECT THEM TO SPECIFIC PATH
   const redirect = (account) => {
-    console.log("nag redirect");
     {
       account.userRole == "Super Admin" && adminButtonRef.current.click();
     }
@@ -154,11 +142,9 @@ const AdminSignIn = () => {
       account.userRole != "Super Admin" && employeeButtonRef.current.click();
     }
   };
-
-  // PASS A POST REQUEST TO RECORD THE LOG IN DETAILS OF THE EMPLOYEE OR SUB ADMIN TO THE AUDIT TABLE
   const recordAudit = async (user) => {
     const postData = {
-      method: "POST", // or 'PUT'
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },

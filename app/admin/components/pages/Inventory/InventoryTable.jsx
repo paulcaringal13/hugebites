@@ -35,7 +35,6 @@ import EditStockForm from "./EditStockForm";
 import { ButtonLoading } from "../../ButtonLoading";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
-// NOT COMPLETED
 const InventoryTable = ({
   data,
   updateStocks,
@@ -151,13 +150,6 @@ const InventoryTable = ({
               const quantity = new Number(-1);
 
               openUpdateStocks(rowData.ingredientId, quantity, rowData);
-
-              // const data = await updateStocks(
-
-              // );
-              // {
-              //   !data ? <ButtonLoading /> : null;
-              // }
             }}
           >
             <AiOutlineMinusCircle type="button" className="text-xl mx-auto " />
@@ -196,7 +188,6 @@ const InventoryTable = ({
             variant="ghost"
             className="h-8 w-8 p-0 hover:bg-primary hover:text-white"
             onClick={() => openEditStock(rowData)}
-            //
           >
             <MdOutlineModeEditOutline className="text-lg font-light" />
           </Button>
@@ -234,8 +225,7 @@ const InventoryTable = ({
           placeholder="Search"
           className="w-2/6"
         />
-        {/* filter specific column */}
-        {/* hide columns */}
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -347,7 +337,6 @@ const InventoryTable = ({
             </TableBody>
           )}
         </Table>
-        {/* pagination */}
         <div className="flex items-center justify-end space-x-2 py-4">
           <Button
             variant="outline"

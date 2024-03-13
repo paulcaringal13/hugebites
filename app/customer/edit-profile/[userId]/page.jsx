@@ -1,16 +1,12 @@
 "use client";
-import * as React from "react";
-import { Box, InputLabel, TextField } from "@mui/material";
+import "../../../styles/globals.css";
 import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
 import CustomerSidebar from "../../components/CustomerSidebar";
 import HomePageNavbar from "../../components/HomePageNavbar";
 import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import "../../../styles/globals.css";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import {
   Toast,
@@ -31,10 +27,7 @@ const CustomerProfile = (path) => {
   const { params } = path;
   const { userId } = params;
 
-  // STATE FOR LOGGED IN USER'S CURRENT INFORMATIONS
   const [accountInfo, setAccountInfo] = useState({});
-
-  // STATE FOR THE UPDATED USER'S INFORMATION
   const [newFirstName, setNewFirstName] = useState("");
   const [newLastName, setNewLastName] = useState("");
   const [newEmail, setNewEmail] = useState("");
@@ -44,7 +37,6 @@ const CustomerProfile = (path) => {
   const [avatar, setAvatar] = useState("");
   const [openChangePass, setOpenChangePass] = useState(false);
   const [openChangeAvatar, setOpenChangeAvatar] = useState(false);
-
   const [file, setFile] = useState();
   const [image, setImage] = useState("");
 
@@ -166,7 +158,6 @@ const CustomerProfile = (path) => {
     window.location.reload(true);
   };
 
-  // EDIT ACCOUNT
   const editAccount = async (newPass) => {
     const postData = {
       method: "PUT",
@@ -196,7 +187,6 @@ const CustomerProfile = (path) => {
     }
   };
 
-  // GET CURRENT LOGGED IN USER'S INFORMATION
   const getAccountInfo = async () => {
     const res = await fetch(
       `http://localhost:3000/api/customer/account?` +
@@ -213,7 +203,6 @@ const CustomerProfile = (path) => {
     setAccountInfo(accountInfo);
   };
 
-  // SET STATE TO USER'S INPUT VALUES
   const setNewAccountInfo = async () => {
     setNewFirstName(accountInfo.firstName);
     setNewLastName(accountInfo.lastName);
@@ -224,7 +213,6 @@ const CustomerProfile = (path) => {
     setAvatar(accountInfo.avatar);
   };
 
-  // alert state
   const [alertMessageOpen, setAlertMessageOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState(false);
   const [alertType, setAlertType] = useState(false);
@@ -241,7 +229,6 @@ const CustomerProfile = (path) => {
     getAccountInfo();
   }, []);
 
-  // SET THE STATES EVERY TIME ACCOUNT INFO CHANGE (FOR UPDATING THE FIELDS AFTER EDITING ACCOUNT INFORMATIONS)
   useEffect(() => {
     setNewAccountInfo();
     {
@@ -603,7 +590,6 @@ const CustomerProfile = (path) => {
         </Dialog>
       )}
 
-      {/* REQUEST MODAL */}
       {!openChangePass ? null : (
         <Dialog open={openChangePass} onOpenChange={setOpenChangePass} onClose>
           <DialogContent className="max-w-full max-h-full md:w-fit md:h-fit flex flex-col p-0">
@@ -723,7 +709,6 @@ const CustomerProfile = (path) => {
         </Dialog>
       )}
 
-      {/* ALERT */}
       {alertMessageOpen ? (
         <ToastProvider swipeDirection="up" duration={3000}>
           <Toast className="w-fit h-fit mr-5" variant={alertType}>

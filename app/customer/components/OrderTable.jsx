@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import dayjs from "dayjs";
 import * as React from "react";
 import {
   flexRender,
@@ -10,15 +11,14 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
+import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
-import { Input } from "../../../components/ui/input";
 import {
   Table,
   TableBody,
@@ -27,20 +27,12 @@ import {
   TableHeader,
   TableRow,
 } from "../../../components/ui/table";
-import { BiChevronDown } from "react-icons/bi";
 import { FaRegEye } from "react-icons/fa6";
 import { RiAttachment2 } from "react-icons/ri";
-import {
-  TbMailForward,
-  TbMailCheck,
-  TbMail,
-  TbMailOpened,
-} from "react-icons/tb";
-import dayjs from "dayjs";
+import { TbMailForward, TbMail } from "react-icons/tb";
 
 const OrderTable = ({
   data,
-  setOrdersTable,
   openViewOrder,
   openAttachImage,
   openViewPayment,
@@ -54,10 +46,8 @@ const OrderTable = ({
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
-  const [columnSelected, setColumnSelected] = useState("");
   const [search, setSearch] = useState("");
 
-  // HANDLE VIEW BUTTON ON CLICK
   const handleViewButton = async (order) => {
     const selectedOrderedProducts = await getOrderedProducts(order);
     const orderedProductAddOns = await getOrderedProductAddOns(order);
@@ -86,10 +76,8 @@ const OrderTable = ({
     });
 
     openViewOrder(orderedProductWithAddOns, order);
-    // setOrderedProducts(orderedProductWithAddOns);
   };
 
-  // GET ALL ORDERED PRODUCT OF A SPECIFIC ORDER with special props for special cakes
   const getOrderedProducts = async (order) => {
     const { orderId } = order;
     const res = await fetch(
@@ -104,7 +92,6 @@ const OrderTable = ({
     return data;
   };
 
-  // add ons with special prop id for tiered product
   const getOrderedProductAddOns = async (order) => {
     const { orderId } = order;
 
@@ -167,7 +154,6 @@ const OrderTable = ({
                 className="h-fit w-fit border-2 p-2 rounded-full text-md mx-auto cursor-pointer transform transition-all hover:scale-125 active:bg-white active:scale-110  duration-100"
                 variant="outline"
                 onClick={() => {
-                  // NOTIF MESSAGE IF ORDER NOT RECEIVED
                   const setRowIsNotReceived = () => {
                     setAlertMessage(
                       "Refund is only available after receiving the product!"
@@ -181,7 +167,6 @@ const OrderTable = ({
                     ? setRowIsNotReceived()
                     : null;
 
-                  // NOTIF MESSAGE IF ORDER NOT PAID
                   const setRowIsNotPaid = () => {
                     setAlertMessage(
                       "Order not paid. You cannot send a request for refund!"
@@ -194,7 +179,6 @@ const OrderTable = ({
                     ? setRowIsNotPaid()
                     : null;
 
-                  // NOTIF MESSAGE IF ORDER IS CANCELLED
                   const setRowIsCancelled = () => {
                     setAlertMessage("Action failed. Order is cancelled!");
                     setAlertTitle("Oops!");
@@ -204,14 +188,6 @@ const OrderTable = ({
                   rowData.orderStatus == "Cancelled"
                     ? setRowIsCancelled()
                     : null;
-
-                  // SUCCESS LAHAT. PWEDENG MAG SEND NG REQUEST SINCE MET LAHAT NG REQUIREMENT
-                  /*REQ:
-                    NAKUHA ANG CAKE
-                    DI LUMAGPAS SA DEADLINE NG PAG SEND (3 DAYS AFTER PICKUP)
-                    BAYAD */
-
-                  // NOTE: NAG ADD SA DAY TODAY BAGO YUNG IS AFTER KASI PARA MAVALIDATE PAG REALTIME YUNG DATE
 
                   rowData.isPaid == 1 &&
                   dayjs().isAfter(rowData.datePickUp) &&
@@ -274,22 +250,6 @@ const OrderTable = ({
         );
       },
     },
-    // {
-    //   accessorKey: "totalPrice",
-    //   header: ({ column }) => {
-    //     return (
-    //       <Button
-    //         className="mx-auto my-auto hover:bg-primary hover:text-white transform transition-all hover:scale-105 duration-100"
-    //         variant="ghost"
-    //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-    //       >
-    //         {}
-    //         Total Price
-    //         <ArrowUpDown className="h-3 w-3" />
-    //       </Button>
-    //     );
-    //   },
-    // },
     {
       accessorKey: "amountPaid",
       header: ({ column }) => {
@@ -427,9 +387,6 @@ const OrderTable = ({
           placeholder="Search"
           className="w-2/6"
         />
-        {/* filter specific column */}
-
-        {/* hide columns */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -578,7 +535,6 @@ const OrderTable = ({
             )}
           </TableBody>
         </Table>
-        {/* pagination */}
         <div className="flex items-center justify-end space-x-2 py-4 me-5 ">
           <Button
             variant="outline"

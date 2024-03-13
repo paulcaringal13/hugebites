@@ -6,7 +6,6 @@ import CustomizationReport from "../../components/pages/Report/CustomizationRepo
 import CustomizedCakeReport from "../../components/pages/Report/CustomizedCakesReport";
 import TotalEarnings from "../../components/pages/Report/TotalEarnings";
 import MonthlyOrders from "../../components/pages/Report/MonthlyOrders";
-// NOT COMPLETED
 export default function AdminRequest(path) {
   const { params } = path;
   const { reportType } = params;
@@ -17,10 +16,6 @@ export default function AdminRequest(path) {
     const userId =
       typeof window !== "undefined" && window.localStorage
         ? localStorage.getItem("accountId")
-        : "";
-    const userName =
-      typeof window !== "undefined" && window.localStorage
-        ? localStorage.getItem("userName")
         : "";
 
     {

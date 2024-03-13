@@ -1,11 +1,16 @@
 "use client";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import "../../styles/globals.css";
+import cakeGuide from "../../../public/images/cakeGuide.jpg";
+import lodash from "lodash";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import cakeGuide from "../../../public/images/cakeGuide.jpg";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -13,7 +18,6 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
@@ -21,21 +25,17 @@ import {
   DialogFooter,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { IoIosClose } from "react-icons/io";
-import {
-  IoReturnUpBackOutline,
-  IoInformationCircleOutline,
-} from "react-icons/io5";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import lodash from "lodash";
+import {
+  IoReturnUpBackOutline,
+  IoInformationCircleOutline,
+} from "react-icons/io5";
+import { IoIosClose } from "react-icons/io";
 
 const MenuSelectedProduct = ({
   user,
@@ -57,14 +57,9 @@ const MenuSelectedProduct = ({
     style: "currency",
     currency: "PHP",
   });
-  // SPECIAL CAKES STATES
-
   const [feedbacks, setFeedbacks] = useState([]);
-
   const [pageSize, setPageSize] = useState(4);
-
   const pagesCount = Math.ceil(feedbacks.length / pageSize);
-
   const pages = lodash.range(1, pagesCount + 1);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -79,38 +74,30 @@ const MenuSelectedProduct = ({
 
   const paginatedList = paginate();
 
-  // PAG COMMON CAKE ITO NALANG ANG IPASA PARA NULL AT HINDI NA MAADD SA DATABASE
   const [defaultSpecialProperty, setDefaultSpecialProperty] = useState([
     {
       specialPropertyName: "Common Cake",
       specialPropertyValue: 0,
     },
   ]);
-
-  //NUMBERED CAKES
   const [numberShape, setNumberShape] = useState([
     {
       specialPropertyName: "Shape Number",
       specialPropertyValue: 0,
     },
   ]);
-
   const [numberShapeVal, setNumberShapeVal] = useState("");
-
-  // MONEY CAKE
   const [amount, setAmount] = useState([
     {
       specialPropertyName: "Amount",
       specialPropertyValue: 0,
     },
   ]);
-
   const [typeOfBill, setTypeOfBill] = useState({
     tobId: 0,
     specialPropertyName: "Type Of Bill",
     specialPropertyValue: 0,
   });
-
   const billArray = [
     {
       tobId: 1,
@@ -133,13 +120,9 @@ const MenuSelectedProduct = ({
       specialPropertyValue: 1000,
     },
   ];
-
   const [amountVal, setAmountVal] = useState(0);
 
   const onSubmit = async () => {
-    // special cake val
-
-    // number cakes
     {
       numberShape[0].specialPropertyName == "None" &&
       selectedProduct.cakeTypeId == 4
@@ -153,7 +136,6 @@ const MenuSelectedProduct = ({
         : null;
     }
 
-    // common cake val
     {
       !quantity && setIsQuantityInvalid(true);
     }
@@ -167,7 +149,6 @@ const MenuSelectedProduct = ({
     {
       !flavor.flavorId && setIsFlavorInvalid(true);
     }
-    // PAG COMMON CAKE ITO YUNG PRODUCT MO
     selectedProduct.cakeTypeId == 1 || selectedProduct.cakeTypeId == 7 ? (
       <>
         {size.packagingId && quantity && flavor.flavorId && color.colorId
@@ -192,7 +173,6 @@ const MenuSelectedProduct = ({
       </>
     ) : null;
 
-    // PAG NUMBER CAKE ITO YUNG PRODUCT MO
     selectedProduct.cakeTypeId == 3 || selectedProduct.cakeTypeId == 4 ? (
       <>
         {size.packagingId &&
@@ -237,7 +217,6 @@ const MenuSelectedProduct = ({
       },
     ];
 
-    // PAG MONEY CAKE ITO YUNG PRODUCT MO
     selectedProduct.cakeTypeId == 2 ? (
       <>
         {size.packagingId &&
@@ -267,10 +246,8 @@ const MenuSelectedProduct = ({
       </>
     ) : null;
 
-    // const tier3Prop = [tier2AddOnsList, [{ moneyid: 1, moneyname: 2 }]];
     const tier2Prop = [tier2AddOnsList];
 
-    // PAG 2 tier CAKE ITO YUNG PRODUCT MO
     selectedProduct.cakeTypeId == 5 ? (
       <>
         {size.packagingId && quantity && flavor.flavorId && color.colorId
@@ -368,7 +345,6 @@ const MenuSelectedProduct = ({
   const [addOnsTotal, setAddOnsTotal] = useState(0);
   const [addOnsQuantity, setAddOnsQuantity] = useState(0);
   const [addOnsList, setAddOnsList] = useState([]);
-
   const [tier2AddOns, setTier2AddOns] = useState({
     addOnsId: 0,
     addOnsName: "",
@@ -377,7 +353,6 @@ const MenuSelectedProduct = ({
   const [tier2AddOnsTotal, setTier2AddOnsTotal] = useState(0);
   const [tier2AddOnsQuantity, setTier2AddOnsQuantity] = useState(0);
   const [tier2AddOnsList, setTier2AddOnsList] = useState([]);
-
   const [tier3AddOns, setTier3AddOns] = useState({
     addOnsId: 0,
     addOnsName: "",
@@ -386,7 +361,6 @@ const MenuSelectedProduct = ({
   const [tier3AddOnsTotal, setTier3AddOnsTotal] = useState(0);
   const [tier3AddOnsQuantity, setTier3AddOnsQuantity] = useState(0);
   const [tier3AddOnsList, setTier3AddOnsList] = useState([]);
-
   const [size, setSize] = useState({
     packagingId: specificProductOffers[0]?.packagingId,
     packagingPrice: specificProductOffers[0]?.packagingPrice,
@@ -411,26 +385,18 @@ const MenuSelectedProduct = ({
   const [quantity, setQuantity] = useState(1);
   const [message, setMessage] = useState("");
   const [subTotal, setSubTotal] = useState();
-
   const [totalPrice, setTotalPrice] = useState(0);
   const [selectedSize, setSelectedSize] = useState("");
   const [file, setFile] = useState();
   const [image, setImage] = useState("");
   const [viewImageAttachment, setViewImageAttachment] = useState(false);
   const [viewCakeGuide, setViewCakeGuide] = useState(false);
-
-  // DIALOG STATE
   const [isCakeCustomized, setIsCakeCustomized] = useState(false);
-
-  // ERROR STATE
   const [isQuantityInvalid, setIsQuantityInvalid] = useState(false);
   const [isSizeInvalid, setIsSizeInvalid] = useState(false);
   const [isFlavorInvalid, setIsFlavorInvalid] = useState(false);
   const [isColorInvalid, setIsColorInvalid] = useState(false);
-
   const [priceDisplay, setPriceDisplay] = useState(0);
-
-  // STATE FOR PRICES OF THE ORDER
   const [prices, setPrices] = useState({
     size: 0,
     shape: 0,
@@ -438,14 +404,12 @@ const MenuSelectedProduct = ({
     flavor: 0,
   });
 
-  // UPDATE PRICES STATE
   const handleUpdatePrice = (name, value) => {
     setPrices((prevState) => ({
       ...prevState,
       [name]: value,
     }));
   };
-
   const setOfferedProductProperties = (i) => {
     let colorHex;
 
@@ -501,7 +465,6 @@ const MenuSelectedProduct = ({
       colorId: 0,
       colorPrice: 0,
       colorName: "",
-      // colorHex: colorHex,
     });
     setShape({
       shapeId: null,
@@ -521,7 +484,6 @@ const MenuSelectedProduct = ({
 
     handleUpdatePrice("flavor", flavor.flavorPrice);
   }, [flavor]);
-  // UPDATE PRICES IF THE STATE ARE CHANGED
 
   useEffect(() => {
     const value = shape.shapePrice || 0;
@@ -539,7 +501,6 @@ const MenuSelectedProduct = ({
     setFeedbacks(feedback);
   }, [feedback]);
 
-  // UPDATES SUBTOTAL PRICE
   useEffect(() => {
     let sum = 0;
     for (let key in prices) {
@@ -576,12 +537,10 @@ const MenuSelectedProduct = ({
     tier3AddOnsList,
   ]);
 
-  // for tier 2
   useEffect(() => {
     setTier2AddOnsTotal(tier2AddOns.addOnsPrice * tier2AddOnsQuantity);
   }, [tier2AddOns, tier2AddOnsQuantity]);
 
-  // for tier 3
   useEffect(() => {
     setTier3AddOnsTotal(tier3AddOns.addOnsPrice * tier3AddOnsQuantity);
   }, [tier3AddOns, tier3AddOnsQuantity]);
@@ -595,7 +554,6 @@ const MenuSelectedProduct = ({
 
   useEffect(() => {
     console.log(flavors);
-    // FILTER YUNG SELECT NI FLAVOR DEPENDE SA CATEGORY NIYA
     const flavorSelect = flavors.filter(
       (i) => selectedProduct.categoryId == i.categoryId
     );
@@ -752,7 +710,6 @@ const MenuSelectedProduct = ({
             </div>
 
             <Separator className="my-2 col-span-2" />
-            {/* <div className="flex flex-row flex-wrap gap-1"> */}
             <div className="flex flex-col gap-2 col-span-2">
               <div className="flex flex-row h-fit w-auto">
                 <Label className="mt-1">
@@ -967,14 +924,11 @@ const MenuSelectedProduct = ({
               ) : null}
             </div>
 
-            {/* DITO YUNG SPECIAL PROPS */}
             {selectedProduct.length == 0 ? null : (
               <>
-                {/* FIRST CONDITION: PAG HINDI COMMON OR CHOCOLOAD YUNG CAKE TYPE. IPAKITA YUNG MGA SPECIAL DROPDOWNS */}
                 {selectedProduct.cakeTypeId != 1 &&
                 selectedProduct.cakeTypeId != 5 ? (
                   <>
-                    {/* Pag single number yung product */}
                     {selectedProduct.cakeTypeId == 3 ? (
                       <>
                         <Label
@@ -994,18 +948,15 @@ const MenuSelectedProduct = ({
                             placeholder="Input number shape"
                             value={numberShape[0].specialPropertyValue}
                             onChange={(e) => {
-                              // PAG HINDI NONE ANG VALUE NI PROPERTY NAME TANGGALIN SI VAL MESSAGE
                               numberShape[0].specialPropertyName != "None" &&
                                 setNumberShapeVal("");
 
-                              // IF YUNG VALUE IS DOUBLE DIGIT ISHOW YUNG VALIDATION
                               e.target.value > 9 || e.target.value < 0
                                 ? setNumberShapeVal(
                                     "Please input single digit number."
                                   )
                                 : null;
 
-                              // PAG HINDI NULL AT DOUBLE DIGIT ANG BINIGAY PALITAN SI PROPERTY NAME NG VALUE PARA MAGING VALID AT MAADD TO CART
                               !!e.target.value &&
                               e.target.value <= 9 &&
                               e.target.value >= 0
@@ -1031,7 +982,6 @@ const MenuSelectedProduct = ({
                         </div>
                       </>
                     ) : null}
-                    {/* Pag double number yung product */}
                     {selectedProduct.cakeTypeId == 4 ? (
                       <>
                         <Label className="col-span-2 mt-1">
@@ -1047,18 +997,15 @@ const MenuSelectedProduct = ({
                             placeholder="Input number shape"
                             value={numberShape[0].specialPropertyValue}
                             onChange={(e) => {
-                              // PAG HINDI NONE ANG VALUE NI PROPERTY NAME TANGGALIN SI VAL MESSAGE
                               numberShape[0].specialPropertyName != "None" &&
                                 setNumberShapeVal("");
 
-                              // IF YUNG VALUE IS DOUBLE DIGIT ISHOW YUNG VALIDATION
                               e.target.value > 99 || e.target.value < 10
                                 ? setNumberShapeVal(
                                     "Please input double digit number."
                                   )
                                 : null;
 
-                              // PAG HINDI NULL AT DOUBLE DIGIT ANG BINIGAY PALITAN SI PROPERTY NAME NG VALUE PARA MAGING VALID AT MAADD TO CART
                               !!e.target.value &&
                               e.target.value <= 99 &&
                               e.target.value >= 10
@@ -1089,7 +1036,6 @@ const MenuSelectedProduct = ({
               </>
             )}
 
-            {/* MONEY CAKE*/}
             {selectedProduct.cakeTypeId == 2 ? (
               <>
                 <Label
@@ -1172,7 +1118,6 @@ const MenuSelectedProduct = ({
               </>
             ) : null}
 
-            {/* add ons may condition kasi walang add ons ang cupcake kaya if 8003 or cupcake ang category ni product walang ipapakita */}
             {selectedProduct.categoryId == 8001 ? (
               <div className="col-span-2 mt-4">
                 <Label className="font-extrabold text-2xl col-span-2 mt-2">
@@ -1442,15 +1387,12 @@ const MenuSelectedProduct = ({
                             List of Add Ons :
                           </Label>
                           <h1 className="col-span-1 text-md font-semibold">
-                            {" "}
                             Name
                           </h1>
                           <h1 className="col-span-1 text-md font-semibold text-center">
-                            {" "}
                             Price
                           </h1>
                           <h1 className="col-span-1 text-md font-semibold text-center ">
-                            {" "}
                             Qty
                           </h1>
                           <h1 className="col-span-1 text-md font-semibold text-center text-primary">
@@ -1865,7 +1807,6 @@ const MenuSelectedProduct = ({
           </div>
         </div>
 
-        {/* for revisions */}
         <div className="h-[1000px] w-auto mt-6">
           <Label className="font-extrabold text-2xl">
             Comments and Feedback
@@ -2159,7 +2100,6 @@ const MenuSelectedProduct = ({
                 View Attachment
               </button>
               <Separator className="my-1 col-span-7" />
-              {/* if si product ay common or chocoload */}
 
               {selectedProduct.cakeTypeId == 1 ||
               selectedProduct.cakeTypeId == 7 ? (
@@ -2198,7 +2138,6 @@ const MenuSelectedProduct = ({
                             <Separator className="my-1 col-span-6" />
 
                             <h1 className="col-span-2 text-sm">
-                              {" "}
                               {i.addOnsName}
                             </h1>
                             <h1 className="col-span-1 text-sm text-center">
@@ -2226,7 +2165,6 @@ const MenuSelectedProduct = ({
                       <h1 className="col-span-3 font-bold my-2">
                         Special Cake Details :
                       </h1>
-                      {/* ADDONS */}
                       <div className="col-span-4 h-[105px] overflow-y-scroll mr-2">
                         {!addOnsList.length ? (
                           <h1 className="col-span-7 text-center font-extrabold text-xl">
@@ -2260,9 +2198,7 @@ const MenuSelectedProduct = ({
                         )}
                         <Separator className="my-1 col-span-7" />
                       </div>
-                      {/* SPECIAL PROPERTIES */}
                       <div className="col-span-3 h-[105px]">
-                        {/* if number cake ang product */}
                         {selectedProduct.cakeTypeId == 3 ||
                         selectedProduct.cakeTypeId == 4 ? (
                           <>
@@ -2278,7 +2214,6 @@ const MenuSelectedProduct = ({
                         ) : null}
 
                         <div className="col-span-3 h-[105px]">
-                          {/* if money cake ang product */}
                           {selectedProduct.cakeTypeId == 2 ? (
                             <>
                               <div className="h-fit w-full flex flex-row">
@@ -2304,7 +2239,6 @@ const MenuSelectedProduct = ({
                     <>
                       <h1 className="col-span-7 font-bold my-2">Add Ons :</h1>
 
-                      {/* ADDONS */}
                       <div className="col-span-7 h-[105px] overflow-y-scroll mr-2">
                         {addOnsList.length == 0 &&
                         tier2AddOnsList.length == 0 &&
@@ -2451,7 +2385,6 @@ const MenuSelectedProduct = ({
         </DialogContent>
       </Dialog>
 
-      {/* VIEW IMAGE ATTACHMENT */}
       {!viewImageAttachment ? null : (
         <Dialog
           open={viewImageAttachment}
@@ -2466,7 +2399,6 @@ const MenuSelectedProduct = ({
             </div>
             <div className="h-full w-full">
               <div className="flex w-full h-full mx-auto items-center relative overflow-hidden m-0 max-h-56 my-2 rounded-lg">
-                {/* image na nag aadjust */}
                 <div
                   style={{
                     width: "500px",
@@ -2494,7 +2426,6 @@ const MenuSelectedProduct = ({
           </DialogContent>
         </Dialog>
       )}
-      {/* VIEW IMAGE ATTACHMENT */}
       {!viewCakeGuide ? null : (
         <Dialog open={viewCakeGuide} onOpenChange={setViewCakeGuide} onClose>
           <DialogContent className="max-w-fit max-h-full md:w-fit md:h-fit flex flex-col p-0">

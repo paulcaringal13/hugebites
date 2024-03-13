@@ -18,11 +18,9 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import { X } from "lucide-react";
 import * as React from "react";
-// NOT COMPLETED
 
 const EditPackagingForm = ({
   setEditPackagingStockOpen,
@@ -36,7 +34,6 @@ const EditPackagingForm = ({
     `${rowSelected.packagingName} (${rowSelected.size})`
   );
   const [currentNameAndSize, setCurrentNameAndSize] = useState("");
-
   const [oldQuantity, setOldQuantity] = useState(0);
   const [packagingArray, setPackagingArray] = useState([]);
   const [errorPackaging, setErrorPackaging] = useState(false);
@@ -54,7 +51,6 @@ const EditPackagingForm = ({
   const onSubmit = (data) => {
     const { quantity } = data;
 
-    // FOR FINDING NEW INGREDIENT ID
     const selectedPackaging = packagingArray.find(
       (item) => item.value === packaging
     );
@@ -64,12 +60,10 @@ const EditPackagingForm = ({
       !packaging ? (isPackagingError = true) : (isPackagingError = false);
     }
 
-    // STATE FOR ERROR MESSAGES
     {
       isPackagingError ? setErrorPackaging(true) : setErrorPackaging(false);
     }
 
-    // VALIDATE IF THERE IS AN ERROR DO NOTHING
     {
       !isPackagingError
         ? editPackagingStock(
@@ -85,7 +79,6 @@ const EditPackagingForm = ({
   };
 
   const setEditForm = () => {
-    // SET THE FORMATTED NAME AND UNIT SELECTION
     const packagingSelection = packagingList.map((value) => {
       return {
         id: value.packagingId,
@@ -97,7 +90,6 @@ const EditPackagingForm = ({
       };
     });
 
-    // SET NAME AND UNIT TO ITS OLD VALUE ON OPEN
     const currentNameAndSize = `${rowSelected.packagingName} (${rowSelected.size})`;
 
     const oldQuantity = rowSelected.quantity;

@@ -1,13 +1,7 @@
 "use client";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-// const SidebarContext = createContext()
 export default function AddOnsDelete({
   selectedAddOn,
   openConfirmRemoveAddOns,

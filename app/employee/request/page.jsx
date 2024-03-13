@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import EmployeeMiniAdminSidebar from "../components/EmployeeMiniAdminSidebar";
 import EmployeeRequestModuleAdmin from "../components/pages/Request/EmployeeRequestModuleAdmin";
+// COMPLETED
 
 export default function EmployeeRequest() {
   const [loggedInUserId, setLoggedInUserId] = useState("");

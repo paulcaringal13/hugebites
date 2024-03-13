@@ -9,7 +9,6 @@ const SignInPage = () => {
   const [tableCustomerAccounts, setTableCustomerAccounts] = useState([]);
 
   const getAllCustomerAccounts = async () => {
-    // GET ALL CUSTOMER ACCOUNTS FROM THE ACCOUNTS TABLE IN THE DATABASE
     const res = await fetch(`http://localhost:3000/api/customer/sign-in`, {
       cache: "no-store",
     });
@@ -20,7 +19,6 @@ const SignInPage = () => {
   };
 
   const getTableCustomerData = async () => {
-    // GET ALL CUSTOMER ACCOUNTS FROM THE ACCOUNTS TABLE IN THE DATABASE
     const res = await fetch(
       `http://localhost:3000/api/customer/sign-in/tbl_customer`,
       {
@@ -32,8 +30,6 @@ const SignInPage = () => {
 
     setTableCustomerAccounts(data);
   };
-
-  // STORE THE RESPONSE TO THIS VARIABLE
 
   useEffect(() => {
     getAllCustomerAccounts();
@@ -69,7 +65,6 @@ const SignInPage = () => {
           }}
           className="mt-20"
         ></div>
-        {/* PASS THE ARRAY OF EXISTING CUSTOMER ACCOUNTS INTO COMPONENT */}
         <div className="relative left-0 w-full">
           <CustomerSignIn
             customerAccounts={customerAccounts}

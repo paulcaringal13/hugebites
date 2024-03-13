@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import { IoClose } from "react-icons/io5";
 import { Separator } from "@/components/ui/separator";
-// NOT COMPLETED
 
 const CustomizedCakeReport = ({ userData, reportType }) => {
   const [loggedInUser, setLoggedInUser] = useState({});

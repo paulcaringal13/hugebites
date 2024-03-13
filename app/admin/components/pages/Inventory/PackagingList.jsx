@@ -17,7 +17,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -29,7 +28,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { BiChevronDown } from "react-icons/bi";
 import { X } from "lucide-react";
 import AddPackagingForm from "./AddPackagingForm";
 import {
@@ -60,7 +58,6 @@ import {
   IoWarningOutline,
 } from "react-icons/io5";
 
-// NOT COMPLETED
 const PackagingList = ({
   closePackagingList,
   packagingListOpen,
@@ -76,10 +73,7 @@ const PackagingList = ({
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
-  const [columnSelected, setColumnSelected] = useState("");
   const [search, setSearch] = useState("");
-
-  // alert state
   const [alertMessageOpen, setAlertMessageOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState(false);
   const [alertType, setAlertType] = useState(false);
@@ -453,7 +447,6 @@ const PackagingList = ({
         />
       ) : null}
 
-      {/* ALERT */}
       {alertMessageOpen ? (
         <ToastProvider swipeDirection="up" duration={3000}>
           <Toast className="w-fit h-fit mr-5" variant={alertType}>

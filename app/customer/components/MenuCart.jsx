@@ -1,24 +1,17 @@
 "use client";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import SmallCardImg from "../../../public/images/SmallCardImg.jpg";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import Image from "next/image";
-import { useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import { MdAlternateEmail } from "react-icons/md";
 import { MdModeEditOutline } from "react-icons/md";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { IoTicketOutline } from "react-icons/io5";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogTitle,
-} from "@/components/ui/dialog";
-
-import SmallCardImg from "../../../public/images/SmallCardImg.jpg";
-import MenuCheckOutForm from "./MenuCheckOutForm";
-import { useRouter } from "next/navigation";
 
 const MenuCart = ({
   user,
@@ -47,6 +40,7 @@ const MenuCart = ({
   const [voucher, setVoucher] = useState({});
   const [voucherSelected, setVoucherSelected] = useState({});
   const [voucherArray, setVoucherArray] = useState([]);
+
   const getVouchers = async () => {
     const res = await fetch(
       `http://localhost:3000/api/customer/voucher?` +
@@ -143,7 +137,6 @@ const MenuCart = ({
               <MdAlternateEmail className="text-ring text-3xl my-auto mr-2" />
               {user.email}
             </h2>
-            {/* <h3> Blk 12 Lot 19 Don Onofre Banay-Banay Cabuyao Laguna</h3> */}
           </CardContent>
           <Separator className="bg-primary" />
           <CardContent className="my-3 h-fit font-extrabold">
@@ -178,7 +171,6 @@ const MenuCart = ({
                           onClick={() => {
                             handleCartEditProduct(item);
                             findSpecificProductSizes(item);
-                            // getCartProductPrices(item);
                             getAddOnsPrices(item);
                           }}
                         />
@@ -191,7 +183,6 @@ const MenuCart = ({
                       </button>
                     </div>
                     <div className="text-sm font-bold mb-2  flex flex-row justify-between">
-                      {/* <h3 className="text-xs font-medium"></h3> */}
                       <div className="grid grid-cols-3 h-6 w-20">
                         <button
                           onClick={() => {
@@ -287,7 +278,6 @@ const MenuCart = ({
         </Card>
       </div>
 
-      {/* REQUEST MODAL */}
       {!openUseVoucher ? null : (
         <Dialog open={openUseVoucher} onOpenChange={setOpenUseVoucher} onClose>
           <DialogContent className="max-w-full max-h-full md:w-[40%] md:h-[65%] flex flex-col p-0 overflow-y-scroll">
@@ -305,7 +295,12 @@ const MenuCart = ({
                     return (
                       <div
                         key={i.customerVoucherId}
-                        className="border-[1px] border-zinc-200 flex flex-col w-full p-3 rounded-sm shadow-sm"
+                        className={`border-[1px] border-zinc-200 flex flex-col w-full p-3 rounded-sm shadow-sm cursor-pointer text-sm active:bg-ring focus:outline-none focus:bg-ring focus:text-white ${
+                          voucher.voucherId == i.voucherId
+                            ? "bg-ring border-ring text-white"
+                            : "bg-transparent"
+                        }`}
+                        onClick={() => setVoucher(i)}
                       >
                         <h1 className="text-lg font-extrabold">
                           {i.voucherName}

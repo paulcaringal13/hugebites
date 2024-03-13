@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/select";
 import { X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
-// NOT COMPLETED
 
 const CustomizationAddFlavorForm = ({
   addFlavorOpen,
@@ -274,7 +273,6 @@ const CustomizationAddFlavorForm = ({
           <DialogFooter>
             <Button
               disabled={!isDirty || !isValid}
-              // type="submit"
               className="mt-3 hover:bg-ring"
               onClick={() => buttonRef.current.click()}
             >

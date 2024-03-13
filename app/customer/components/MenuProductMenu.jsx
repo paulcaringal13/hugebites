@@ -3,15 +3,14 @@ import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
 import lodash from "lodash";
-import { RiContactsBookLine } from "react-icons/ri";
 
 const MenuProductMenu = ({ prodArray, categoryArray }) => {
   const router = useRouter();
@@ -26,23 +25,10 @@ const MenuProductMenu = ({ prodArray, categoryArray }) => {
   const [prods, setProds] = useState([]);
 
   const [pageSize, setPageSize] = useState(9);
-
-  // const [averageRating, setAverageRating] = useState(2.77);
-
-  const getCustomerFeedback = async () => {
-    const feedbackRes = await fetch(`http://localhost:3000/api/feedback/all`, {
-      cache: "no-store",
-    });
-
-    const products = await feedbackRes.json();
-
-    setProducts(products);
-  };
-
-  const pagesCount = Math.ceil(products.length / pageSize);
+  const pagesCount = Math.ceil(prods.length / pageSize);
   const pages = lodash.range(1, pagesCount + 1);
-  const [currentPage, setCurrentPage] = useState(1);
 
+  const [currentPage, setCurrentPage] = useState(1);
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -54,8 +40,45 @@ const MenuProductMenu = ({ prodArray, categoryArray }) => {
 
   const paginatedList = paginate();
 
+  const getCustomerFeedback = async () => {
+    const feedbackRes = await fetch(`http://localhost:3000/api/feedback/all`, {
+      cache: "no-store",
+    });
+
+    const response = await feedbackRes.json();
+
+    const x = prodArray.map((i) => {
+      const y = response.filter((j) => i.productId == j.productId);
+
+      return {
+        ...i,
+        averageRating: y[0].averageRating,
+        totalFeedbacks: y[0].totalFeedbacks,
+        productDescription: y[0].productDescription,
+        cakeTypeId: y[0].cakeTypeId,
+      };
+    });
+
+    const y = x.map((i) => {
+      const sizesCost = i.sizes.map((size) => Number(size.packagingPrice));
+
+      const min = Math.min(...sizesCost);
+      const max = Math.max(...sizesCost);
+
+      return {
+        ...i,
+        priceDisplay: i.sizes[0]?.packagingPrice || 0,
+        minPrice: min,
+        maxPrice: max,
+      };
+    });
+
+    setProductList(y);
+    setProducts(y);
+  };
+
   useEffect(() => {
-    const prods = prodArray.map((i) => {
+    const prods = products.map((i) => {
       const sizesCost = i.sizes.map((size) => Number(size.packagingPrice));
 
       const min = Math.min(...sizesCost);
@@ -86,6 +109,7 @@ const MenuProductMenu = ({ prodArray, categoryArray }) => {
   useEffect(() => {
     getCustomerFeedback();
   }, [prodArray]);
+
   return (
     <>
       <div className="w-full h-fit my-8">
@@ -128,11 +152,11 @@ const MenuProductMenu = ({ prodArray, categoryArray }) => {
                 <button
                   key={ctg.categoryId}
                   onClick={() => {
-                    const listOfCakes = productList.filter(
+                    const listOfCakes = products.filter(
                       (i) => i.categoryName === ctg.categoryName
                     );
 
-                    setProducts(listOfCakes);
+                    setProds(listOfCakes);
                   }}
                 >
                   <p className="w-full font-extralight text-xs text-center">
@@ -211,7 +235,6 @@ const MenuProductMenu = ({ prodArray, categoryArray }) => {
                         <h1 className="font-bold text-lg mb-1">
                           {prod.productName}
                         </h1>
-                        {/* <div className="flex flex-row gap-2 mb-2"> */}
                         <div className="flex items-center">
                           <svg
                             className={`w-4 h-4 ${
@@ -281,10 +304,6 @@ const MenuProductMenu = ({ prodArray, categoryArray }) => {
                           <p className="ms-2 text-sm font-bold text-gray-900 dark:text-white">
                             {prod.averageRating}
                           </p>
-                          {/* <span className="w-1 h-1 mx-1.5 bg-gray-500 rounded-full dark:bg-gray-400"></span>
-                          <a className="text-sm font-medium my-auto text-gray-900 underline hover:no-underline dark:text-white">
-                            73 reviews
-                          </a> */}
                         </div>
 
                         <div className="flex flex-row gap-2">

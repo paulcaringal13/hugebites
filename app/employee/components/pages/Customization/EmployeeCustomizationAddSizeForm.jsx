@@ -1,6 +1,6 @@
 "use client";
 import "../../../../styles/globals.css";
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import * as React from "react";
 import { Button } from "../../../../../components/ui/button";
@@ -11,30 +11,18 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "../../../../../components/ui/dialog";
 import { Input } from "../../../../../components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Toaster } from "@/components/ui/toaster";
+
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import { X } from "lucide-react";
-import {
-  Toast,
-  ToastClose,
-  ToastDescription,
-  ToastProvider,
-  ToastTitle,
-  ToastViewport,
-} from "@/components/ui/toast";
-import { useToast } from "@/components/ui/use-toast";
 
 const EmployeeCustomizationAddSizeForm = ({
   addSizeOpen,
@@ -54,10 +42,8 @@ const EmployeeCustomizationAddSizeForm = ({
   });
   const { register, handleSubmit, formState, reset, getValues } = form;
   const { errors, isDirty, isValid } = formState;
-
   const [productTable, setProductTable] = useState(productsData);
   const [oldTable, setOldTable] = useState(sizesTable);
-
   const [product, setProduct] = useState({
     productId: 0,
     productName: "",

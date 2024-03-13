@@ -33,7 +33,6 @@ import { MdOutlineDeleteOutline } from "react-icons/md";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 import { Label } from "@/components/ui/label";
 
-// NOT COMPLETED
 const CustomizationSizesTable = ({
   data,
   openEditSize,
@@ -227,7 +226,6 @@ const CustomizationSizesTable = ({
           placeholder="Search"
           className="w-2/6"
         />
-        {/* hide columns */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -341,7 +339,6 @@ const CustomizationSizesTable = ({
             </TableBody>
           )}
         </Table>
-        {/* pagination */}
         <div className="flex items-center justify-end space-x-2 py-4 me-5 ">
           <Button
             variant="outline"

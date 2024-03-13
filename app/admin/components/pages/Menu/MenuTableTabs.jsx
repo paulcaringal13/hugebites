@@ -47,8 +47,8 @@ import {
   IoWarningOutline,
 } from "react-icons/io5";
 import { GrFormClose } from "react-icons/gr";
+import { Textarea } from "@/components/ui/textarea";
 
-// NOT COMPLETED
 const MenuTableTabs = ({
   productList,
   categoryList,
@@ -64,12 +64,9 @@ const MenuTableTabs = ({
     currency: "PHP",
   });
 
-  // STORAGE FOR ID OF SELECTED ROW
   const [selectedRow, setSelectedRow] = useState({});
   const [selectedProduct, setSelectedProduct] = useState({});
   const [selectedOfferedProduct, setSelectedOfferedProduct] = useState({});
-
-  // OFFERED PRODUCT STATE
 
   const [flavorOptions, setFlavorOptions] = useState([]);
   const [colorOptions, setColorOptions] = useState([]);
@@ -78,6 +75,7 @@ const MenuTableTabs = ({
   const [openAddSize, setOpenAddSize] = useState(false);
   const [newSize, setNewSize] = useState("");
   const [newSizePrice, setNewSizePrice] = useState(0);
+  const [newSizeDescription, setNewSizeDescription] = useState("");
   const [offeredProductsOpen, setOfferedProductsOpen] = useState(false);
   const [openAddOfferedProduct, setOpenAddOfferedProduct] = useState(false);
   const [openEditOfferedProduct, setOpenEditOfferedProduct] = useState(false);
@@ -181,7 +179,6 @@ const MenuTableTabs = ({
   const openManageOfferedProducts = () => {
     setOpenManageOfferedProduct(true);
   };
-  console.log(selectedOfferedProduct);
   const releaseDefaultProduct = async () => {
     const sizePost = {
       method: "POST",
@@ -193,6 +190,7 @@ const MenuTableTabs = ({
         size: newSize,
         packagingStatus: "Available",
         packagingPrice: newSizePrice,
+        sizeDescription: newSizeDescription,
       }),
     };
 
@@ -253,6 +251,7 @@ const MenuTableTabs = ({
           packagingId: newPackagingId,
           size: newSize,
           packagingPrice: newSizePrice,
+          sizeDescription: newSizeDescription,
           productId: selectedRow.productId,
           productName: selectedRow.productName,
           shapeId: shapeId,
@@ -377,7 +376,6 @@ const MenuTableTabs = ({
             selectedOfferedProduct.isDefaultProductRemoved,
         };
 
-        // LOOP SA ARRAY NA NASA LOOB NG OBJECT NA PRODUCT NA SELECTED THEN HANAPIN KUNG SINO MAG MATCH THEN EDIT
         const editedTable = selectedRow.prodDefaultProducts.map((i) => {
           selectedOfferedProduct.defaultProductId == i.defaultProductId
             ? (i = editedDefaultProduct)
@@ -386,12 +384,10 @@ const MenuTableTabs = ({
           return { ...i };
         });
 
-        // FIND YUNG SELECTED NA PRODUCT DAPAT
         const prod = productTable.find(
           (i) => selectedProduct.productId == i.productId
         );
 
-        // SET YUNG ARRAY SA LOOB NIYA NG EDITED NA NEW ARRAY
         prod.prodDefaultProducts = [...editedTable];
 
         setOfferedProductsOpen(false);
@@ -425,7 +421,6 @@ const MenuTableTabs = ({
         removePut
       );
 
-      // LOOP SA ARRAY NA NASA LOOB NG OBJECT NA PRODUCT NA SELECTED THEN HANAPIN KUNG SINO MAG MATCH THEN EDIT
       const editedTable = selectedRow.prodDefaultProducts.map((i) => {
         selectedOfferedProduct.defaultProductId == i.defaultProductId
           ? (i.isDefaultProductRemoved = 1)
@@ -434,12 +429,10 @@ const MenuTableTabs = ({
         return { ...i };
       });
 
-      // FIND YUNG SELECTED NA PRODUCT DAPAT
       const prod = productTable.find(
         (i) => selectedProduct.productId == i.productId
       );
 
-      // SET YUNG ARRAY SA LOOB NIYA NG EDITED NA NEW ARRAY
       prod.prodDefaultProducts = editedTable;
 
       setOpenRemoveOfferedProduct(false);
@@ -469,7 +462,6 @@ const MenuTableTabs = ({
         relaunchPut
       );
 
-      // LOOP SA ARRAY NA NASA LOOB NG OBJECT NA PRODUCT NA SELECTED THEN HANAPIN KUNG SINO MAG MATCH THEN EDIT
       const editedTable = selectedRow.prodDefaultProducts.map((i) => {
         selectedOfferedProduct.defaultProductId == i.defaultProductId
           ? (i.isDefaultProductRemoved = 0)
@@ -478,12 +470,10 @@ const MenuTableTabs = ({
         return { ...i };
       });
 
-      // FIND YUNG SELECTED NA PRODUCT DAPAT
       const prod = productTable.find(
         (i) => selectedProduct.productId == i.productId
       );
 
-      // SET YUNG ARRAY SA LOOB NIYA NG EDITED NA NEW ARRAY
       prod.prodDefaultProducts = editedTable;
 
       setOpenRelaunchOfferedProduct(false);
@@ -506,14 +496,12 @@ const MenuTableTabs = ({
     setTotalPrice(Number(newTotal));
   };
 
-  // PRODUCT
   const [addProductOpen, setAddProductOpen] = useState(false);
   const [editProductOpen, setEditProductOpen] = useState(false);
   const [viewFeedbacksOpen, setViewFeedbacksOpen] = useState(false);
   const [removeProductOpen, setRemoveProductOpen] = useState(false);
   const [relaunchProductOpen, setRelaunchProductOpen] = useState(false);
 
-  // PRODUCT TABLE STATE
   const [productTable, setProductTable] = useState(productList);
   const [defaultProductsTable, setDefaultProductsTable] =
     useState(defaultProductsList);
@@ -528,7 +516,6 @@ const MenuTableTabs = ({
 
   const openViewFeedbacks = (rowData) => {
     setViewFeedbacksOpen(true);
-    // PASS THE SELECTED ROW FROM MENU TABLE TO THIS PAGE
     setSelectedRow(rowData);
   };
 
@@ -538,7 +525,6 @@ const MenuTableTabs = ({
 
   const openEditProduct = (rowData) => {
     setEditProductOpen(true);
-    // PASS THE SELECTED ROW FROM MENU TABLE TO THIS PAGE
     setSelectedRow(rowData);
   };
 
@@ -580,7 +566,6 @@ const MenuTableTabs = ({
       openRequestAlert();
     };
 
-    // IF ADD
     {
       e == "add" ? setProductTable([...productTable, data]) : null;
     }
@@ -589,7 +574,6 @@ const MenuTableTabs = ({
       e == "add" && data ? addAlert() : null;
     }
 
-    // IF EDIT OR DELETE
     {
       e == "edit" ? setProductTable(data) : null;
     }
@@ -618,8 +602,6 @@ const MenuTableTabs = ({
       );
 
       const updatedTable = productTable.map((product) => {
-        // let
-
         {
           product.productId == productId
             ? (product.status = "Unavailable")
@@ -686,15 +668,11 @@ const MenuTableTabs = ({
     }
   };
 
-  // CATEGORY
-  // OPEN MODAL STATE
   const [addCategoryOpen, setAddCategoryOpen] = useState(false);
   const [editCategoryOpen, setEditCategoryOpen] = useState(false);
 
-  // CATEGORY TABLE STATE
   const [categoryTable, setCategoryTable] = useState(categoryList);
 
-  // FOR OPENING AND CLOSING THE ADD MODAL
   const openAddCategory = () => {
     setAddCategoryOpen(true);
   };
@@ -705,7 +683,6 @@ const MenuTableTabs = ({
 
   const openEditCategory = (rowData) => {
     setEditCategoryOpen(true);
-    // PASS THE SELECTED ROW FROM MENU TABLE TO THIS PAGE
     setSelectedRow(rowData);
   };
 
@@ -728,7 +705,6 @@ const MenuTableTabs = ({
       openRequestAlert();
     };
 
-    // IF ADD
     {
       e == "add" ? setCategoryTable([...categoryTable, data]) : null;
     }
@@ -737,7 +713,6 @@ const MenuTableTabs = ({
       e == "add" && data ? addAlert() : null;
     }
 
-    // IF EDIT OR DELETE
     {
       e == "edit" ? setCategoryTable(data) : null;
     }
@@ -746,7 +721,6 @@ const MenuTableTabs = ({
     }
   };
 
-  // alert state
   const [alertMessageOpen, setAlertMessageOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState(false);
   const [alertType, setAlertType] = useState(false);
@@ -767,7 +741,6 @@ const MenuTableTabs = ({
     computeTotal();
   }, [shape, color, newSizePrice, flavor]);
   useEffect(() => {
-    // FILTER YUNG SELECT NI FLAVOR DEPENDE SA CATEGORY NIYA
     const flavorSelect = flavors.filter(
       (i) => selectedRow.categoryId == i.categoryId
     );
@@ -824,14 +797,10 @@ const MenuTableTabs = ({
             <CardContent className="px-6">
               <ProductTable
                 data={productTable}
-                // TABLE
                 productTable={productTable}
-                // OPEN EDIT FORM
                 openEditProduct={openEditProduct}
                 openViewFeedbacks={openViewFeedbacks}
-                // UPDATING TABLE IN FRONT END
                 updateProductTable={updateProductTable}
-                // FOR GETTING SELECTED ROW VALUES
                 openRelaunchProduct={openRelaunchProduct}
                 openRemoveProduct={openRemoveProduct}
                 openOfferedProducts={openOfferedProducts}
@@ -863,14 +832,10 @@ const MenuTableTabs = ({
               <CategoryTable
                 data={categoryTable}
                 openEditCategory={openEditCategory}
-                // TO LOOK IF THE CATEGORY CONTAINS A PRODUCT
                 productTable={productTable}
-                //FOR UI UPDATE
                 categoryTable={categoryTable}
                 setCategoryTable={setCategoryTable}
-                // FOR REMOVING THE PRODUCT TO MENU IF THE CATEGORY IS REMOVED
                 setProductTable={setProductTable}
-                // FOR UPDATING TABLE IN FRONT END
                 updateCategoryTable={updateCategoryTable}
               />
             </CardContent>
@@ -878,18 +843,14 @@ const MenuTableTabs = ({
         </TabsContent>
       </Tabs>
 
-      {/* PRODUCT MODALS */}
       {addProductOpen && !!cakeTypes ? (
         <AddProductForm
           addProductOpen={addProductOpen}
           setAddProductOpen={setAddProductOpen}
           closeAddProduct={closeAddProduct}
-          // UPDATING FOR FRONTEND
           updateProductTable={updateProductTable}
           categoryTable={categoryTable}
-          // FOR VALIDATION
           productTable={productTable}
-          // FOR CAKE TYPE SELECTION CREATE AND EDIT PURPOSES
           cakeTypes={cakeTypes}
         />
       ) : null}
@@ -899,15 +860,10 @@ const MenuTableTabs = ({
           editProductOpen={editProductOpen}
           setEditProductOpen={setEditProductOpen}
           closeEditProduct={closeEditProduct}
-          // UPDATE TABLE IN FRONT END
           updateProductTable={updateProductTable}
-          // OLD VALUES AND UPDATING THE TABLE IN FRONT END
           productTable={productTable}
-          // FOR PASSING THE ID OF THE SELECTED ROW
           selectedRow={selectedRow}
-          // FOR SELECT
           categoryTable={categoryTable}
-          // FOR CAKE TYPE SELECTION CREATE AND EDIT PURPOSES
           cakeTypes={cakeTypes}
         />
       ) : null}
@@ -1050,6 +1006,7 @@ const MenuTableTabs = ({
                         </Label>
                       )}
                     </div>
+
                     <div className="col-span-2 flex flex-col">
                       <Input
                         id="packagingPrice"
@@ -1075,6 +1032,22 @@ const MenuTableTabs = ({
                         </Label>
                       )}
                     </div>
+
+                    <h1 className="col-span-4 w-[50%] border-b-4 border-ring font-bold text-lg">
+                      Description
+                    </h1>
+                    <Textarea
+                      id="sizeDescription"
+                      className="form-control w-full col-span-4"
+                      name="sizeDescription"
+                      min={1}
+                      multiline={3}
+                      type="text"
+                      placeholder="Input size description"
+                      onChange={(e) => {
+                        setNewSizeDescription(e.target.value);
+                      }}
+                    />
                     <h1 className="col-span-4 w-[50%] border-b-4 border-ring font-bold text-lg">
                       Flavor
                     </h1>
@@ -1646,14 +1619,12 @@ const MenuTableTabs = ({
                         </div>
                       );
                     })}
-                    {/* {selectedRow.prodDefaultProducts.length < 4 ? ( */}
                     <button
                       className="px-4 py-2 my-1 rounded-md border-zinc-200 border-[1px] hover:bg-primary hover:text-white hover:border-primary active:bg-primary-foreground cursor-pointer focus:bg-ring focus:text-white focus:outline-red-700"
                       onClick={() => setOpenAddOfferedProduct(true)}
                     >
                       +
                     </button>
-                    {/* ) : null} */}
                   </div>
                 </div>
               </div>
@@ -1662,7 +1633,6 @@ const MenuTableTabs = ({
         </Dialog>
       )}
 
-      {/* ALERT */}
       {alertMessageOpen ? (
         <ToastProvider swipeDirection="up" duration={3000}>
           <Toast className="w-fit h-fit mr-5" variant={alertType}>

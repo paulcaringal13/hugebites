@@ -1,10 +1,14 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import HomePageNavbar from "./HomePageNavbar";
 import MenuSelectedProduct from "../components/MenuSelectedProduct";
 import MenuCart from "./MenuCart";
 import MenuEditCartProduct from "./MenuEditCartProduct";
 import MenuCheckOutForm from "./MenuCheckOutForm";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import {
   Toast,
   ToastClose,
@@ -13,10 +17,6 @@ import {
   ToastTitle,
   ToastViewport,
 } from "@/components/ui/toast";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { useParams } from "next/navigation";
-import { useRouter } from "next/navigation";
 import {
   IoInformationCircleOutline,
   IoCheckmarkCircleOutline,
@@ -44,7 +44,6 @@ const MenuOrderProductModule = ({
   const [feedback, setFeedback] = useState([]);
   const [cartProduct, setCartProduct] = useState({});
   const [specificProductSizes, setSpecificProductSizes] = useState([]);
-  // const [selectedProduct, setSelectedProduct] = useState([]);
   const [specificProductOffers, setSpecificProductOffers] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [productPrices, setProductPrices] = useState([]);
@@ -55,11 +54,8 @@ const MenuOrderProductModule = ({
     useState(false);
   const [openEditCartProduct, setOpenEditCartProduct] = useState(false);
   const [openRemoveCartProduct, setOpenRemoveCartProduct] = useState(false);
-
   const [responseSuccess, setResponseSuccess] = useState(false);
   const [responseError, setResponseError] = useState(false);
-
-  // alert state
   const [alertMessageOpen, setAlertMessageOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState(false);
   const [alertType, setAlertType] = useState(false);
@@ -73,10 +69,6 @@ const MenuOrderProductModule = ({
     }, 3000);
   };
 
-  const closeRequestAlert = () => {
-    setAlertMessageOpen(false);
-  };
-
   const handleCartRemoveProduct = (prod) => {
     setCartProduct(prod);
     setOpenRemoveCartProduct(true);
@@ -87,7 +79,6 @@ const MenuOrderProductModule = ({
     setOpenEditCartProduct(true);
   };
 
-  // update quantity in the array list
   const minusQuantityToList = async (cartId) => {
     const updatedCart = cartList.map((i) => {
       const totalPriceInitialPrice = i.totalPrice / i.quantity;
@@ -139,7 +130,6 @@ const MenuOrderProductModule = ({
     }
   };
 
-  // update quantity in the array list
   const addQuantityToList = (cartId) => {
     const updatedCart = cartList.map((i) => {
       const totalPriceInitialPrice = i.totalPrice / i.quantity;
@@ -166,7 +156,6 @@ const MenuOrderProductModule = ({
     setCartList(updatedCart);
   };
 
-  // update quantity in database
   async function deductQuantity(cartId, quantity, subTotal) {
     const initialPrice = subTotal / quantity;
     const updatedQuantity = Number(quantity) - 1;
@@ -193,7 +182,6 @@ const MenuOrderProductModule = ({
     }
   }
 
-  // update quantity in database
   async function addQuantity(cartId, quantity, subTotal) {
     const initialPrice = subTotal / quantity;
     const updatedQuantity = Number(quantity) + 1;
@@ -246,11 +234,6 @@ const MenuOrderProductModule = ({
       const specialProp = specialPropertyList.filter(
         (prop) => prop.cartId == cartId
       );
-
-      // let sum = subTotal;
-      // addOns.forEach((j) => {
-      //   sum += j.addOnsTotal * quantity;
-      // });
 
       return {
         ...i,
@@ -334,7 +317,6 @@ const MenuOrderProductModule = ({
 
     const addOnsPrices = await addOnsRes.json();
 
-    // ipasa nalang yung nireturn na data kesa sa state para real time
     getCartProductPrices(cart, addOnsPrices[0]);
   };
 
@@ -396,7 +378,6 @@ const MenuOrderProductModule = ({
 
     const results = await res.json();
 
-    // setImage(`/response-images/${results}`);
     if (!res.ok) throw new Error(await res.text());
 
     return results;
@@ -483,7 +464,6 @@ const MenuOrderProductModule = ({
             })
           : null;
 
-        // pag 2 tiers
         cartProduct.cakeTypeId == 5 && specialProperty.length != 0
           ? specialProperty.forEach(async (i) => {
               const specialPropertyPost = {
@@ -538,7 +518,6 @@ const MenuOrderProductModule = ({
             })
           : null;
 
-        // pag 3 tiers
         cartProduct.cakeTypeId == 6 && specialProperty.length != 0
           ? specialProperty.forEach(async (i, index) => {
               let specialPropertyName;
@@ -658,7 +637,6 @@ const MenuOrderProductModule = ({
     }
   };
 
-  // update total price
   const updateTotal = () => {
     let totalPrice = 0;
     cartList.forEach((i) => {
@@ -680,7 +658,6 @@ const MenuOrderProductModule = ({
     getSpecificProductOffers();
     getSpecialProperty();
     getCustomerFeedback();
-    // getSpecificProduct();
   }, []);
 
   return (
@@ -805,7 +782,6 @@ const MenuOrderProductModule = ({
         />
       ) : null}
 
-      {/* binabago kay checkout */}
       {!openMenuCheckOut ? null : (
         <MenuCheckOutForm
           cart={cartList}
@@ -815,7 +791,6 @@ const MenuOrderProductModule = ({
         />
       )}
 
-      {/* ALERT */}
       {alertMessageOpen ? (
         <ToastProvider swipeDirection="up" duration={3000}>
           <Toast className="w-fit h-fit mr-5" variant={alertType}>

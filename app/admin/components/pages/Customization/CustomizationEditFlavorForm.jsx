@@ -23,7 +23,6 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { X } from "lucide-react";
-// NOT COMPLETED
 
 const CustomizationEditFlavorForm = ({
   selectedRow,
@@ -279,7 +278,6 @@ const CustomizationEditFlavorForm = ({
           <DialogFooter>
             <Button
               disabled={!isDirty || !isValid}
-              // type="submit"
               className="mt-3 hover:bg-ring"
               onClick={() => buttonRef.current.click()}
             >

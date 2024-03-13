@@ -23,7 +23,6 @@ import { X } from "lucide-react";
 import * as React from "react";
 import { Textarea } from "@/components/ui/textarea";
 
-// NOT COMPLETED
 const EditProductForm = ({
   editProductOpen,
   setEditProductOpen,
@@ -144,22 +143,18 @@ const EditProductForm = ({
           : (newImage = `/images/products/${results}`);
       }
 
-      // FOR THE CAKE TYPE SELECTION
       let isSpecial;
       {
         cakeType != "Common Cake" ? (isSpecial = 1) : (isSpecial = 0);
       }
 
-      // SELECT WHICH ROW IS TO BE EDITED AND RETURN THE NEW TABLE WITH THE EDITED ROW
       const editedProduct = productTable.map((row) => {
-        // SET PRODUCT NAME
         {
           row.productId == selectedRow.productId
             ? (row.productName = productName)
             : null;
         }
 
-        // SET CTG NAME
         {
           row.productId == selectedRow.productId
             ? (row.categoryName = newCategoryName)
@@ -172,7 +167,6 @@ const EditProductForm = ({
             : null;
         }
 
-        // SET CAKE TYPE
         {
           row.productId == selectedRow.productId
             ? (row.cakeTypeName = newCakeType)
@@ -191,7 +185,6 @@ const EditProductForm = ({
             : null;
         }
 
-        // SET IMAGE
         {
           row.productId == selectedRow.productId
             ? (row.image = newImage)
@@ -229,9 +222,7 @@ const EditProductForm = ({
           editProduct
         );
 
-        // UPDATE IN THE UI
         updateProductTable(editedProduct, "edit");
-        // CLOSE MODAL
         closeEditProduct();
       } catch (e) {
         console.log(e);
@@ -241,7 +232,6 @@ const EditProductForm = ({
     }
   };
 
-  // changes
   useEffect(() => {
     category != "Human Cake" ? setCakeType("Common Cake") : null;
   }, [category]);

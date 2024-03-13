@@ -36,19 +36,13 @@ const OrderModuleAdmin = ({ userId }) => {
     style: "currency",
     currency: "PHP",
   });
-
   const [loggedInUser, setLoggedInUser] = useState({});
   const [customerTotalSpent, setCustomerTotalSpent] = useState(0);
-
-  // order tables
   const [ordersTable, setOrdersTable] = useState([]);
   const [ordersData, setOrdersData] = useState([]);
-  // list of ordered products
   const [orderedProducts, setOrderedProducts] = useState([]);
-  // order details
   const [selectedOrder, setSelectedOrder] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState({});
-  // getters
   async function getOrders() {
     const res = await fetch(`http://localhost:3000/api/admin/orders`, {
       cache: "no-store",
@@ -73,10 +67,8 @@ const OrderModuleAdmin = ({ userId }) => {
       };
     });
 
-    // FORMATTED DATA FOR TABLE ROWS
     setOrdersTable(orders);
 
-    // REAL DATA
     setOrdersData(data);
   }
 
@@ -115,7 +107,6 @@ const OrderModuleAdmin = ({ userId }) => {
     return orderSelect[0];
   }
 
-  // view function states
   const [viewOrderOpen, setViewOrderOpen] = useState(false);
 
   const [expandViewOrder, setExpandViewOrder] = useState(false);
@@ -150,7 +141,6 @@ const OrderModuleAdmin = ({ userId }) => {
     setSelectedProduct(product);
   };
 
-  // proof of payment states
   const [viewPaymentOpen, setViewPaymentOpen] = useState(false);
   const [cancelOrderOpen, setCancelOrderOpen] = useState(false);
   const [openValConfirmPayment, setOpenValConfirmPayment] = useState(false);
@@ -275,7 +265,6 @@ const OrderModuleAdmin = ({ userId }) => {
 
     setRemainingBal(foundOrder.totalPrice - foundOrder.amountPaid);
   };
-  // NOT COMPLETED
 
   const openCancelOrder = (order) => {
     setSelectedOrder(order);
@@ -434,10 +423,9 @@ const OrderModuleAdmin = ({ userId }) => {
         <p
           style="
           font-size: 0.875rem;
-line-height: 1.25rem; 
-
-            font-weight: 300;
-            text-align: justify;
+          line-height: 1.25rem; 
+          font-weight: 300;
+          text-align: justify;
           "
         >
         <br>
@@ -861,16 +849,6 @@ line-height: 1.25rem;
 
       setOrderedProducts(newOrderedProducts);
 
-      // let listOfP = "";
-      // orderedProducts.forEach((i) => {
-      //   listOfP += `<p>${i.productName} : ${formatter.format(
-      //     i.subTotal
-      //   )} </p><p>${
-      //     !selectedOrder.discount ? null : `- ${selectedOrder.discount}`
-      //   }</p>`;
-      // });
-
-      let emailNotifRes;
       const emailPost = {
         method: "POST",
         header: {
@@ -1049,35 +1027,6 @@ line-height: 1.25rem;
     }
   };
 
-  // AFTER PAYING THE ORDER ADD TO HIS TOTAL SPENT
-  const addToTotalSpent = async () => {
-    // yung selected order dito ay string ang nakalagay, kasi formatted na lagyan ng peso sign
-    // ginawa tong find para makuha yung total price na int value para maadd yung payment sa total spent ni customer for vouchers
-    const order = ordersData.find((i) => selectedOrder.orderId == i.orderId);
-
-    //add to total spent
-    const newTotalSpent = customerTotalSpent + Number(order.totalPrice);
-
-    const totalSpentPost = {
-      method: "PUT",
-      header: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        customerId: userId,
-        totalSpent: newTotalSpent,
-      }),
-    };
-
-    const res = await fetch(
-      `http://localhost:3000/api/customer/order/totalSpent`,
-      totalSpentPost
-    );
-    setSelectedOrder();
-    closeAttachImage();
-  };
-
-  // alert state
   const [alertMessageOpen, setAlertMessageOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState(false);
   const [alertType, setAlertType] = useState(false);
@@ -1096,7 +1045,6 @@ line-height: 1.25rem;
 
   useEffect(() => {
     getOrders();
-    // getTotalSpent();
   }, [loggedInUser]);
 
   useEffect(() => {
@@ -1123,7 +1071,6 @@ line-height: 1.25rem;
         </CardContent>
       </Card>
 
-      {/* VIEW ORDER MODAL */}
       {!viewOrderOpen && !selectedOrder ? null : (
         <Dialog open={viewOrderOpen} onOpenChange={setViewOrderOpen} onClose>
           <DialogContent className="max-w-full max-h-full md:w-[93%] md:h-[90%] flex flex-col p-0">
@@ -1134,14 +1081,11 @@ line-height: 1.25rem;
             </div>
 
             <div className="flex flex-row w-full h-[75%] m-0">
-              {/* left div */}
               <div
-                // bg-blue-500
                 className={` w-full h-full p-5 transition-all ${
                   !expandViewOrder ? "w-[95%]" : "w-[60%]"
                 }`}
               >
-                {/* contents sa left div*/}
                 <Card className="w-full h-full transition-all">
                   <CardContent
                     className={`pt-4 h-full ${
@@ -1289,10 +1233,7 @@ line-height: 1.25rem;
                                       </Label>
                                       {i.specialProperty?.map((j) => {
                                         return (
-                                          <div
-                                            // className="flex flex-col m-2 border-r-2 border-zinc-200 pr-5"
-                                            key={j.specialPropertyId}
-                                          >
+                                          <div key={j.specialPropertyId}>
                                             <div className="text-xs font-semibold h-fit">
                                               {j.specialPropertyName}:
                                               <span className=" ml-4">
@@ -1355,7 +1296,6 @@ line-height: 1.25rem;
                   </CardContent>
                 </Card>
               </div>
-              {/* right div */}
               {expandViewOrder ? (
                 <div
                   className={`w-full h-full flex flex-row transition-all ${
@@ -1364,8 +1304,6 @@ line-height: 1.25rem;
                       : "w-[40%] grid-cols-5"
                   } `}
                 >
-                  {/* contents sa right div */}
-                  {/* bg-orange-300 */}
                   <div className="col-span-1 h-full w-fit px-1 flex items-center">
                     <div
                       className="mx-auto rounded-full bg-transparent cursor-pointer"
@@ -1570,7 +1508,6 @@ line-height: 1.25rem;
         </Dialog>
       )}
 
-      {/* REJECT PAYMENT MODAL */}
       {!openValRejectPayment ? null : (
         <Dialog
           open={openValRejectPayment}
@@ -1722,7 +1659,6 @@ line-height: 1.25rem;
                                   <Label className="col-span-2 border-x-[1px] border-b-[1px] border-black p-2 font-extrabold">
                                     {i.specialPropertyName}
                                   </Label>
-                                  {/* <Label className="col-span-1 border-r-[1px] border-b-[1px] border-black p-2"></Label> */}
                                   <Label className="col-span-2 border-r-[1px] border-b-[1px] border-black p-2">
                                     {formatter.format(i.specialPropertyValue)}
                                   </Label>
@@ -1919,7 +1855,6 @@ line-height: 1.25rem;
                     }}
                   ></Input>
 
-                  {/* editing now */}
                   {estimatedOrderPrice == 0 ? null : (
                     <div className="flex flex-row gap-1">
                       {orderedProducts.map((i, index) => {
@@ -2058,7 +1993,6 @@ line-height: 1.25rem;
         </Dialog>
       )}
 
-      {/* INSUFFICIENT PAYMENT MODAL */}
       {!openValInsufficientPayment ? null : (
         <Dialog
           open={openValInsufficientPayment}
@@ -2122,7 +2056,6 @@ line-height: 1.25rem;
         </Dialog>
       )}
 
-      {/* CONFIRM PAYMENT MODAL */}
       {!openValConfirmPayment ? null : (
         <Dialog
           open={openValConfirmPayment}
@@ -2157,7 +2090,6 @@ line-height: 1.25rem;
         </Dialog>
       )}
 
-      {/* CANCEL AND SEND BACK THE MONEY OF THE CUSTOMER MODAL */}
       {!openValCancelOrder ? null : (
         <Dialog
           open={openValCancelOrder}
@@ -2192,7 +2124,6 @@ line-height: 1.25rem;
         </Dialog>
       )}
 
-      {/* CANCEL MODAL */}
       {!cancelOrderOpen ? null : (
         <Dialog
           open={cancelOrderOpen}
@@ -2255,7 +2186,6 @@ line-height: 1.25rem;
         </Dialog>
       )}
 
-      {/* ALERT */}
       {alertMessageOpen ? (
         <ToastProvider swipeDirection="up" duration={3000}>
           <Toast className="w-fit h-fit mr-5" variant={alertType}>

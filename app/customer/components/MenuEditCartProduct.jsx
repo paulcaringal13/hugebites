@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-
+import AddOnsDelete from "./AddOnsDelete";
 import {
   Dialog,
   DialogContent,
@@ -16,15 +16,9 @@ import {
   SelectGroup,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { IoIosClose } from "react-icons/io";
-import { IoAdd } from "react-icons/io5";
-import AddOnsDelete from "./AddOnsDelete";
-import { RiContactsBookLine } from "react-icons/ri";
-import { type } from "os";
 import {
   Toast,
   ToastClose,
@@ -38,6 +32,7 @@ import {
   IoCheckmarkCircleOutline,
   IoWarningOutline,
 } from "react-icons/io5";
+import { IoIosClose } from "react-icons/io";
 
 const MenuEditCartProduct = ({
   cartProduct,
@@ -58,27 +53,18 @@ const MenuEditCartProduct = ({
     currency: "PHP",
   });
 
-  // alert state
   const [alertMessageOpen, setAlertMessageOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState(false);
   const [alertType, setAlertType] = useState(false);
   const [alertMessage, setAlertMessage] = useState(false);
 
-  const openRequestAlert = () => {
-    setAlertMessageOpen(true);
-    setTimeout(() => {
-      setAlertMessageOpen(false);
-    }, 3000);
-  };
-
-  // PAG COMMON CAKE ITO NALANG ANG IPASA PARA NULL AT HINDI NA MAADD SA DATABASE
   const [specialProperty, setSpecialProperty] = useState([
     {
       specialPropertyName: "Common Cake",
       specialPropertyValue: 0,
     },
   ]);
-  //NUMBERED CAKES
+
   const [numberShape, setNumberShape] = useState([
     {
       specialPropertyId:
@@ -90,7 +76,7 @@ const MenuEditCartProduct = ({
     },
   ]);
   const [numberShapeVal, setNumberShapeVal] = useState("");
-  // MONEY CAKE
+
   const [amount, setAmount] = useState(
     cartProduct.specialProperty[0]?.cartSpecialPropertyValue
   );
@@ -127,9 +113,7 @@ const MenuEditCartProduct = ({
   ];
 
   const [moneySpecialProp, setMoneySpecialProp] = useState([]);
-
   const [amountVal, setAmountVal] = useState(0);
-
   const [editedCartProduct, setEditedCartProduct] = useState({
     productId: 0,
     packagingId: 0,
@@ -140,14 +124,12 @@ const MenuEditCartProduct = ({
     message: "",
     quantity: 0,
   });
-
   const [size, setSize] = useState({
     packagingId: 0,
     packagingPrice: 0,
     size: "",
   });
   const [flavor, setFlavor] = useState({ flavorId: 0, flavorName: "" });
-
   const [color, setColor] = useState({
     colorId: 0,
     colorPrice: 0,
@@ -161,14 +143,11 @@ const MenuEditCartProduct = ({
   const [quantity, setQuantity] = useState(cartProduct.quantity);
   const [message, setMessage] = useState();
   const [subTotal, setSubTotal] = useState(0);
-  // STATE FOR PRICES OF THE ORDER
   const [prices, setPrices] = useState({});
   const [file, setFile] = useState();
   const [image, setImage] = useState("");
   const [viewImageAttachment, setViewImageAttachment] = useState(false);
-
   const [totalPrice, setTotalPrice] = useState(0);
-
   const [addOnsArray, setAddOnsArray] = useState([]);
   const [addOns, setAddOns] = useState({
     addOnsId: 0,
@@ -178,7 +157,6 @@ const MenuEditCartProduct = ({
   const [addOnsTotal, setAddOnsTotal] = useState(0);
   const [addOnsQuantity, setAddOnsQuantity] = useState(0);
   const [addOnsList, setAddOnsList] = useState([]);
-
   const [tier2AddOns, setTier2AddOns] = useState({
     addOnsId: 0,
     addOnsName: "",
@@ -187,7 +165,6 @@ const MenuEditCartProduct = ({
   const [tier2AddOnsTotal, setTier2AddOnsTotal] = useState(0);
   const [tier2AddOnsQuantity, setTier2AddOnsQuantity] = useState(0);
   const [tier2AddOnsList, setTier2AddOnsList] = useState([]);
-
   const [tier3AddOns, setTier3AddOns] = useState({
     addOnsId: 0,
     addOnsName: "",
@@ -196,21 +173,14 @@ const MenuEditCartProduct = ({
   const [tier3AddOnsTotal, setTier3AddOnsTotal] = useState(0);
   const [tier3AddOnsQuantity, setTier3AddOnsQuantity] = useState(0);
   const [tier3AddOnsList, setTier3AddOnsList] = useState([]);
-
-  const [isCakeCustomized, setIsCakeCustomized] = useState(false);
-
   const [tier2SpecialPropertyId, setTier2SpecialPropertyId] = useState();
   const [tier3SpecialPropertyId, setTier3SpecialPropertyId] = useState();
-
-  // para sa updating ng database since mag error if di na existing sa table eh nag dedelete narin tayo agad so may chance na di makita sa table yung ipapasang id galing sa list
   const [newAddOnsList, setNewAddOnsList] = useState([]);
   const [selectedAddOn, setSelectedAddOn] = useState({});
-
   const [isQuantityInvalid, setIsQuantityInvalid] = useState(false);
   const [isSizeInvalid, setIsSizeInvalid] = useState(false);
   const [isFlavorInvalid, setIsFlavorInvalid] = useState(false);
   const [isColorInvalid, setIsColorInvalid] = useState(false);
-
   const [flavorOptions, setFlavorOptions] = useState([]);
   const [colorOptions, setColorOptions] = useState([]);
   const [shapeOptions, setShapeOptions] = useState([]);
@@ -218,7 +188,6 @@ const MenuEditCartProduct = ({
   const [openConfirmRemoveAddOns, setOpenConfirmRemoveAddOns] = useState(false);
 
   const validateChanges = () => {
-    // special cake val
     {
       numberShape[0].specialPropertyName == "None" &&
       cartProduct.cakeTypeId == 4
@@ -242,7 +211,6 @@ const MenuEditCartProduct = ({
       quantity <= 0 && setIsQuantityInvalid(true);
     }
 
-    // PAG COMMON CAKE, TIERED, AND CHOCOLOAD, WALANG NEED NA SPECIAL PROP ITO YUNG PRODUCT MO
     cartProduct.cakeTypeId != 3 &&
     cartProduct.cakeTypeId != 4 &&
     cartProduct.cakeTypeId != 2 ? (
@@ -279,7 +247,6 @@ const MenuEditCartProduct = ({
       </>
     ) : null;
 
-    //  PAG NUMBER
     cartProduct.cakeTypeId == 3 || cartProduct.cakeTypeId == 4 ? (
       <>
         {size.packagingId &&
@@ -320,7 +287,6 @@ const MenuEditCartProduct = ({
       </>
     ) : null;
 
-    // PAG MONEY
     cartProduct.cakeTypeId == 2 ? (
       <>
         {size.packagingId &&
@@ -373,8 +339,8 @@ const MenuEditCartProduct = ({
 
     return results;
   };
+
   const updateSpecialProperty = async () => {
-    let newSpecialPropArray;
     let oldSpecialProp = cartProduct.specialProperty;
 
     cartProduct.cakeTypeId == 3 || cartProduct.cakeTypeId == 4
@@ -404,7 +370,6 @@ const MenuEditCartProduct = ({
             console.log(e);
           }
 
-          // ITO YUNG NAG AUPDATE FOR UI PURPOSES
           numberShape.forEach((j) => {
             i.cartSpecialPropertyId == j.specialPropertyId
               ? (i.cartSpecialPropertyValue = j.specialPropertyValue)
@@ -448,12 +413,15 @@ const MenuEditCartProduct = ({
             : null;
         })
       : null;
-
-    // NOTE PAG MONEY CAKE STRING ANG GAMITIN FOR CONDITION PARA MAKUHA SINCE STATIC NAMAN ANG NAME NIYA NA SI AMOUNT AND SI TYPE OF BILL
-    //  PAG TYPE OF BILL HAHANAPIN NIYA MUNA SINONG CARTPROPERTY ID ANG PAPALITAN
   };
 
-  // UPDATES SUBTOTAL PRICE
+  const openRequestAlert = () => {
+    setAlertMessageOpen(true);
+    setTimeout(() => {
+      setAlertMessageOpen(false);
+    }, 3000);
+  };
+
   useEffect(() => {
     let sum = 0;
     for (let key in prices) {
@@ -491,9 +459,8 @@ const MenuEditCartProduct = ({
     tier3AddOnsList,
   ]);
 
-  // page load & change ng productPrices galing API
   useEffect(() => {
-    const x = { ...productPrices }; // old
+    const x = { ...productPrices };
     delete x.customerId;
     delete x.productId;
     delete x.subTotal;
@@ -516,7 +483,7 @@ const MenuEditCartProduct = ({
     setAddOnsList(tier1AddOns);
     setTier2AddOnsList(tier2AddOns);
     setTier3AddOnsList(tier3AddOns);
-    setPrices(x); // new
+    setPrices(x);
   }, [productPrices]);
 
   useEffect(() => {
@@ -542,7 +509,6 @@ const MenuEditCartProduct = ({
     setAmount(0);
   }, [typeOfBill]);
 
-  // page load & change ng productPrices galing API
   useEffect(() => {
     setQuantity(productPrices.quantity || 0);
   }, [productPrices.quantity]);
@@ -589,7 +555,6 @@ const MenuEditCartProduct = ({
 
     setMessage(cartProduct.message);
 
-    // FILTER YUNG SELECT NI FLAVOR DEPENDE SA CATEGORY NIYA
     const flavorSelect = flavors.filter(
       (i) => cartProduct.categoryId == i.categoryId
     );
@@ -766,8 +731,6 @@ const MenuEditCartProduct = ({
                       <div>
                         {!color.colorId ? "Select a color" : color.colorName}
                       </div>
-
-                      {/* <SelectValue placeholder="Select a color" /> */}
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
@@ -819,10 +782,6 @@ const MenuEditCartProduct = ({
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-
-                {/* search mo ko */}
-                {/* SPECIAL CAKE CONDITION (IF SI CAKE NA SELECTED AY SINGLE NUMBER TATANGGALIN YUNG SHAPE AND ANG MAGIGING SHAPE IS SI NUMBER NA) */}
-
                 <Label className="col-span-2 mt-1">
                   Quantity <span className="text-ring mr-1"> *</span>
                 </Label>
@@ -870,6 +829,7 @@ const MenuEditCartProduct = ({
                   id="image"
                   type="file"
                   className="col-span-1 h-[38px]"
+                  disabled={cartProduct.isCakeCustomized == 0}
                   onChange={(e) => {
                     setFile(e.target.files?.[0]);
 
@@ -897,7 +857,6 @@ const MenuEditCartProduct = ({
                 )}
               </div>
 
-              {/* if si product ay cupcake wala siyang add ons   */}
               {cartProduct.categoryId == 8003 ? (
                 <div className="w-auto flex flex-col col-span-2">
                   <div className="grid grid-cols-6 gap-x-2 col-span-2 w-full">
@@ -908,7 +867,10 @@ const MenuEditCartProduct = ({
                         onValueChange={(value) => {
                           setAddOns(value);
                         }}
-                        disabled={cartProduct.categoryId == 8003}
+                        disabled={
+                          cartProduct.categoryId == 8003 ||
+                          cartProduct.categoryId == 8002
+                        }
                       >
                         <SelectTrigger className="w-full mt-1">
                           <div>
@@ -940,7 +902,10 @@ const MenuEditCartProduct = ({
                         onChange={(e) => {
                           setAddOnsQuantity(e.target.value);
                         }}
-                        disabled={cartProduct.categoryId == 8003}
+                        disabled={
+                          cartProduct.categoryId == 8003 ||
+                          cartProduct.categoryId == 8002
+                        }
                       ></Input>
                     </div>
 
@@ -955,14 +920,12 @@ const MenuEditCartProduct = ({
                         disabled={cartProduct.categoryId == 8003}
                         className="mt-1 h-10 w-fit items-center rounded-full active:bg-white"
                       >
-                        {/* <IoAdd className="w-5 h-5 text-muted-foreground" /> */}
                         Add
                       </Button>
                     </div>
                   </div>
                 </div>
               ) : (
-                // if hindi cupcake
                 <>
                   <div className="w-auto flex flex-col col-span-2">
                     {addOnsList?.length <= 2 ? (
@@ -974,6 +937,10 @@ const MenuEditCartProduct = ({
                             onValueChange={(value) => {
                               setAddOns(value);
                             }}
+                            disabled={
+                              cartProduct.categoryId == 8003 ||
+                              cartProduct.categoryId == 8002
+                            }
                           >
                             <SelectTrigger className="w-full mt-1">
                               <div>
@@ -1002,6 +969,10 @@ const MenuEditCartProduct = ({
                             max={5}
                             placeholder="Quantity"
                             value={addOnsQuantity}
+                            disabled={
+                              cartProduct.categoryId == 8003 ||
+                              cartProduct.categoryId == 8002
+                            }
                             onChange={(e) => {
                               setAddOnsQuantity(e.target.value);
                             }}
@@ -1396,15 +1367,12 @@ const MenuEditCartProduct = ({
                                   Tier 3 List of Add Ons :
                                 </Label>
                                 <h1 className="col-span-2 text-md font-semibold">
-                                  {" "}
                                   Name
                                 </h1>
                                 <h1 className="col-span-1 text-md font-semibold text-center">
-                                  {" "}
                                   Price
                                 </h1>
                                 <h1 className="col-span-1 text-md font-semibold text-center ">
-                                  {" "}
                                   Qty
                                 </h1>
                                 <h1 className="col-span-1 text-md font-semibold text-center text-primary">
@@ -1434,7 +1402,6 @@ const MenuEditCartProduct = ({
                                 className="col-span-6 grid grid-cols-6 border-b-[1px] border-zinc-200 mb-1"
                               >
                                 <h1 className="col-span-2 text-sm">
-                                  {" "}
                                   {i.addOnsName}
                                 </h1>
                                 <h1 className="col-span-1 text-sm text-center">
@@ -1463,11 +1430,9 @@ const MenuEditCartProduct = ({
                       </>
                     ) : null}
 
-                    {/* PAG WALANG LAMAN OR PAG COMMON(?) WALANG ILALAGAY SA UI */}
                     {cartProduct.specialProperty.length == 0 ? null : (
                       <>
                         <div className="w-auto col-span-2 flex flex-col">
-                          {/* PAG SINGLE DIGIT NUMBER CAKE */}
                           {cartProduct.cakeTypeId == 3 ? (
                             <>
                               <Label className="col-span-1 mt-1">
@@ -1481,21 +1446,17 @@ const MenuEditCartProduct = ({
                                 min={0}
                                 max={9}
                                 placeholder="Input number shape"
-                                // disabled={!cartProduct.isCakeCustomized}
                                 value={numberShape[0].specialPropertyValue}
                                 onChange={(e) => {
-                                  // PAG HINDI NONE ANG VALUE NI PROPERTY NAME TANGGALIN SI VAL MESSAGE
                                   numberShape[0].specialPropertyName !=
                                     "None" && setNumberShapeVal("");
 
-                                  // IF YUNG VALUE IS DOUBLE DIGIT ISHOW YUNG VALIDATION
                                   e.target.value > 9 || e.target.value < 0
                                     ? setNumberShapeVal(
                                         "Please input single digit number."
                                       )
                                     : null;
 
-                                  // PAG HINDI NULL AT DOUBLE DIGIT ANG BINIGAY PALITAN SI PROPERTY NAME NG VALUE PARA MAGING VALID AT MAADD TO CART
                                   !!e.target.value &&
                                   e.target.value <= 9 &&
                                   e.target.value >= 0
@@ -1527,7 +1488,6 @@ const MenuEditCartProduct = ({
                             </>
                           ) : null}
 
-                          {/* PAG DOUBLE DIGIT NUMBER CAKE*/}
                           {cartProduct.cakeTypeId == 4 ? (
                             <>
                               <Label className="col-span-2 mt-1">
@@ -1544,18 +1504,15 @@ const MenuEditCartProduct = ({
                                   placeholder="Input number shape"
                                   value={numberShape[0].specialPropertyValue}
                                   onChange={(e) => {
-                                    // PAG HINDI NONE ANG VALUE NI PROPERTY NAME TANGGALIN SI VAL MESSAGE
                                     numberShape[0].specialPropertyName !=
                                       "None" && setNumberShapeVal("");
 
-                                    // IF YUNG VALUE IS DOUBLE DIGIT ISHOW YUNG VALIDATION
                                     e.target.value > 99 || e.target.value < 10
                                       ? setNumberShapeVal(
                                           "Please input double digit number."
                                         )
                                       : null;
 
-                                    // PAG HINDI NULL AT DOUBLE DIGIT ANG BINIGAY PALITAN SI PROPERTY NAME NG VALUE PARA MAGING VALID AT MAADD TO CART
                                     !!e.target.value &&
                                     e.target.value <= 99 &&
                                     e.target.value >= 10
@@ -1590,7 +1547,6 @@ const MenuEditCartProduct = ({
                             </>
                           ) : null}
 
-                          {/* PAG MONEY CAKE  */}
                           {cartProduct.cakeTypeId == 2 ? (
                             <>
                               <Label
@@ -1791,8 +1747,6 @@ const MenuEditCartProduct = ({
                   setAlertType("success");
                   openRequestAlert();
 
-                  // special prop updating
-
                   cartProduct.cakeTypeId == 1 || cartProduct.cakeTypeId == 7
                     ? null
                     : updateSpecialProperty();
@@ -1819,7 +1773,6 @@ const MenuEditCartProduct = ({
                   setOpenEditCartProduct(false);
                   setOpenConfirmChanges(false);
 
-                  // for added ADD ONS TO DATABASE
                   newAddOnsList.forEach(async (i) => {
                     const cartAddOnsPost = {
                       method: "POST",
@@ -1855,7 +1808,6 @@ const MenuEditCartProduct = ({
         </DialogContent>
       </Dialog>
 
-      {/* VIEW IMAGE ATTACHMENT */}
       {!viewImageAttachment ? null : (
         <Dialog
           open={viewImageAttachment}
@@ -1870,7 +1822,6 @@ const MenuEditCartProduct = ({
             </div>
             <div className="h-full w-full">
               <div className="flex w-full h-full mx-auto items-center relative overflow-hidden m-0 max-h-56 my-2 rounded-lg">
-                {/* image na nag aadjust */}
                 <div
                   style={{
                     width: "500px",
@@ -1915,7 +1866,6 @@ const MenuEditCartProduct = ({
         />
       ) : null}
 
-      {/* ALERT */}
       {alertMessageOpen ? (
         <ToastProvider swipeDirection="up" duration={3000}>
           <Toast className="w-fit h-fit mr-5" variant={alertType}>

@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import EmployeeMiniAdminSidebar from "../components/EmployeeMiniAdminSidebar";
 import EmployeeYearlyForecast from "../components/pages/Forecast/EmployeeYearlyForecast";
 
+// COMPLETED
+
 export default function AdminRequest() {
   const [loggedInUserId, setLoggedInUserId] = useState("");
 

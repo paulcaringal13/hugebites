@@ -10,7 +10,6 @@ export default function Orders(path) {
 
   const [userData, setUserData] = useState([]);
 
-  // GET ALL USER DATA NEEDED
   async function getUserData() {
     const res = await fetch(
       `http://localhost:3000/api/customer/home?` +

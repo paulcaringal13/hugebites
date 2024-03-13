@@ -18,7 +18,6 @@ import { Input } from "@/components/ui/input";
 const EditRole = ({
   openEditRole,
   setOpenEditRole,
-  setSpecificRole,
   specificRole,
   setRoles,
   roles,
@@ -41,7 +40,6 @@ const EditRole = ({
   const [voucherAccess, setVoucherAccess] = useState(false);
   const [accountsAccess, setAccountsAccess] = useState(false);
   const [userRoleAccess, setUserRoleAccess] = useState(false);
-
   const [roleNameVal, setRoleNameVal] = useState("");
   const [roleAccessVal, setRoleAccessVal] = useState("");
 
@@ -180,8 +178,6 @@ const EditRole = ({
     setAccountsAccess(specificRole.accountAccess);
     setUserRoleAccess(specificRole.userRoleAccess);
   }, [specificRole]);
-  // NOT COMPLETED
-  console.log(specificRole);
   return (
     <>
       <Dialog open={openEditRole} onOpenChange={setOpenEditRole} onClose>
@@ -218,22 +214,6 @@ const EditRole = ({
 
           <Label className="text-lg font-extrabold m-0">Role Access</Label>
 
-          {/* <div className="flex col-span-1 gap-2 w-fit">
-            <Checkbox
-              id="terms"
-              className="text-white my-2 border-black"
-              checked={selectAll}
-              onCheckedChange={() => {
-                setSelectAll(!selectAll);
-                {
-                  !selectAll ? checkAllCheckBox() : unCheckAllCheckBox();
-                }
-              }}
-            />
-            <Label className="ml-auto my-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-              Select All
-            </Label>
-          </div> */}
           <div className="grid grid-cols-2 gap-4 w-full">
             <div className="flex col-span-1 gap-2 w-fit">
               <Checkbox

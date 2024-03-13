@@ -16,7 +16,6 @@ import { Input } from "../../../../../components/ui/input";
 import { Label } from "@/components/ui/label";
 import { X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
-// NOT COMPLETED
 
 const CustomizationAddAddOnsForm = ({
   addAddOnsOpen,
@@ -33,7 +32,7 @@ const CustomizationAddAddOnsForm = ({
     },
     mode: "onTouched",
   });
-  const { register, handleSubmit, formState, reset, getValues } = form;
+  const { register, handleSubmit, formState } = form;
   const { errors, isDirty, isValid } = formState;
 
   const [oldTable, setOldTable] = useState(addOnsTable);

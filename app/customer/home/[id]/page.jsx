@@ -5,8 +5,6 @@ import CustomerSidebar from "../../components/CustomerSidebar";
 import HomePage from "../../components/Home/HomePage";
 import TermsAndConditions from "../../components/Home/TermsAndConditions";
 
-// COMPLETED
-
 export default function Home(path) {
   const { params } = path;
   const { id } = params;

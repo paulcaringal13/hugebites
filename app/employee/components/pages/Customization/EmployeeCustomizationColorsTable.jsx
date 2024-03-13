@@ -195,7 +195,6 @@ const EmployeeCustomizationColorsTable = ({
           placeholder="Search"
           className="w-2/6"
         />
-        {/* hide columns */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -309,7 +308,6 @@ const EmployeeCustomizationColorsTable = ({
             </TableBody>
           )}
         </Table>
-        {/* pagination */}
         <div className="flex items-center justify-end space-x-2 py-4 me-5 ">
           <Button
             variant="outline"

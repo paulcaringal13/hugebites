@@ -59,7 +59,6 @@ import {
 } from "react-icons/io5";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
-// NOT COMPLETED
 const IngredientsList = ({
   closeIngredientList,
   ingredientListOpen,
@@ -77,8 +76,6 @@ const IngredientsList = ({
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [search, setSearch] = useState("");
-
-  // alert state
   const [alertMessageOpen, setAlertMessageOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState(false);
   const [alertType, setAlertType] = useState(false);
@@ -491,7 +488,6 @@ const IngredientsList = ({
         />
       ) : null}
 
-      {/* ALERT */}
       {alertMessageOpen ? (
         <ToastProvider swipeDirection="up" duration={3000}>
           <Toast className="w-fit h-fit mr-5" variant={alertType}>

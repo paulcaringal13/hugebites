@@ -27,8 +27,6 @@ import {
 } from "react-icons/io5";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
-// COMPLETED
-
 const CustomerSignUp = () => {
   const router = useRouter();
 

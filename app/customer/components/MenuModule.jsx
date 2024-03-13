@@ -1,22 +1,13 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import Image from "next/image";
 import { useState, useEffect } from "react";
-import { MdAlternateEmail } from "react-icons/md";
-import SmallCardImg from "../../../public/images/SmallCardImg.jpg";
+import { useParams } from "next/navigation";
 import HomePageNavbar from "./HomePageNavbar";
+import MenuCheckOutForm from "./MenuCheckOutForm";
 import MenuCart from "./MenuCart";
 import MenuEditCartProduct from "./MenuEditCartProduct";
 import MenuProductMenu from "./MenuProductMenu";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import {
   Toast,
   ToastClose,
@@ -30,8 +21,6 @@ import {
   IoCheckmarkCircleOutline,
   IoWarningOutline,
 } from "react-icons/io5";
-import MenuCheckOutForm from "./MenuCheckOutForm";
-import { useParams } from "next/navigation";
 
 const MenuModule = ({
   user,
@@ -57,45 +46,18 @@ const MenuModule = ({
   const [productPrices, setProductPrices] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [orderPrice, setOrderPrice] = useState(0);
-
   const [openEditCartProduct, setOpenEditCartProduct] = useState(false);
   const [openRemoveCartProduct, setOpenRemoveCartProduct] = useState(false);
   const [openMenuCheckOut, setOpenMenuCheckOut] = useState(false);
   const [openRulesAndRegulations, setOpenRulesAndRegulations] = useState(false);
   const [specificProductSizes, setSpecificProductSizes] = useState([]);
-
   const [voucher, setVoucher] = useState({});
 
-  const openCheckOutForm = (voucherSelected, total) => {
-    setVoucher(voucherSelected);
-    setOrderPrice(total);
-    setOpenRulesAndRegulations(true);
-  };
-
-  // alert state
   const [alertMessageOpen, setAlertMessageOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState(false);
   const [alertType, setAlertType] = useState(false);
   const [alertMessage, setAlertMessage] = useState(false);
 
-  const openRequestAlert = () => {
-    setAlertMessageOpen(true);
-    setTimeout(() => {
-      setAlertMessageOpen(false);
-    }, 3000);
-  };
-
-  const handleCartRemoveProduct = (prod) => {
-    setCartProduct(prod);
-    setOpenRemoveCartProduct(true);
-  };
-
-  const handleCartEditProduct = (prod) => {
-    setCartProduct(prod);
-    setOpenEditCartProduct(true);
-  };
-
-  // update quantity in the array list
   const minusQuantityToList = async (cartId) => {
     const updatedCart = cartList.map((i) => {
       const totalPriceInitialPrice = i.totalPrice / i.quantity;
@@ -148,7 +110,6 @@ const MenuModule = ({
     }
   };
 
-  // update quantity in the array list
   const addQuantityToList = (cartId) => {
     const updatedCart = cartList.map((i) => {
       const totalPriceInitialPrice = i.totalPrice / i.quantity;
@@ -175,7 +136,6 @@ const MenuModule = ({
     setCartList(updatedCart);
   };
 
-  // update quantity in database
   async function deductQuantity(cartId, quantity, subTotal) {
     const initialPrice = subTotal / quantity;
     const updatedQuantity = Number(quantity) - 1;
@@ -202,7 +162,6 @@ const MenuModule = ({
     }
   }
 
-  // update quantity in database
   async function addQuantity(cartId, quantity, subTotal) {
     const initialPrice = subTotal / quantity;
     const updatedQuantity = Number(quantity) + 1;
@@ -244,7 +203,6 @@ const MenuModule = ({
       {
         cache: "no-store",
       }
-      // { next: { revalidate: 10 } }
     );
     const data = await res.json();
 
@@ -307,7 +265,6 @@ const MenuModule = ({
 
     const addOnsPrices = await addOnsRes.json();
 
-    // ipasa nalang yung nireturn na data kesa sa state para real time
     getCartProductPrices(cart, addOnsPrices[0]);
   };
 
@@ -344,7 +301,6 @@ const MenuModule = ({
     setProductPrices(pricesWithAddOns);
   };
 
-  // update total price
   const updateTotal = () => {
     let totalPrice = 0;
     cartList.forEach((i) => {
@@ -352,6 +308,29 @@ const MenuModule = ({
     });
 
     setTotalPrice(totalPrice);
+  };
+
+  const openCheckOutForm = (voucherSelected, total) => {
+    setVoucher(voucherSelected);
+    setOrderPrice(total);
+    setOpenRulesAndRegulations(true);
+  };
+
+  const openRequestAlert = () => {
+    setAlertMessageOpen(true);
+    setTimeout(() => {
+      setAlertMessageOpen(false);
+    }, 3000);
+  };
+
+  const handleCartRemoveProduct = (prod) => {
+    setCartProduct(prod);
+    setOpenRemoveCartProduct(true);
+  };
+
+  const handleCartEditProduct = (prod) => {
+    setCartProduct(prod);
+    setOpenEditCartProduct(true);
   };
 
   useEffect(() => {
@@ -599,7 +578,6 @@ const MenuModule = ({
         />
       ) : null}
 
-      {/* binabago kay checkout */}
       {!openMenuCheckOut ? null : (
         <MenuCheckOutForm
           cart={cartList}
@@ -611,7 +589,6 @@ const MenuModule = ({
         />
       )}
 
-      {/* ALERT */}
       {alertMessageOpen ? (
         <ToastProvider swipeDirection="up" duration={3000}>
           <Toast className="w-fit h-fit mr-5" variant={alertType}>

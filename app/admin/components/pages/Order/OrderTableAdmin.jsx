@@ -29,7 +29,6 @@ import {
 import { FaRegEye } from "react-icons/fa6";
 import { IoCloseOutline } from "react-icons/io5";
 import dayjs from "dayjs";
-// NOT COMPLETED
 
 const OrderTableAdmin = ({
   data,
@@ -47,7 +46,6 @@ const OrderTableAdmin = ({
   const [columnVisibility, setColumnVisibility] = useState({});
   const [search, setSearch] = useState("");
 
-  // HANDLE VIEW BUTTON ON CLICK
   const handleViewButton = async (order) => {
     const selectedOrderedProducts = await getOrderedProducts(order);
     const orderedProductAddOns = await getOrderedProductAddOns(order);
@@ -76,10 +74,8 @@ const OrderTableAdmin = ({
     });
 
     openViewOrder(orderedProductWithAddOns, order);
-    // setOrderedProducts(orderedProductWithAddOns);
   };
 
-  // GET ALL ORDERED PRODUCT OF A SPECIFIC ORDER with special props for special cakes
   const getOrderedProducts = async (order) => {
     const { orderId } = order;
     const res = await fetch(
@@ -94,7 +90,6 @@ const OrderTableAdmin = ({
     return data;
   };
 
-  // add ons with special prop id for tiered product
   const getOrderedProductAddOns = async (order) => {
     const { orderId } = order;
 
@@ -136,7 +131,6 @@ const OrderTableAdmin = ({
             className="h-fit w-fit border-2 p-2 rounded-full text-md mx-auto cursor-pointer transform transition-all hover:scale-125 active:bg-white active:scale-110  duration-100"
             variant="outline"
             onClick={() => {
-              //   closeRequestAlert();
               handleViewButton(rowData);
             }}
           >
@@ -308,7 +302,6 @@ const OrderTableAdmin = ({
           placeholder="Search"
           className="w-2/6"
         />
-        {/* hide columns */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -452,7 +445,6 @@ const OrderTableAdmin = ({
             )}
           </TableBody>
         </Table>
-        {/* pagination */}
         <div className="flex items-center justify-end space-x-2 py-4 me-5 ">
           <Button
             variant="outline"

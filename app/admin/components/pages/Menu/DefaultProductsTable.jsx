@@ -36,7 +36,6 @@ import {
   MdOutlineDeleteOutline,
 } from "react-icons/md";
 
-// NOT COMPLETED
 const DefaultProductsTable = ({
   data,
   openEditOfferedProducts,
@@ -51,7 +50,6 @@ const DefaultProductsTable = ({
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
-  const [columnSelected, setColumnSelected] = useState("");
   const [search, setSearch] = useState("");
 
   const columns = [
@@ -277,7 +275,6 @@ const DefaultProductsTable = ({
           placeholder="Search"
           className="w-2/6"
         />
-        {/* hide columns */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -393,7 +390,6 @@ const DefaultProductsTable = ({
             </TableBody>
           )}
         </Table>
-        {/* pagination */}
         <div className="flex items-center justify-end space-x-2 py-4 me-5 ">
           <Button
             variant="outline"

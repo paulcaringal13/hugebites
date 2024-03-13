@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import EmployeeMiniAdminSidebar from "../components/EmployeeMiniAdminSidebar";
 import EmployeeMenuTableTabs from "../components/pages/Menu/EmployeeMenuTableTabs";
 
-// ALL GOODS
+// COMPLETED
 
 const EmployeeMenu = () => {
   const [productList, setProductList] = useState([]);
@@ -16,7 +16,6 @@ const EmployeeMenu = () => {
   const [flavorsData, setFlavorsData] = useState([]);
   const [shapesData, setShapesData] = useState([]);
 
-  // GET ALL PRODUCTS DETAILS
   const getAllProducts = async () => {
     const res = await fetch(`http://localhost:3000/api/admin/menu/product`);
 
@@ -32,7 +31,6 @@ const EmployeeMenu = () => {
     setProducts(results[0]);
   };
 
-  // GET ALL CAKE TYPES FOR SELECTION
   const getCakeTypes = async () => {
     const res = await fetch(`http://localhost:3000/api/admin/menu/cakeType`);
 
@@ -41,7 +39,6 @@ const EmployeeMenu = () => {
     setCakeTypes(data[0]);
   };
 
-  // GET ALL DEFAULT/OFFERED/FIXED PRODUCTS
   const getDefaultProducts = async () => {
     const res = await fetch(`http://localhost:3000/api/default-products`);
 
@@ -49,7 +46,6 @@ const EmployeeMenu = () => {
     setDefaultProducts(data);
   };
 
-  // GET ALL CATEGORIES
   const getAllCategories = async () => {
     const res = await fetch(`http://localhost:3000/api/admin/menu/categories`);
 
@@ -62,7 +58,6 @@ const EmployeeMenu = () => {
     setCategoryList(categories);
   };
 
-  // COMBINE DEFAULT PRODUCTS TO WHICH PRODUCT IT BELONGS
   const handleDefaultProducts = () => {
     const finalProdList = products.map((i) => {
       const { productId } = i;

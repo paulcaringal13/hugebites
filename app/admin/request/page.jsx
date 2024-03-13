@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import MiniAdminSidebar from "../components/MiniAdminSidebar";
 import RequestModuleAdmin from "../components/pages/Request/RequestModuleAdmin";
-// NOT COMPLETED
 export default function AdminRequest() {
   const [loggedInUserId, setLoggedInUserId] = useState("");
 
@@ -10,10 +9,6 @@ export default function AdminRequest() {
     const userId =
       typeof window !== "undefined" && window.localStorage
         ? localStorage.getItem("accountId")
-        : "";
-    const userName =
-      typeof window !== "undefined" && window.localStorage
-        ? localStorage.getItem("userName")
         : "";
 
     {

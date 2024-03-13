@@ -22,7 +22,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { BiChevronDown } from "react-icons/bi";
-// NOT COMPLETED
 
 const CustomizationEditColorForm = ({
   selectedRow,

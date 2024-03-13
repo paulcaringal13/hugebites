@@ -14,4 +14,3 @@ const AdminInventory = async () => {
 };
 
 export default AdminInventory;
-// NOT COMPLETED

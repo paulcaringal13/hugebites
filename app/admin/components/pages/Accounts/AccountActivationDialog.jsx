@@ -11,8 +11,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 
-// NOT COMPLETED
-
 const AccountActivationDialog = ({
   dialogOpen,
   user,

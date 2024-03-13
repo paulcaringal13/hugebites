@@ -2,6 +2,8 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 
 import { Button } from "@/components/ui/button";
 
+// COMPLETED
+
 export function ButtonLoading() {
   return (
     <Button disabled size="icon">

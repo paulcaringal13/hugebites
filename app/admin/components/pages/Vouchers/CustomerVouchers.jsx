@@ -34,7 +34,6 @@ const CustomerVouchers = ({ data }) => {
     style: "currency",
     currency: "PHP",
   });
-
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -96,7 +95,6 @@ const CustomerVouchers = ({ data }) => {
           <Button
             className="my-auto mx-auto"
             variant="ghost"
-            // NOT COMPLETED
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Email
@@ -171,7 +169,6 @@ const CustomerVouchers = ({ data }) => {
           placeholder="Search"
           className="w-2/6"
         />
-        {/* HIDE COLUMN */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -280,7 +277,6 @@ const CustomerVouchers = ({ data }) => {
             </TableBody>
           )}
         </Table>
-        {/* pagination */}
         <div className="flex items-center justify-end space-x-2 py-4">
           <Button
             variant="outline"

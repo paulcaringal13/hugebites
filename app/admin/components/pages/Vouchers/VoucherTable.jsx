@@ -1,15 +1,11 @@
 "use client";
 import { useState } from "react";
 import * as React from "react";
-import { BiEditAlt } from "react-icons/bi";
-import { BiSolidUserX } from "react-icons/bi";
-import { BiSolidUserCheck } from "react-icons/bi";
 import { Label } from "../../../../../components/ui/label";
 import {
   IoInformationCircleOutline,
   IoCheckmarkCircleOutline,
   IoWarningOutline,
-  IoCloseCircleOutline,
 } from "react-icons/io5";
 import {
   Toast,
@@ -27,14 +23,12 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import { Button } from "../../../../../components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../../../../../components/ui/dropdown-menu";
 import { Input } from "../../../../../components/ui/input";
@@ -46,12 +40,8 @@ import {
   TableHeader,
   TableRow,
 } from "../../../../../components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import {
-  MdOutlineRestoreFromTrash,
-  MdOutlineDeleteOutline,
-} from "react-icons/md";
+import { MdOutlineDeleteOutline } from "react-icons/md";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -121,7 +111,6 @@ const VoucherTable = ({ data, setVoucherArray }) => {
     {
       header: "Delete Voucher",
       id: "remove",
-      // NOT COMPLETED
       cell: ({ row }) => {
         const rowData = row.original;
         return (
@@ -180,7 +169,6 @@ const VoucherTable = ({ data, setVoucherArray }) => {
     },
   ];
 
-  // alert state
   const [alertMessageOpen, setAlertMessageOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState(false);
   const [alertType, setAlertType] = useState(false);
@@ -222,7 +210,6 @@ const VoucherTable = ({ data, setVoucherArray }) => {
           placeholder="Search"
           className="w-2/6"
         />
-        {/* HIDE COLUMN */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -331,7 +318,6 @@ const VoucherTable = ({ data, setVoucherArray }) => {
             </TableBody>
           )}
         </Table>
-        {/* pagination */}
         <div className="flex items-center justify-end space-x-2 py-4">
           <Button
             variant="outline"
@@ -352,7 +338,6 @@ const VoucherTable = ({ data, setVoucherArray }) => {
         </div>
       </div>
 
-      {/* ALERT */}
       {alertMessageOpen ? (
         <ToastProvider swipeDirection="up" duration={3000}>
           <Toast className="w-fit h-fit mr-5" variant={alertType}>

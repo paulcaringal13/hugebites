@@ -24,8 +24,6 @@ import {
 } from "@/components/ui/select";
 import { X } from "lucide-react";
 
-// NOT COMPLETED
-
 const EditAccountForm = ({
   editOpen,
   user,
@@ -34,8 +32,6 @@ const EditAccountForm = ({
   handleEditSuccess,
   setEditFail,
 }) => {
-  const [accountType, setAccountType] = useState("");
-
   const editForm = useForm({
     defaultValues: {
       firstName: user.firstName,
@@ -48,7 +44,7 @@ const EditAccountForm = ({
   });
 
   const { register, handleSubmit, formState, reset, getValues } = editForm;
-  const { errors, isDirty, isValid } = formState;
+  const { errors } = formState;
   const [userRole, setUserRole] = useState(user.roleName);
   const [roles, setRoles] = useState([]);
 
@@ -60,7 +56,6 @@ const EditAccountForm = ({
       }
     );
 
-    // get
     <a href="http://localhost:3000/api/admin/userAccess">Click Here!</a>;
 
     const data = await adminRes.json();
@@ -68,15 +63,10 @@ const EditAccountForm = ({
     setRoles(data);
   };
 
-  console.log(userRole);
-
   const onSubmit = async (data) => {
     const { firstName, lastName, email, contact } = data;
 
     const roleId = roles.filter((i) => i.roleName == userRole);
-
-    console.log(userRole);
-    console.log(roleId);
 
     const editAccountsData = {
       method: "PUT",

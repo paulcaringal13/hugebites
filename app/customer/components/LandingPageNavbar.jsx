@@ -3,23 +3,13 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import { FaUserAlt } from "react-icons/fa";
-import { BiCart } from "react-icons/bi";
 import bgWaveHeader from "../../../public/images/bgWaveHeader.png";
-
-import React from "react";
 
 const LandingPageNavbar = () => {
   const router = useRouter();
@@ -48,33 +38,10 @@ const LandingPageNavbar = () => {
               onClick={() => router.replace("/customer")}
             >
               <img
-                // className="h-15 w-auto"
                 style={{ height: "100px", width: "auto" }}
                 src="/images/Logo.png"
               />
             </div>
-            {/* <div className="hidden sm:ml-6 sm:block md:ml-auto my-auto">
-              <div className="flex space-x-4 ">
-                <Button
-                  href="#"
-                  className="bg-transparent text-black hover:bg-primary hover:text-white rounded-md px-3 py-2 text-sm font-medium"
-                >
-                  Category
-                </Button>
-                <Button
-                  href="#"
-                  className="bg-transparent text-black hover:bg-primary hover:text-white rounded-md px-3 py-2 text-sm font-medium"
-                >
-                  Menu
-                </Button>
-                <Button
-                  href="#"
-                  className="bg-transparent text-black hover:bg-primary hover:text-white rounded-md px-3 py-2 text-sm font-medium"
-                >
-                  About us
-                </Button>
-              </div>
-            </div> */}
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             <div className="relative ml-3 bg-transparent">

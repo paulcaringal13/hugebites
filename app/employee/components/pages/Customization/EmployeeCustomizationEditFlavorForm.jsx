@@ -278,7 +278,6 @@ const EmployeeCustomizationEditFlavorForm = ({
           <DialogFooter>
             <Button
               disabled={!isDirty || !isValid}
-              // type="submit"
               className="mt-3 hover:bg-ring"
               onClick={() => buttonRef.current.click()}
             >

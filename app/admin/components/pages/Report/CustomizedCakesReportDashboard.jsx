@@ -5,7 +5,6 @@ import { Chart as ChartJS } from "chart.js/auto";
 import { Doughnut } from "react-chartjs-2";
 import "react-day-picker/dist/style.css";
 import { Label } from "@/components/ui/label";
-// NOT COMPLETED
 
 const CustomizedCakesReportDashboard = ({ userData, reportType }) => {
   const [loggedInUser, setLoggedInUser] = useState({});
@@ -70,11 +69,11 @@ const CustomizedCakesReportDashboard = ({ userData, reportType }) => {
               },
             }}
             data={{
-              labels: reportDatas.map((i) => i.cakeType), // ['prod1', 'prod2']
+              labels: reportDatas.map((i) => i.cakeType),
               datasets: [
                 {
                   label: "Cakes Ordered",
-                  data: reportDatas.map((i) => i.rowCount), // ['80', '70']
+                  data: reportDatas.map((i) => i.rowCount),
                   backgroundColor: ["#ff3945", "rgba(2,138,136, 0.6)"],
                 },
               ],

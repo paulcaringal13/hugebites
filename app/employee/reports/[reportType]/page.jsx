@@ -6,7 +6,7 @@ import EmployeeCustomizationReport from "../../components/pages/Report/EmployeeC
 import EmployeeCustomizedCakesReport from "../../components/pages/Report/EmployeeCustomizedCakesReport";
 import EmployeeTotalEarnings from "../../components/pages/Report/EmployeeTotalEarnings";
 import EmployeeMonthlyOrders from "../../components/pages/Report/EmployeeMonthlyOrders";
-
+// COMPLETED
 export default function EmployeeReports(path) {
   const { params } = path;
   const { reportType } = params;

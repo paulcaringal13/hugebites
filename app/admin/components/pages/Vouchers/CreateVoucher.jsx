@@ -10,20 +10,12 @@ import {
   DialogContent,
   DialogDescription,
   DialogFooter,
-  // NOT COMPLETED
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "../../../../../components/ui/dialog";
 import { Input } from "../../../../../components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { X } from "lucide-react";
 import {
   Toast,
@@ -37,7 +29,6 @@ import { Textarea } from "@/components/ui/textarea";
 
 const CreateAccountForm = ({ refreshTable }) => {
   const [openCreate, setOpenCreate] = useState(false);
-  const [accountType, setAccountType] = useState("");
   const [createSuccess, setCreateSuccess] = useState(false);
   const [createFail, setCreateFail] = useState(false);
 

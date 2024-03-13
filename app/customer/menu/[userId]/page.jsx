@@ -18,7 +18,6 @@ export default function Menu(path) {
   const [colors, setColors] = useState([]);
   const [shapes, setShapes] = useState([]);
 
-  // GET ALL USER DATA NEEDED
   async function getUserData() {
     const res = await fetch(
       `http://localhost:3000/api/customer/home?` +
@@ -32,7 +31,6 @@ export default function Menu(path) {
     setUserData(data);
   }
 
-  // GET ALL CATEGORIES
   async function getAllCategories() {
     const res = await fetch(
       `http://localhost:3000/api/customer/menu/categories`,
@@ -43,10 +41,11 @@ export default function Menu(path) {
 
     const data = await res.json();
 
-    setCategoriesData(data);
+    const x = data.filter((i) => i.isRemoved != 1);
+
+    setCategoriesData(x);
   }
 
-  // GET ALL PRODUCTS AND FIND WHO IS REMOVED FROM THE MENU
   const getAllProducts = async () => {
     const res = await fetch(
       `http://localhost:3000/api/customer/menu/product/products`,
@@ -62,7 +61,6 @@ export default function Menu(path) {
     setProductsData(availableProducts);
   };
 
-  // GET ALL FLAVORS
   const getFlavor = async () => {
     const res = await fetch(`http://localhost:3000/api/customization/flavor`, {
       cache: "no-store",
@@ -73,7 +71,6 @@ export default function Menu(path) {
     setFlavors(flavors);
   };
 
-  // // GET ALL ADD ONS
   const getAddOns = async () => {
     const res = await fetch(`http://localhost:3000/api/customization/addOns`, {
       cache: "no-store",
@@ -84,7 +81,6 @@ export default function Menu(path) {
     setAddOnsArray(addOns);
   };
 
-  // GET ALL SHAPES
   const getShape = async () => {
     const res = await fetch(`http://localhost:3000/api/customization/shape`, {
       cache: "no-store",
@@ -105,7 +101,6 @@ export default function Menu(path) {
     setColors(color);
   };
 
-  // GET ALL SIZES TO OFFER ON CUSTOMIZED PROD
   const getSizes = async () => {
     const res = await fetch(
       `http://localhost:3000/api/customer/menu/packaging`,
@@ -119,7 +114,6 @@ export default function Menu(path) {
     setPackagingSizes(sizes);
   };
 
-  // GET DEFAULT PRODUCTS
   const getSpecificProductOffers = async () => {
     const res = await fetch(`http://localhost:3000/api/default-products`, {
       cache: "no-store",
@@ -133,12 +127,9 @@ export default function Menu(path) {
     setOfferedProducts(availableOfferedProducts);
   };
 
-  // HANDLE AND COMBINE GET DATAS
   const handleProducts = () => {
-    // GET CATEGORIES THAT ARE NOT REMOVED FROM THE MENU
     const availableCategories = categoriesData.filter((i) => i.isRemoved == 0);
 
-    // GET PRODUCTS THAT ARE HAVE CATEGORY THAT IS AVAILABLE ON THE MENU
     const productsWithAvailableCategories = productsData.filter((prod) => {
       const { categoryId } = prod;
 
@@ -149,7 +140,6 @@ export default function Menu(path) {
       return isProductCategoryNotRemoved;
     });
 
-    // GET OFFERED PRODUCTS WITH SIZES. PRODUCTS WITHOUT SIZES ARE NOT OFFERED ON THE MENU
     const productsWithSizes = productsWithAvailableCategories.map((prod) => {
       const { productId } = prod;
 

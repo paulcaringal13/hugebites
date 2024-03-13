@@ -1,9 +1,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Gluten:wght@700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Russo+One&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Russo+One&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* 356, 100%, 66% */
 
 @layer base {
   :root {
@@ -85,10 +85,6 @@ a:hover {
   color: #ff3333;
 }
 
-/* // primary=#FDF9F9
-// secondary=#EE7376 hover=#ea5054
-// tertiary=#7C5F35
- */
 div.addons-box::-webkit-scrollbar {
   display: none;
 }

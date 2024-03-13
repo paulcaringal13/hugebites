@@ -49,7 +49,6 @@ import {
   IoWarningOutline,
 } from "react-icons/io5";
 
-// NOT COMPLETED
 const CustomizationTableTabs = ({
   sizesData,
   shapesData,
@@ -334,14 +333,6 @@ const CustomizationTableTabs = ({
               <CardTitle className="text-2xl my-2 ms-2">
                 Customization Sizes
               </CardTitle>
-              <div className="flex flex-row justify-between ms-auto">
-                <Button
-                  className="mx-1 bg-transparent text-black border hover:border-ring hover:text-white hover:bg-primary"
-                  onClick={() => openAddSize()}
-                >
-                  Add Size
-                </Button>
-              </div>
             </CardHeader>
             <CardContent className="px-6">
               <CustomizationSizesTable
@@ -460,7 +451,6 @@ const CustomizationTableTabs = ({
           addAddOnsOpen={addAddOnsOpen}
           setAddAddOnsOpen={setAddAddOnsOpen}
           closeAddAddOns={closeAddAddOns}
-          // UPDATING FOR FRONTEND
           addOnsTable={addOnsTable}
           setAddOnsTable={setAddOnsTable}
         />
@@ -468,14 +458,10 @@ const CustomizationTableTabs = ({
 
       {editAddOnsOpen ? (
         <CustomizationEditAddOnsForm
-          // DATA NEEDED
           selectedRow={selectedRow}
-          // OPEN DIALOG STATE
           editAddOnsOpen={editAddOnsOpen}
           setEditAddOnsOpen={setEditAddOnsOpen}
-          // CLOSING FORM
           closeEditAddOns={closeEditAddOns}
-          // SIZE TABLE FOR UPDATING UI
           addOnsTable={addOnsTable}
           setAddOnsTable={setAddOnsTable}
         />
@@ -509,7 +495,6 @@ const CustomizationTableTabs = ({
               <Button
                 className="hover:bg-ring active:bg-primary-foreground duration-300 w-fit"
                 onClick={async () => {
-                  // // UPDATE IN THE UI
                   const updatedTable = addOnsTable.map((i) => {
                     i.addOnsId == selectedRow.addOnsId
                       ? (i.isAddOnsRemoved = 1)
@@ -520,7 +505,6 @@ const CustomizationTableTabs = ({
                     return { ...i };
                   });
                   setAddOnsTable(updatedTable);
-                  // // SET DATABASE IS REMOVED DATA
                   const removePut = {
                     method: "PUT",
                     headers: {
@@ -581,7 +565,6 @@ const CustomizationTableTabs = ({
               <Button
                 className="hover:bg-blue-600 active:bg-blue-300 bg-blue-500 duration-300 w-fit"
                 onClick={async () => {
-                  // // UPDATE IN THE UI
                   const updatedTable = addOnsTable.map((i) => {
                     i.addOnsId == selectedRow.addOnsId
                       ? (i.isAddOnsRemove = 0)
@@ -592,7 +575,6 @@ const CustomizationTableTabs = ({
                     return { ...i };
                   });
                   setAddOnsTable(updatedTable);
-                  // // SET DATABASE IS REMOVED DATA
                   const relaunchPut = {
                     method: "PUT",
                     headers: {
@@ -629,7 +611,6 @@ const CustomizationTableTabs = ({
           addFlavorOpen={addFlavorOpen}
           setAddFlavorOpen={setAddFlavorOpen}
           closeAddFlavor={closeAddFlavor}
-          // UPDATING FOR FRONTEND
           flavorsTable={flavorsTable}
           setFlavorsTable={setFlavorsTable}
           categoryList={categoryList}
@@ -638,14 +619,10 @@ const CustomizationTableTabs = ({
 
       {editFlavorOpen ? (
         <CustomizationEditFlavorForm
-          // DATA NEEDED
           selectedRow={selectedRow}
-          // OPEN DIALOG STATE
           editFlavorOpen={editFlavorOpen}
           setEditFlavorOpen={setEditFlavorOpen}
-          // CLOSING FORM
           closeEditFlavor={closeEditFlavor}
-          // SIZE TABLE FOR UPDATING UI
           flavorsTable={flavorsTable}
           setFlavorsTable={setFlavorsTable}
           categoryList={categoryList}
@@ -680,7 +657,6 @@ const CustomizationTableTabs = ({
               <Button
                 className="hover:bg-ring active:bg-primary-foreground duration-300 w-fit"
                 onClick={async () => {
-                  // // UPDATE IN THE UI
                   const updatedTable = flavorsTable.map((i) => {
                     i.flavorId == selectedRow.flavorId
                       ? (i.isFlavorRemoved = 1)
@@ -691,7 +667,6 @@ const CustomizationTableTabs = ({
                     return { ...i };
                   });
                   setFlavorsTable(updatedTable);
-                  // // SET DATABASE IS REMOVED DATA
                   const removePut = {
                     method: "PUT",
                     headers: {
@@ -752,7 +727,6 @@ const CustomizationTableTabs = ({
               <Button
                 className="hover:bg-blue-600 active:bg-blue-300 bg-blue-500 duration-300 w-fit"
                 onClick={async () => {
-                  // // UPDATE IN THE UI
                   const updatedTable = flavorsTable.map((i) => {
                     i.flavorId == selectedRow.flavorId
                       ? (i.isFlavorRemoved = 0)
@@ -763,7 +737,6 @@ const CustomizationTableTabs = ({
                     return { ...i };
                   });
                   setFlavorsTable(updatedTable);
-                  // // SET DATABASE IS REMOVED DATA
                   const relaunchPut = {
                     method: "PUT",
                     headers: {
@@ -800,7 +773,6 @@ const CustomizationTableTabs = ({
           addColorOpen={addColorOpen}
           setAddColorOpen={setAddColorOpen}
           closeAddColor={closeAddColor}
-          // UPDATING FOR FRONTEND
           colorsTable={colorsTable}
           setColorsTable={setColorsTable}
         />
@@ -808,14 +780,10 @@ const CustomizationTableTabs = ({
 
       {editColorOpen ? (
         <CustomizationEditColorForm
-          // DATA NEEDED
           selectedRow={selectedRow}
-          // OPEN DIALOG STATE
           editColorOpen={editColorOpen}
           setEditColorOpen={setEditColorOpen}
-          // CLOSING FORM
           closeEditColor={closeEditColor}
-          // SIZE TABLE FOR UPDATING UI
           colorsTable={colorsTable}
           setColorsTable={setColorsTable}
         />
@@ -849,7 +817,6 @@ const CustomizationTableTabs = ({
               <Button
                 className="hover:bg-ring active:bg-primary-foreground duration-300 w-fit"
                 onClick={async () => {
-                  // // UPDATE IN THE UI
                   const updatedTable = colorsTable.map((i) => {
                     i.colorId == selectedRow.colorId
                       ? (i.isColorRemoved = 1)
@@ -860,7 +827,6 @@ const CustomizationTableTabs = ({
                     return { ...i };
                   });
                   setColorsTable(updatedTable);
-                  // // SET DATABASE IS REMOVED DATA
                   const removePut = {
                     method: "PUT",
                     headers: {
@@ -921,7 +887,6 @@ const CustomizationTableTabs = ({
               <Button
                 className="hover:bg-blue-600 active:bg-blue-300 bg-blue-500 duration-300 w-fit"
                 onClick={async () => {
-                  // // UPDATE IN THE UI
                   const updatedTable = colorsTable.map((i) => {
                     i.colorId == selectedRow.colorId
                       ? (i.isColorRemoved = 0)
@@ -932,7 +897,6 @@ const CustomizationTableTabs = ({
                     return { ...i };
                   });
                   setColorsTable(updatedTable);
-                  // // SET DATABASE IS REMOVED DATA
                   const relaunchPut = {
                     method: "PUT",
                     headers: {
@@ -967,7 +931,6 @@ const CustomizationTableTabs = ({
           addShapeOpen={addShapeOpen}
           setAddShapeOpen={setAddShapeOpen}
           closeAddShape={closeAddShape}
-          // UPDATING FOR FRONTEND
           shapesTable={shapesTable}
           setShapesTable={setShapesTable}
         />
@@ -975,14 +938,10 @@ const CustomizationTableTabs = ({
 
       {editShapeOpen ? (
         <CustomizationEditShapeForm
-          // DATA NEEDED
           selectedRow={selectedRow}
-          // OPEN DIALOG STATE
           editShapeOpen={editShapeOpen}
           setEditShapeOpen={setEditShapeOpen}
-          // CLOSING FORM
           closeEditShape={closeEditShape}
-          // SIZE TABLE FOR UPDATING UI
           shapesTable={shapesTable}
           setShapesTable={setShapesTable}
         />
@@ -1016,7 +975,6 @@ const CustomizationTableTabs = ({
               <Button
                 className="hover:bg-ring active:bg-primary-foreground duration-300 w-fit"
                 onClick={async () => {
-                  // // UPDATE IN THE UI
                   const updatedTable = shapesTable.map((i) => {
                     i.shapeId == selectedRow.shapeId
                       ? (i.isShapeRemoved = 1)
@@ -1027,7 +985,6 @@ const CustomizationTableTabs = ({
                     return { ...i };
                   });
                   setShapesTable(updatedTable);
-                  // // SET DATABASE IS REMOVED DATA
                   const removePut = {
                     method: "PUT",
                     headers: {
@@ -1088,7 +1045,6 @@ const CustomizationTableTabs = ({
               <Button
                 className="hover:bg-blue-600 active:bg-blue-300 bg-blue-500 duration-300 w-fit"
                 onClick={async () => {
-                  // // UPDATE IN THE UI
                   const updatedTable = shapesTable.map((i) => {
                     i.shapeId == selectedRow.shapeId
                       ? (i.isSizeRemoved = 0)
@@ -1099,7 +1055,6 @@ const CustomizationTableTabs = ({
                     return { ...i };
                   });
                   setShapesTable(updatedTable);
-                  // // SET DATABASE IS REMOVED DATA
                   const relaunchPut = {
                     method: "PUT",
                     headers: {
@@ -1129,15 +1084,11 @@ const CustomizationTableTabs = ({
         </Dialog>
       )}
 
-      {/* SIZE MODALS */}
       {addSizeOpen ? (
         <CustomizationAddSizeForm
           addSizeOpen={addSizeOpen}
           setAddSizeOpen={setAddSizeOpen}
           closeAddSize={closeAddSize}
-          // UPDATING FOR FRONTEND
-          // updateProductTable={updateProductTable}
-          // FOR VALIDATION
           sizesTable={sizesTable}
           setSizesTable={setSizesTable}
           productsData={productsData}
@@ -1146,17 +1097,12 @@ const CustomizationTableTabs = ({
 
       {editSizeOpen ? (
         <CustomizationEditSizeForm
-          // DATA NEEDED
           selectedRow={selectedRow}
-          // OPEN DIALOG STATE
           editSizeOpen={editSizeOpen}
           setEditSizeOpen={setEditSizeOpen}
-          // CLOSING FORM
           closeEditSize={closeEditSize}
-          // SIZE TABLE FOR UPDATING UI
           sizesTable={sizesTable}
           setSizesTable={setSizesTable}
-          // PRODUCTS TABLE FOR SELECTING WHICH PRODUCT THE ADD ON HAS RELATIONSHIP
           productsData={productsData}
         />
       ) : null}
@@ -1186,7 +1132,6 @@ const CustomizationTableTabs = ({
               <Button
                 className="hover:bg-ring active:bg-primary-foreground duration-300 w-fit"
                 onClick={async () => {
-                  // // UPDATE IN THE UI
                   const updatedTable = sizesTable.map((i) => {
                     i.packagingId == selectedRow.packagingId
                       ? (i.isSizeRemoved = 1)
@@ -1197,7 +1142,6 @@ const CustomizationTableTabs = ({
                     return { ...i };
                   });
                   setSizesTable(updatedTable);
-                  // // SET DATABASE IS REMOVED DATA
                   const removePut = {
                     method: "PUT",
                     headers: {
@@ -1257,7 +1201,6 @@ const CustomizationTableTabs = ({
               <Button
                 className="hover:bg-blue-600 active:bg-blue-300 bg-blue-500 duration-300 w-fit"
                 onClick={async () => {
-                  // // UPDATE IN THE UI
                   const updatedTable = sizesTable.map((i) => {
                     i.packagingId == selectedRow.packagingId
                       ? (i.isSizeRemoved = 0)
@@ -1268,7 +1211,6 @@ const CustomizationTableTabs = ({
                     return { ...i };
                   });
                   setSizesTable(updatedTable);
-                  // // SET DATABASE IS REMOVED DATA
                   const relaunchPut = {
                     method: "PUT",
                     headers: {
@@ -1298,7 +1240,6 @@ const CustomizationTableTabs = ({
         </Dialog>
       )}
 
-      {/* ALERT */}
       {alertMessageOpen ? (
         <ToastProvider swipeDirection="up" duration={3000}>
           <Toast className="w-fit h-fit mr-5" variant={alertType}>

@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import EmployeeMiniAdminSidebar from "../components/EmployeeMiniAdminSidebar";
 import EmployeeCustomizationTableTabs from "../components/pages/Customization/EmployeeCustomizationTableTabs";
 
+// COMPLETED
+
 const EmployeeCustomization = () => {
   const [sizesData, setSizesData] = useState([]);
   const [colorsData, setColorsData] = useState([]);
@@ -12,7 +14,6 @@ const EmployeeCustomization = () => {
   const [productsData, setProductsData] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
 
-  // HINDI FILTERED YUNG DATA (FOR SIZE ADD AND UPDATE PURPOSES)
   const getProducts = async () => {
     const res = await fetch(
       `http://localhost:3000/api/customization/packaging/product`,

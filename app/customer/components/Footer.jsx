@@ -10,8 +10,6 @@ import { FaPhoneVolume } from "react-icons/fa6";
 import { MdOutlineMail } from "react-icons/md";
 import { FaFacebookF, FaInstagram } from "react-icons/fa";
 
-// COMPLETED
-
 const Footer = () => {
   return (
     <footer

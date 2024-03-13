@@ -33,15 +33,11 @@ import {
   ToastViewport,
 } from "@/components/ui/toast";
 
-// NOT COMPLETED
-
 const CreateAccountForm = ({ refreshTable }) => {
   const [openCreate, setOpenCreate] = useState(false);
-  // const [roleId, setRoleId] = useState(0);
   const [userRole, setUserRole] = useState("");
   const [createSuccess, setCreateSuccess] = useState(false);
   const [createFail, setCreateFail] = useState(false);
-
   const [roles, setRoles] = useState([]);
 
   const getRoles = async () => {
@@ -52,14 +48,10 @@ const CreateAccountForm = ({ refreshTable }) => {
       }
     );
 
-    // get
-    // <a href="http://localhost:3000/api/admin/userAccess">Click Here!</a>;
-
     const data = await adminRes.json();
 
     setRoles(data);
   };
-  console.log(roles);
   const openCreateDialog = () => {
     setOpenCreate(true);
     reset();

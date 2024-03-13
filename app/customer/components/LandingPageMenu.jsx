@@ -2,12 +2,6 @@
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
-import CategoryIconCake from "../../../public/images/categories/CategoryIconCake.png";
-import CategoryIconCupcake from "../../../public/images/categories/CategoryIconCupcake.png";
-import CategoryIconDog from "../../../public/images/categories/CategoryIconDog.png";
-import CategoryIconAll from "../../../public/images/categories/CategoryIconAll.png";
-
-import MenuCart from "../components/MenuCart";
 import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
@@ -15,16 +9,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
 
-const LandingPageMenu = ({ prodArray, categoryArray }) => {
+const LandingPageMenu = ({ prodArray }) => {
   const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "PHP",
   });
-  const router = useRouter();
-  const pathname = usePathname();
-  const [productList, setProductList] = useState([]);
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
@@ -41,8 +31,6 @@ const LandingPageMenu = ({ prodArray, categoryArray }) => {
         maxPrice: max,
       };
     });
-    // FOR ALL PRODUCTS
-    setProductList(prods);
     setProducts(prods);
   }, [prodArray]);
 
@@ -104,24 +92,7 @@ const LandingPageMenu = ({ prodArray, categoryArray }) => {
                               <TooltipProvider key={i.packagingId}>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <div
-                                      className="h-7 w-7 border-2 p-1 rounded-full text-xs text-center active:bg-primary hover:outline-none hover:border-rose-400 hover:bg-rose-400 hover:text-white"
-                                      // update price pag nag cliclick
-                                      // onClick={() => {
-                                      // setProducts((prev) => {
-                                      //   // find index of product sa array
-                                      //   const idx = prev.findIndex(
-                                      //     (j) => j.productId === prod.productId
-                                      //   );
-                                      //   const newProds = [...prev];
-                                      //   newProds[idx] = {
-                                      //     ...newProds[idx],
-                                      //     priceDisplay: i.packagingPrice,
-                                      //   };
-                                      //   return newProds;
-                                      // });
-                                      // }}
-                                    >
+                                    <div className="h-7 w-7 border-2 p-1 rounded-full text-xs text-center active:bg-primary hover:outline-none hover:border-rose-400 hover:bg-rose-400 hover:text-white">
                                       {Array.from(`${i.size}`)[0]}
                                       {Array.from(`${i.size}`)[1]}
                                     </div>

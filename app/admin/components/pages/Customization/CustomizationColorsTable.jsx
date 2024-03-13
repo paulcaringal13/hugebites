@@ -31,7 +31,6 @@ import {
 import { BiEditAlt, BiSolidUserCheck, BiSolidUserX } from "react-icons/bi";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 import { Label } from "@/components/ui/label";
-// NOT COMPLETED
 
 const CustomizationColorsTable = ({
   data,
@@ -60,23 +59,6 @@ const CustomizationColorsTable = ({
         );
       },
     },
-    // {
-    //   accessorKey: "colorName",
-    //   header: ({ column }) => {
-    //     return (
-    //       <Button
-    //         variant="ghost"
-    //         className="mx-auto my-auto"
-    //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-
-    //       >
-    //         Color Name
-    //         <span className="text-xs ml-2">Sort</span>
-    //         <ArrowUpDown className="h-3 w-3" />
-    //       </Button>
-    //     );
-    //   },
-    // },
     {
       header: "Color Name",
       id: "colorName",
@@ -215,7 +197,6 @@ const CustomizationColorsTable = ({
           placeholder="Search"
           className="w-2/6"
         />
-        {/* hide columns */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -329,7 +310,6 @@ const CustomizationColorsTable = ({
             </TableBody>
           )}
         </Table>
-        {/* pagination */}
         <div className="flex items-center justify-end space-x-2 py-4 me-5 ">
           <Button
             variant="outline"

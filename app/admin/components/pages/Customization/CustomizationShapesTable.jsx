@@ -33,7 +33,6 @@ import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { Label } from "@/components/ui/label";
 
-// NOT COMPLETED
 const CustomizationShapesTable = ({
   data,
   openEditShape,
@@ -195,7 +194,6 @@ const CustomizationShapesTable = ({
           placeholder="Search"
           className="w-2/6"
         />
-        {/* hide columns */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -309,7 +307,6 @@ const CustomizationShapesTable = ({
             </TableBody>
           )}
         </Table>
-        {/* pagination */}
         <div className="flex items-center justify-end space-x-2 py-4 me-5 ">
           <Button
             variant="outline"

@@ -42,7 +42,6 @@ import {
 } from "@/components/ui/table";
 import { X } from "lucide-react";
 
-// NOT COMPLETED
 const IngredientWasteTable = ({
   data,
   closeWasteLog,

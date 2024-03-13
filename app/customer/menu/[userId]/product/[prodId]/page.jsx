@@ -10,17 +10,10 @@ export default function Product({ params }) {
   const [packagingSizes, setPackagingSizes] = useState([]);
   const [colors, setColors] = useState([]);
   const [shapes, setShapes] = useState([]);
-
-  // OFFERED ADD ONS
   const [addOnsArray, setAddOnsArray] = useState([]);
   const [flavors, setFlavors] = useState([]);
-
-  // SPECIFIC PRODUCT DATA
   const [selectedProduct, setSelectedProduct] = useState([]);
-  // SPECIFIC PRODUCT SIZES FOR CUSTOMIZED FEATURE. BECAUSE OFFERED PRODUCT HAS ITS OWN SIZE
-  const [selectedProductSizes, setSelectedProductSizes] = useState([]);
 
-  // GET ALL USER DATA NEEDED
   async function getUserData() {
     const res = await fetch(
       `http://localhost:3000/api/customer/home?` +
@@ -34,7 +27,6 @@ export default function Product({ params }) {
     setUserData(data);
   }
 
-  // GET SPECIFIC PRODUCT DATA
   const getSpecificProduct = async () => {
     const res = await fetch(
       `http://localhost:3000/api/customer/menu/product/specificProduct?` +
@@ -49,7 +41,6 @@ export default function Product({ params }) {
     setSelectedProduct(product);
   };
 
-  // GET ALL FLAVORS
   const getFlavor = async () => {
     const res = await fetch(`http://localhost:3000/api/customization/flavor`, {
       cache: "no-store",
@@ -60,10 +51,8 @@ export default function Product({ params }) {
     const x = flavors.filter((i) => i.isFlavorRemoved == 0);
 
     setFlavors(x);
-    console.log(x);
   };
 
-  // GET ALL ADD ONS
   const getAddOns = async () => {
     const res = await fetch(`http://localhost:3000/api/customization/addOns`, {
       cache: "no-store",
@@ -75,7 +64,6 @@ export default function Product({ params }) {
     setAddOnsArray(x);
   };
 
-  // GET ALL SHAPES
   const getShape = async () => {
     const res = await fetch(`http://localhost:3000/api/customization/shape`, {
       cache: "no-store",
@@ -87,7 +75,6 @@ export default function Product({ params }) {
     setShapes(x);
   };
 
-  // GET ALL COLOR
   const getColor = async () => {
     const res = await fetch(`http://localhost:3000/api/customization/color`, {
       cache: "no-store",
@@ -99,7 +86,6 @@ export default function Product({ params }) {
     setColors(x);
   };
 
-  // GET ALL SIZES TO OFFER ON CUSTOMIZED PROD
   const getSizes = async () => {
     const res = await fetch(
       `http://localhost:3000/api/customer/menu/packaging`,

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import * as React from "react";
 import {
   flexRender,
@@ -9,13 +9,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
 import { Input } from "../../../components/ui/input";
@@ -27,7 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "../../../components/ui/table";
-import { BiChevronDown } from "react-icons/bi";
+import { ArrowUpDown } from "lucide-react";
 import { FaRegEye } from "react-icons/fa6";
 import { TbMailCancel, TbMail } from "react-icons/tb";
 
@@ -39,7 +37,6 @@ const RequestTable = ({ data, openViewRequest, openCancelRequest }) => {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
-  const [columnSelected, setColumnSelected] = useState("");
   const [search, setSearch] = useState("");
 
   const columns = [
@@ -196,7 +193,6 @@ const RequestTable = ({ data, openViewRequest, openCancelRequest }) => {
           placeholder="Search"
           className="w-2/6"
         />
-        {/* hide columns */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -261,30 +257,12 @@ const RequestTable = ({ data, openViewRequest, openCancelRequest }) => {
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {/* {cell.column.id != "refundMessage" ? ( */}
                       <div className="text-center">
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
                         )}
                       </div>
-                      {/* ) : (
-                        <div className="text-center my-auto flex flex-row">
-                          <h1 className="my-auto mx-auto text-center">
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </h1>
-                          <div
-                            className="h-fit w-fit border-2 p-2 rounded-full text-md mx-auto cursor-pointer transform transition-all hover:scale-125 active:scale-110  active:bg-white duration-100"
-                            variant="outline"
-                            onClick={() => openAttachImage(row.original)}
-                          >
-                            <RiAttachment2 />
-                          </div>
-                        </div>
-                      )} */}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -301,7 +279,6 @@ const RequestTable = ({ data, openViewRequest, openCancelRequest }) => {
             )}
           </TableBody>
         </Table>
-        {/* pagination */}
         <div className="flex items-center justify-end space-x-2 py-4 me-5 ">
           <Button
             variant="outline"

@@ -1,4 +1,3 @@
-import { Lexend } from "next/font/google";
 import "../styles/globals.css";
 import Footer from "./components/Footer";
 

@@ -14,7 +14,6 @@ import { X } from "lucide-react";
 import * as React from "react";
 import lodash from "lodash";
 
-// NOT COMPLETED
 const ViewFeedbacks = ({
   viewFeedbacksOpen,
   setViewFeedbacksOpen,
@@ -23,7 +22,6 @@ const ViewFeedbacks = ({
 }) => {
   const [averageRating, setAverageRating] = useState(0);
   const [feedback, setFeedback] = useState([]);
-
   const [pageSize, setPageSize] = useState(3);
 
   const pagesCount = Math.ceil(feedback.length / pageSize);
@@ -80,7 +78,6 @@ const ViewFeedbacks = ({
 
   return (
     <>
-      {/* View Feedback */}
       <Dialog open={viewFeedbacksOpen} onOpenChange={setViewFeedbacksOpen}>
         <DialogContent className="max-w-full max-h-full md:w-[90%] md:h-[85%] p-10 flex flex-col">
           <DialogHeader>

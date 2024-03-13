@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 
-// NOT COMPLETED
 const TotalEarnings = () => {
   const [orderDatas, setOrderDatas] = useState([]);
 
@@ -203,7 +202,6 @@ const TotalEarnings = () => {
                   label: "No. of Orders",
                   data: orderDatas.map((i) => i.totalOrders),
                   backgroundColor: ["#ff3945"],
-                  // borderColor: ["#ff3945"],
                   tension: 0.1,
                 },
               ],
@@ -245,7 +243,6 @@ const TotalEarnings = () => {
                   label: "No. of Orders",
                   data: orderDatas.map((i) => i.totalOrders),
                   backgroundColor: ["#ff3945"],
-                  // borderColor: ["#ff3945"],
                   tension: 0.1,
                 },
               ],

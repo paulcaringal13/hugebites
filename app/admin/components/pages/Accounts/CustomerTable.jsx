@@ -26,17 +26,11 @@ import {
 } from "react-icons/io5";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "../../../../../components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../../../../components/ui/dropdown-menu";
 import { Input } from "../../../../../components/ui/input";
@@ -50,19 +44,19 @@ import {
 } from "../../../../../components/ui/table";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
-// NOT COMPLETED
-
 const CustomerTable = ({ data }) => {
   const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "PHP",
   });
-
   const [openUseVoucher, setOpenUseVoucher] = useState(false);
   const [voucher, setVoucher] = useState({});
   const [userId, setUserId] = useState(0);
-
   const [voucherArray, setVoucherArray] = useState([]);
+  const [alertMessageOpen, setAlertMessageOpen] = useState(false);
+  const [alertTitle, setAlertTitle] = useState(false);
+  const [alertType, setAlertType] = useState(false);
+  const [alertMessage, setAlertMessage] = useState(false);
 
   const getVouchers = async () => {
     const res = await fetch(`http://localhost:3000/api/admin/voucher`, {
@@ -101,12 +95,6 @@ const CustomerTable = ({ data }) => {
       console.log(error);
     }
   };
-
-  // alert state
-  const [alertMessageOpen, setAlertMessageOpen] = useState(false);
-  const [alertTitle, setAlertTitle] = useState(false);
-  const [alertType, setAlertType] = useState(false);
-  const [alertMessage, setAlertMessage] = useState(false);
 
   const openRequestAlert = () => {
     setAlertMessageOpen(true);
@@ -276,7 +264,6 @@ const CustomerTable = ({ data }) => {
           placeholder="Search"
           className="w-2/6"
         />
-        {/* HIDE COLUMN */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -385,7 +372,6 @@ const CustomerTable = ({ data }) => {
             </TableBody>
           )}
         </Table>
-        {/* pagination */}
         <div className="flex items-center justify-end space-x-2 py-4">
           <Button
             variant="outline"
@@ -456,7 +442,6 @@ const CustomerTable = ({ data }) => {
           </Dialog>
         )}
 
-        {/* ALERT */}
         {alertMessageOpen ? (
           <ToastProvider swipeDirection="up" duration={3000}>
             <Toast className="w-fit h-fit mr-5" variant={alertType}>

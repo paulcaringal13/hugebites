@@ -6,21 +6,16 @@ import shape from "../../public/images/shape.png";
 import customizeCakeBg from "../../public/images/customizeCakeBg.jpg";
 import { Button } from "@/components/ui/button";
 import LandingPageNavbar from "./components/LandingPageNavbar";
-import Footer from "./components/Footer";
 import LandingPageMenu from "./components/LandingPageMenu";
 import { useRouter } from "next/navigation";
 
 const Page = () => {
   const router = useRouter();
 
-  // PRODUCTS
   const [productsData, setProductsData] = useState([]);
-  // CATEGORIES
   const [categoriesData, setCategoriesData] = useState([]);
-  // SIZES / PACKAGING
   const [packagingSizes, setPackagingSizes] = useState([]);
 
-  // FINAL PRODUCTS ARRAY
   const [prodArray, setProdArray] = useState([]);
 
   const getAllProducts = async () => {
@@ -104,7 +99,7 @@ const Page = () => {
 
   return (
     <>
-      <section id="hero">
+      <section id="dark">
         <div
           style={{
             position: "absolute",
@@ -206,7 +201,7 @@ const Page = () => {
               <h1 className="font-bold text-md p-3 ps-2 pe-2 rounded-lg w-3/6 mx-auto mb-3">
                 AND
               </h1>
-              <h1 className="font-light text-4xl p-3 ps-2 pe-2 rounded-lg w-3/6 mx-auto mb-5 font-gluten ">
+              <h1 className="font-light text-4xl p-3 ps-2 pe-2 rounded-lg w-3/6 mx-auto mb-5 font-poppins ">
                 CUSTOMIZE YOUR OWN CAKE
               </h1>
             </div>

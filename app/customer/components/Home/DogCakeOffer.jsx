@@ -1,8 +1,6 @@
 "use client";
 import dogBday from "../../../../public/images/dogBday.svg";
 
-// COMPLETED
-
 const DogCakeOffer = () => {
   return (
     <div className="h-[750px] w-full mt-10">

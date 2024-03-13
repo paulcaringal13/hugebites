@@ -1,18 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { BsChevronRight, BsChevronLeft } from "react-icons/bs";
-import { RiCakeLine } from "react-icons/ri";
-import { LuShoppingBasket } from "react-icons/lu";
-import { AiOutlineUserSwitch } from "react-icons/ai";
-import { LuTicket } from "react-icons/lu";
+import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { RxHome } from "react-icons/rx";
 import {
   Sheet,
   SheetContent,
@@ -20,9 +15,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Separator } from "@/components/ui/separator";
+import { BsChevronRight, BsChevronLeft } from "react-icons/bs";
+import { RiCakeLine } from "react-icons/ri";
+import { LuShoppingBasket } from "react-icons/lu";
+import { AiOutlineUserSwitch } from "react-icons/ai";
+import { RxHome } from "react-icons/rx";
+import { LuTicket } from "react-icons/lu";
 
-// ROUTES
 export const routes = [
   {
     id: 1,
@@ -221,9 +220,6 @@ export default function CustomerSidebar({ account }) {
                 className={`relative items-center text-center py-2 px-3 my-1 font-medium rounded-md cursor-pointer transition-colors hover:bg-primary-foreground hover:text-white ${
                   expanded ? "flex " : ""
                 }`}
-                // onClick={() =>
-                //   router.replace(`/customer/orders/${account.customerId}`)
-                // }
               >
                 <LuTicket size={20} className="me-2" />{" "}
                 <span

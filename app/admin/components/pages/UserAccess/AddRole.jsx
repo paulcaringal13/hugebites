@@ -24,7 +24,6 @@ const AddRole = ({
   setAlertTitle,
   setAlertType,
   openRequestAlert,
-  // NOT COMPLETED
 }) => {
   const [selectAll, setSelectAll] = useState(false);
   const [roleName, setRoleName] = useState("");
@@ -40,36 +39,8 @@ const AddRole = ({
   const [voucherAccess, setVoucherAccess] = useState(false);
   const [accountsAccess, setAccountsAccess] = useState(false);
   const [userRoleAccess, setUserRoleAccess] = useState(false);
-
   const [roleNameVal, setRoleNameVal] = useState("");
   const [roleAccessVal, setRoleAccessVal] = useState("");
-
-  const checkAllCheckBox = () => {
-    setDashboardAccess(true);
-    setMenuAccess(true);
-    setOrderAccess(true);
-    setCustomizationAccess(true);
-    setAuditAccess(true);
-    setInventoryAccess(true);
-    setReportsAccess(true);
-    setForecastAccess(true);
-    setVoucherAccess(true);
-    setRefundAccess(true);
-    setAccountsAccess(true);
-  };
-
-  const unCheckAllCheckBox = () => {
-    setMenuAccess(false);
-    setOrderAccess(false);
-    setCustomizationAccess(false);
-    setAuditAccess(false);
-    setInventoryAccess(false);
-    setReportsAccess(false);
-    setForecastAccess(false);
-    setVoucherAccess(false);
-    setRefundAccess(false);
-    setAccountsAccess(false);
-  };
 
   const addRole = async () => {
     const rolePost = {
@@ -184,22 +155,6 @@ const AddRole = ({
           </div>
 
           <Label className="text-lg font-extrabold m-0">Role Access</Label>
-
-          {/* <div className="flex col-span-1 gap-2 w-fit">
-            <Checkbox
-              className="text-white my-2 border-black"
-              checked={selectAll}
-              onCheckedChange={() => {
-                setSelectAll(!selectAll);
-                {
-                  !selectAll ? checkAllCheckBox() : unCheckAllCheckBox();
-                }
-              }}
-            />
-            <Label className="ml-auto my-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-              Select All
-            </Label>
-          </div> */}
           <div className="grid grid-cols-2 gap-4 w-full">
             <div className="flex col-span-1 gap-2 w-fit">
               <Checkbox

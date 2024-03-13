@@ -32,14 +32,12 @@ import {
   TableHeader,
   TableRow,
 } from "../../../../../components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { IoMdClose, IoMdCheckmark } from "react-icons/io";
 
 const UserAccess = ({
   data,
-  setOpenEditRole,
-  openEditRole,
+
   getSpecificRole,
   setSpecificRole,
   setOpenConfirmRelaunch,
@@ -72,27 +70,7 @@ const UserAccess = ({
         );
       },
     },
-    // {
-    //   header: "Dashboard",
-    //   id: "dashboardAccess",
-    //   cell: ({ row }) => {
-    //     const rowData = row.original;
 
-    //     return (
-    //       <>
-    //         {!rowData.dashboardAccess ? (
-    //           <div className="bg-red-500 rounded-full h-fit w-fit p-2 text-white mx-auto">
-    //             <IoMdClose className="h-3 w-3" />
-    //           </div>
-    //         ) : (
-    //           <div className="bg-green-600 rounded-full h-fit w-fit p-2 text-white mx-auto">
-    //             <IoMdCheckmark className="h-3 w-3" />
-    //           </div>
-    //         )}
-    //       </>
-    //     );
-    //   },
-    // },
     {
       header: "Menu",
       id: "menuAccess",
@@ -204,7 +182,6 @@ const UserAccess = ({
       cell: ({ row }) => {
         const rowData = row.original;
 
-        // NOT COMPLETED
         return (
           <>
             {!rowData.reportsAccess ? (
@@ -429,7 +406,6 @@ const UserAccess = ({
           placeholder="Search"
           className="w-2/6"
         />
-        {/* HIDE COLUMN */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -541,7 +517,6 @@ const UserAccess = ({
             </TableBody>
           )}
         </Table>
-        {/* pagination */}
         <div className="flex items-center justify-end space-x-2 py-4 me-5 ">
           <Button
             variant="outline"

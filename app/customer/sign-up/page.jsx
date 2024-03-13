@@ -33,7 +33,6 @@ const SignUpPage = async () => {
           }}
           className="mt-24 ml-14"
         ></div>
-        {/* PASS THE ARRAY OF EXISTING CUSTOMER ACCOUNTS INTO COMPONENT */}
         <div className="left-0 w-full">
           <CustomerSignUp />
         </div>

@@ -5,8 +5,6 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 
-// COMPLETED
-
 const TermsAndConditions = ({
   openTermsAndConditions,
   setOpenTermsAndConditions,

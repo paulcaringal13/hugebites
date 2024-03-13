@@ -24,7 +24,6 @@ import {
   TooltipTrigger,
 } from "../../../components/ui/tooltip";
 import { ChevronDown, ChevronUp } from "lucide-react";
-// NOT COMPLETED
 import { BsGraphUp } from "react-icons/bs";
 import { MdOutlineDashboard } from "react-icons/md";
 import { IoAccessibilitySharp } from "react-icons/io5";

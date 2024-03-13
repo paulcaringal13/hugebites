@@ -15,7 +15,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -27,10 +26,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { BiChevronDown } from "react-icons/bi";
 import dayjs from "dayjs";
 import { FaRegEye } from "react-icons/fa6";
-// NOT COMPLETED
 
 const RequestTableAdmin = ({ data, openViewAttachment }) => {
   const formatter = new Intl.NumberFormat("en-US", {
@@ -41,7 +38,6 @@ const RequestTableAdmin = ({ data, openViewAttachment }) => {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
-  const [columnSelected, setColumnSelected] = useState("");
   const [search, setSearch] = useState("");
   const columns = [
     {
@@ -180,7 +176,6 @@ const RequestTableAdmin = ({ data, openViewAttachment }) => {
           className="w-2/6"
         />
 
-        {/* hide columns */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -264,7 +259,6 @@ const RequestTableAdmin = ({ data, openViewAttachment }) => {
             )}
           </TableBody>
         </Table>
-        {/* pagination */}
         <div className="flex items-center justify-end space-x-2 py-4 me-5 ">
           <Button
             variant="outline"

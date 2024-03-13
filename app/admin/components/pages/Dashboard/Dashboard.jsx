@@ -15,7 +15,6 @@ import dayjs from "dayjs";
 import YearlyForecastDashboard from "../Forecast/YearlyForecastDashboard";
 import CustomizedCakesReportDashboard from "../Report/CustomizedCakesReportDashboard";
 
-// NOT COMPLETED
 const Dashboard = () => {
   const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -31,7 +30,6 @@ const Dashboard = () => {
   const [topCustomers, setTopCustomers] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
 
-  // FOR GREETINGS
   const getUserInfo = async () => {
     const userId =
       typeof window !== "undefined" && window.localStorage

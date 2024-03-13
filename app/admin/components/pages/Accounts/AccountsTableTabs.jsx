@@ -27,8 +27,6 @@ import {
   ToastViewport,
 } from "@/components/ui/toast";
 
-// NOT COMPLETED
-
 const AccountsTableTabs = () => {
   const [employeeArray, setEmployeeArray] = useState([]);
   const [customerArray, setCustomerArray] = useState([]);
@@ -36,7 +34,6 @@ const AccountsTableTabs = () => {
   const [actionSuccess, setActionSuccess] = useState(false);
   const [action, setAction] = useState("");
   const [actionFail, setActionFail] = useState(false);
-
   const [editModal, setEditModal] = useState(false);
   const [editSuccess, setEditSuccess] = useState(false);
   const [editFail, setEditFail] = useState(false);

@@ -6,7 +6,7 @@ import { Bar } from "react-chartjs-2";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { IoClose } from "react-icons/io5";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 
-// NOT COMPLETED
 const ProductsReport = () => {
   const [reportDatas, setReportDatas] = useState([]);
 
@@ -379,7 +378,6 @@ const ProductsReport = () => {
                   labels: reportDatas.map((i) => i.name),
                   datasets: [
                     {
-                      // label: "Sales",
                       data: reportDatas.map((i) => i.totalSales),
                       backgroundColor: [
                         "#5FBDFF",

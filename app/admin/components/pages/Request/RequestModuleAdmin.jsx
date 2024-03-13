@@ -37,19 +37,15 @@ import {
 } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 
-// NOT COMPLETED
 const RequestModuleAdmin = () => {
   const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "PHP",
   });
-  // requests table
   const [requestTable, setRequestTable] = useState([]);
   const [requestData, setRequestData] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState();
   const [orderedProducts, setOrderedProducts] = useState([]);
-
-  // view function states
   const [responseMessage, setResponseMessage] = useState();
   const [viewAttachmentOpen, setViewAttachmentOpen] = useState(false);
   const [viewProofOpen, setViewProofOpen] = useState(false);
@@ -61,11 +57,8 @@ const RequestModuleAdmin = () => {
   const [file, setFile] = useState();
   const [image, setImage] = useState("");
   const [selectedProductMessage, setSelectedProductMessage] = useState("");
-
   const [isRefundRedo, setIsRefundRedo] = useState("");
   const [isFullRefund, setIsFullRefund] = useState("");
-
-  // alert state
   const [alertMessageOpen, setAlertMessageOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState(false);
   const [alertType, setAlertType] = useState(false);
@@ -485,7 +478,6 @@ const RequestModuleAdmin = () => {
         return { ...i };
       });
 
-      let emailNotifRes;
       const emailPost = {
         method: "POST",
         header: {
@@ -600,7 +592,6 @@ const RequestModuleAdmin = () => {
 
     setOrderedProducts(orderedProductWithAddOns);
   };
-  // GET ALL ORDERED PRODUCT OF A SPECIFIC ORDER
   const getOrderedProducts = async () => {
     const res = await fetch(
       `http://localhost:3000/api/customer/order/orderedProducts?` +
@@ -684,7 +675,6 @@ const RequestModuleAdmin = () => {
         </CardContent>
       </Card>
 
-      {/* VIEW ATTACHMENT MODAL */}
       {!viewAttachmentOpen ? null : (
         <Dialog
           open={viewAttachmentOpen}
@@ -1061,7 +1051,6 @@ const RequestModuleAdmin = () => {
               </div>
             </div>
 
-            {/* CONFIRM REJECT MODAL */}
             {!rejectRequestOpen ? null : (
               <Dialog
                 open={rejectRequestOpen}
@@ -1110,7 +1099,6 @@ const RequestModuleAdmin = () => {
               </Dialog>
             )}
 
-            {/* CONFIRM ACCEPT MODAL */}
             {!acceptRequestOpen ? null : (
               <Dialog
                 open={acceptRequestOpen}
@@ -1217,7 +1205,6 @@ const RequestModuleAdmin = () => {
               </Dialog>
             )}
 
-            {/* VIEW PROOF OF PAYMENT */}
             {!viewProofOpen ? null : (
               <Dialog
                 open={viewProofOpen}
@@ -1259,7 +1246,6 @@ const RequestModuleAdmin = () => {
               </Dialog>
             )}
 
-            {/* VIEW PROOF OF PAYMENT */}
             {!viewMessageOpen ? null : (
               <Dialog
                 open={viewMessageOpen}
@@ -1289,7 +1275,6 @@ const RequestModuleAdmin = () => {
               </Dialog>
             )}
 
-            {/* VIEW IMAGE ATTACHMENT */}
             {!viewImageAttachment ? null : (
               <Dialog
                 open={viewImageAttachment}
@@ -1332,7 +1317,6 @@ const RequestModuleAdmin = () => {
               </Dialog>
             )}
 
-            {/* VIEW MESSAGE ATTACHMENT */}
             {!viewMessageAttachment ? null : (
               <Dialog
                 open={viewMessageAttachment}
@@ -1365,7 +1349,6 @@ const RequestModuleAdmin = () => {
         </Dialog>
       )}
 
-      {/* ALERT */}
       {alertMessageOpen ? (
         <ToastProvider swipeDirection="up" duration={3000}>
           <Toast className="w-fit h-fit mr-5" variant={alertType}>

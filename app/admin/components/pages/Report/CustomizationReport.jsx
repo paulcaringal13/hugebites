@@ -6,7 +6,7 @@ import { Bar } from "react-chartjs-2";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { IoClose } from "react-icons/io5";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -16,15 +16,11 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-// NOT COMPLETED
 
 const CustomizationReport = () => {
   const [reportDatas, setReportDatas] = useState([]);
 
   const [openSetDateRange, setOpenSetDateRange] = useState(false);
-
-  const [orderDatas, setOrderDatas] = useState([]);
-
   const [year, setYear] = useState(2022);
   const [month, setMonth] = useState({
     id: 1,
@@ -164,7 +160,6 @@ const CustomizationReport = () => {
   ];
 
   const getMonthlySales = async () => {
-    console.log("nag monthly");
     const res = await fetch(
       `http://localhost:3000/api/admin/reports/customization/monthly?` +
         new URLSearchParams({
@@ -178,8 +173,6 @@ const CustomizationReport = () => {
     );
 
     const data = await res.json();
-
-    console.log(data);
 
     setReportDatas(data);
   };
@@ -199,7 +192,6 @@ const CustomizationReport = () => {
 
     const data = await res.json();
 
-    // return data;
     setReportDatas(data);
   };
 

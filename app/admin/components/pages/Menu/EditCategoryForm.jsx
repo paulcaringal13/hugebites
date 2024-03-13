@@ -16,7 +16,6 @@ import { Label } from "@/components/ui/label";
 import { X } from "lucide-react";
 import * as React from "react";
 
-// NOT COMPLETED
 const EditCategoryForm = ({
   editCategoryOpen,
   setEditCategoryOpen,
@@ -84,7 +83,6 @@ const EditCategoryForm = ({
   };
 
   const editCategory = async (data, newImage) => {
-    // SELECT WHICH ROW IS TO BE EDITED AND RETURN THE NEW TABLE WITH THE EDITED ROW
     const editedCategory = categoryTable.map((row) => {
       {
         row.categoryId == selectedRow.categoryId
@@ -101,7 +99,6 @@ const EditCategoryForm = ({
       return { ...row };
     });
 
-    // UPDATE TO DATABASE
     try {
       const editCategory = {
         method: "PUT",
@@ -121,7 +118,6 @@ const EditCategoryForm = ({
       );
 
       updateCategoryTable(editedCategory, "edit");
-      // CLOSE MODAL
 
       closeEditCategory();
     } catch (e) {

@@ -13,7 +13,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "../../../components/ui/button";
 import { Label } from "../../../components/ui/label";
 import { BiChevronDown } from "react-icons/bi";
-// NOT COMPLETED
 
 const AdminNavbar = () => {
   const router = useRouter();
@@ -26,7 +25,6 @@ const AdminNavbar = () => {
   const [avatar, setAvatar] = useState();
 
   const handleLogout = async () => {
-    // GET THE AUDIT ID FROM THE LOCAL STORAGE FOR FINDING THE RIGHT ROW TO EDIT
     let auditId =
       typeof window !== "undefined" && window.localStorage
         ? localStorage.getItem("auditId")
@@ -42,7 +40,6 @@ const AdminNavbar = () => {
       }),
     };
 
-    // UPDATE THE LOGOUT COLUMN TO THE DATE AND TIME THE USER LOGGED OUT
     try {
       const res = await fetch(
         `http://localhost:3000/api/admin/audit/sign-in?` +
@@ -55,14 +52,11 @@ const AdminNavbar = () => {
       console.log(error);
     }
 
-    // CLEAR LOCAL STORAGE
     localStorage.clear();
-    // REDIRECT TO SIGN IN PAGE
     buttonRef.current.click();
   };
 
   useEffect(() => {
-    // GET THE USER ID, FIRST AND LAST NAME.
     const userId =
       typeof window !== "undefined" && window.localStorage
         ? localStorage.getItem("accountId")
@@ -82,7 +76,6 @@ const AdminNavbar = () => {
         ? localStorage.getItem("avatar")
         : "";
 
-    // SET THE STATE TO THE LOCAL STORAGE ID VALUE
     {
       userId && setLoggedInUserId(userId);
     }
@@ -91,17 +84,14 @@ const AdminNavbar = () => {
       localStorage.getItem("avatar") && setAvatar(avatar);
     }
 
-    // CONCATINATE THE FIRST AND LAST NAME TO GET THE FULLNAME
     {
       firstName && lastName
         ? setLoggedInUserName(`${firstName} ${lastName}`)
         : null;
     }
 
-    // GET THE FIRST LETTER OF THE USERS FIRST AND LAST NAME FOR AVATAR PURPOSES
     const initials = `${Array.from(firstName)[0]}${Array.from(lastName)[0]}`;
 
-    // SET THE STATE
     {
       firstName && lastName ? setUserInitials(initials) : null;
     }
@@ -134,10 +124,7 @@ const AdminNavbar = () => {
             </div>
           </PopoverTrigger>
           <PopoverContent className="flex flex-col w-fit h-fit p-0">
-            <Button
-              className="my-auto bg-transparent text-black hover:bg-accent"
-              // onClick={() => handleLogout()}
-            >
+            <Button className="my-auto bg-transparent text-black hover:bg-accent">
               View Profile
             </Button>
             <Button

@@ -1,16 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
-import OrderTable from "../components/OrderTable";
 import { useParams } from "next/navigation";
 import dayjs from "dayjs";
+import Image from "next/image";
+import OrderTable from "../components/OrderTable";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { FaChevronCircleLeft, FaChevronCircleRight } from "react-icons/fa";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image";
 import {
   Toast,
   ToastClose,
@@ -19,13 +19,13 @@ import {
   ToastTitle,
   ToastViewport,
 } from "@/components/ui/toast";
+import { FaChevronCircleLeft, FaChevronCircleRight } from "react-icons/fa";
 import {
   IoInformationCircleOutline,
   IoCheckmarkCircleOutline,
   IoWarningOutline,
   IoCloseCircleOutline,
 } from "react-icons/io5";
-import { Textarea } from "@/components/ui/textarea";
 
 const OrderModule = ({ userData }) => {
   const formatter = new Intl.NumberFormat("en-US", {
@@ -37,18 +37,12 @@ const OrderModule = ({ userData }) => {
 
   const [loggedInUser, setLoggedInUser] = useState({});
   const [customerTotalSpent, setCustomerTotalSpent] = useState(0);
-
-  // order tables
   const [ordersTable, setOrdersTable] = useState([]);
   const [ordersData, setOrdersData] = useState([]);
-
-  // list of ordered products
   const [orderedProducts, setOrderedProducts] = useState([]);
-  // order details
   const [selectedOrder, setSelectedOrder] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState({});
 
-  // getters
   async function getOrders() {
     const res = await fetch(
       `http://localhost:3000/api/customer/orders?` +
@@ -84,14 +78,11 @@ const OrderModule = ({ userData }) => {
       };
     });
 
-    // FORMATTED DATA FOR TABLE ROWS
     setOrdersTable(orders);
 
-    // REAL DATA
     setOrdersData(data);
   }
 
-  // GET CUSTOMER TOTAL SPENT
   const getTotalSpent = async () => {
     const res = await fetch(
       `http://localhost:3000/api/customer/order/totalSpent?` +
@@ -105,7 +96,6 @@ const OrderModule = ({ userData }) => {
 
     setCustomerTotalSpent(data[0].totalSpent);
   };
-  // view function states
   const [viewOrderOpen, setViewOrderOpen] = useState(false);
 
   const [expandViewOrder, setExpandViewOrder] = useState(false);
@@ -120,7 +110,6 @@ const OrderModule = ({ userData }) => {
     setViewOrderOpen(false);
   };
 
-  // commen state
   const [reviewOrderOpen, setReviewOrderOpen] = useState(false);
   const [productReview, setProductReview] = useState(false);
   const [reviewComment, setReviewComment] = useState("");
@@ -136,7 +125,6 @@ const OrderModule = ({ userData }) => {
     setProductReview(product);
   };
 
-  // proof of payment states
   const [attachImageOpen, setAttachImageOpen] = useState(false);
   const [viewPaymentOpen, setViewPaymentOpen] = useState(false);
   const [viewImageAttached, setViewImageAttached] = useState(false);
@@ -292,7 +280,7 @@ const OrderModule = ({ userData }) => {
         <p
           style="
           font-size: 0.875rem;
-line-height: 1.25rem; 
+          line-height: 1.25rem; 
 
             font-weight: 300;
             text-align: justify;
@@ -329,13 +317,8 @@ line-height: 1.25rem;
     }
   };
 
-  // AFTER PAYING THE ORDER ADD TO HIS TOTAL SPENT
   const addToTotalSpent = async () => {
-    // yung selected order dito ay string ang nakalagay, kasi formatted na lagyan ng peso sign
-    // ginawa tong find para makuha yung total price na int value para maadd yung payment sa total spent ni customer for vouchers
     const order = ordersData.find((i) => selectedOrder.orderId == i.orderId);
-
-    //add to total spent
     const newTotalSpent = customerTotalSpent + Number(order.totalPrice);
 
     const totalSpentPost = {
@@ -387,7 +370,6 @@ line-height: 1.25rem;
     setViewPaymentOpen(false);
   };
 
-  // request
   const [sendRequest, setSendRequest] = useState(false);
   const [requestMessage, setRequestMessage] = useState("");
 
@@ -566,7 +548,6 @@ line-height: 1.25rem;
     setSendRequest(false);
     setRequestMessage("");
   };
-  // alert state
   const [alertMessageOpen, setAlertMessageOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState(false);
   const [alertType, setAlertType] = useState(false);
@@ -590,7 +571,7 @@ line-height: 1.25rem;
   useEffect(() => {
     setLoggedInUser(userData);
   }, []);
-  console.log(orderedProducts);
+
   return (
     <div className="h-full w-full">
       <OrderTable
@@ -607,7 +588,6 @@ line-height: 1.25rem;
         setAlertType={setAlertType}
       />
 
-      {/* VIEW ORDER MODAL */}
       {!viewOrderOpen ? null : (
         <Dialog open={viewOrderOpen} onOpenChange={setViewOrderOpen} onClose>
           <DialogContent className="max-w-full max-h-full md:w-[93%] md:h-[90%] flex flex-col p-0">
@@ -618,14 +598,11 @@ line-height: 1.25rem;
             </div>
 
             <div className="flex flex-row w-full h-[75%] m-0">
-              {/* left div */}
               <div
-                // bg-blue-500
                 className={` w-full h-full p-5 transition-all ${
                   !expandViewOrder ? "w-[95%]" : "w-[60%]"
                 }`}
               >
-                {/* contents sa left div*/}
                 <Card className="w-full h-full transition-all">
                   <CardContent
                     className={`pt-4 h-full ${
@@ -840,7 +817,6 @@ line-height: 1.25rem;
                   </CardContent>
                 </Card>
               </div>
-              {/* right div */}
               {expandViewOrder ? (
                 <div
                   className={`w-full h-full flex flex-row transition-all ${
@@ -849,8 +825,6 @@ line-height: 1.25rem;
                       : "w-[40%] grid-cols-5"
                   } `}
                 >
-                  {/* contents sa right div */}
-                  {/* bg-orange-300 */}
                   <div className="col-span-1 h-full w-fit px-1 flex items-center">
                     <div
                       className="mx-auto rounded-full bg-transparent cursor-pointer"
@@ -1036,7 +1010,6 @@ line-height: 1.25rem;
         </Dialog>
       )}
 
-      {/* COMMENT MODAL */}
       {!reviewOrderOpen ? null : (
         <Dialog
           open={reviewOrderOpen}
@@ -1155,11 +1128,6 @@ line-height: 1.25rem;
                   placeholder="Share your thoughts and experience to help other customers."
                   onChange={(e) => setReviewComment(e.target.value)}
                 />
-                {/* {!errors.addOnsDescription?.message ? null : (
-                  <Label className="errorMessage mb-1">
-                    {errors.addOnsDescription?.message}
-                  </Label>
-                )} */}
               </div>
               <Label className="my-auto w-fit h-full text-center font-extrabold">
                 Add photo:
@@ -1218,7 +1186,6 @@ line-height: 1.25rem;
         </Dialog>
       )}
 
-      {/* PROOF OF PAYMENT MODAL */}
       {!attachImageOpen ? null : (
         <Dialog
           open={attachImageOpen}
@@ -1317,7 +1284,6 @@ line-height: 1.25rem;
         </Dialog>
       )}
 
-      {/* REQUEST MODAL */}
       {!sendRequest ? null : (
         <Dialog open={sendRequest} onOpenChange={setSendRequest} onClose>
           <DialogContent className="max-w-full max-h-full md:w-fit md:h-fit flex flex-col p-0">
@@ -1408,8 +1374,6 @@ line-height: 1.25rem;
           </DialogContent>
         </Dialog>
       )}
-
-      {/* ALERT */}
       {alertMessageOpen ? (
         <ToastProvider swipeDirection="up" duration={3000}>
           <Toast className="w-fit h-fit mr-5" variant={alertType}>

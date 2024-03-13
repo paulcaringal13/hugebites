@@ -1,8 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import MiniAdminSidebar from "../../admin/components/MiniAdminSidebar";
 import EmployeeMiniAdminSidebar from "../components/EmployeeMiniAdminSidebar";
-
 import UserAccess from "../../admin/components/pages/UserAccess/UserAccess";
 import AddRole from "../../admin/components/pages/UserAccess/AddRole";
 import EditRole from "../../admin/components/pages/UserAccess/EditRole";
@@ -27,12 +25,12 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+
+// COMPLETED
 
 export default function AdminRequest() {
   const [roles, setRoles] = useState([]);
@@ -46,7 +44,6 @@ export default function AdminRequest() {
   const [openAddRoles, setOpenAddRoles] = useState(false);
   const [openEditRole, setOpenEditRole] = useState(false);
 
-  // alert state
   const [alertMessageOpen, setAlertMessageOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState(false);
   const [alertType, setAlertType] = useState(false);
@@ -83,9 +80,6 @@ export default function AdminRequest() {
       }
     );
 
-    // get
-    // <a href="http://localhost:3000/api/admin/userAccess/validateRole">Click Here!</a>;
-
     const data = await adminRes.json();
 
     setRolesArray(data);
@@ -99,9 +93,6 @@ export default function AdminRequest() {
     const adminRes = await fetch(`http://localhost:3000/api/admin/userAccess`, {
       cache: "no-store",
     });
-
-    // get
-    // <a href="http://localhost:3000/api/admin/userAccess">Click Here!</a>;
 
     const data = await adminRes.json();
 

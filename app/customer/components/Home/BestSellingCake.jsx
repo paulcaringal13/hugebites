@@ -4,8 +4,6 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import bestSellerImage from "../../../../public/images/bestSellerImage.png";
 
-// COMPLETED
-
 const BestSellingCake = ({ userData }) => {
   const router = useRouter();
   const [bestSeller, setBestSeller] = useState([]);

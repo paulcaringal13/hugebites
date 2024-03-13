@@ -24,7 +24,6 @@ import {
 } from "@/components/ui/select";
 import { X } from "lucide-react";
 
-// NOT COMPLETED
 const CustomizationEditSizeForm = ({
   selectedRow,
   editSizeOpen,
@@ -58,17 +57,7 @@ const CustomizationEditSizeForm = ({
   const onSubmit = async (data) => {
     !product.productId ? setErrorProductSelection(true) : null;
 
-    const checkVal = sizesTable.find(
-      (item) =>
-        item.size.toLowerCase() == data.size.toLowerCase() &&
-        item.packagingPrice == data.packagingPrice &&
-        item.productId == product.productId &&
-        item.sizeDescription == selectedRow.sizeDescription
-    );
-
-    !checkVal
-      ? editSize(data)
-      : setValSize("Packaging on this product already exist.");
+    editSize(data);
   };
 
   const editSize = async (data) => {

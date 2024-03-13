@@ -1,8 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import dayjs from "dayjs";
+import "react-day-picker/dist/style.css";
+import { DayPicker } from "react-day-picker";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import {
   AlertDialog,
@@ -13,11 +18,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Separator } from "@/components/ui/separator";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import dayjs from "dayjs";
-import { DayPicker } from "react-day-picker";
-import "react-day-picker/dist/style.css";
 import {
   Toast,
   ToastClose,
@@ -26,7 +26,6 @@ import {
   ToastTitle,
   ToastViewport,
 } from "@/components/ui/toast";
-import { useParams, useRouter, usePathname, Router } from "next/navigation";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 const MenuCheckOutForm = ({
@@ -45,16 +44,12 @@ const MenuCheckOutForm = ({
   const params = useParams();
 
   const [emailFName, setEmailFName] = useState();
-  const [emailLName, setEmailLName] = useState();
-  const [emailContact, setEmailContact] = useState();
   const [emailAdd, setEmailAdd] = useState();
-
   const [openConfirmCheckOut, setOpenConfirmCheckOut] = useState(false);
   const [valMop, setValMop] = useState("");
   const [valDatePickUp, setValDatePickUp] = useState("");
   const [checkOutSuccess, setCheckOutSuccess] = useState();
   const [orderFinished, setOrderFinished] = useState(false);
-
   const [methodOfPayment, setMethodOfPayment] = useState("");
   const [dateToday, setDateToday] = useState(dayjs());
   const [datePickUp, setDatePickUp] = useState(dayjs().add(3, "day"));
@@ -444,17 +439,8 @@ const MenuCheckOutForm = ({
     }
   };
 
-  console.log("cart", cart);
-  console.log("orderPrice", orderPrice);
-  console.log("methodOfPayment", methodOfPayment);
-  console.log("datePickUp", datePickUp);
-  console.log("paymentDeadline", paymentDeadline);
-  console.log("refundDeadline", refundDeadline);
-  console.log("voucher", voucher);
-
   useEffect(() => {
     const pickUpDate = dayjs(datePickUp);
-
     const paymentDate = dayjs(dateToday.add(2, "day"));
     const refundDate = dayjs(pickUpDate.add(3, "day"));
 
@@ -471,10 +457,6 @@ const MenuCheckOutForm = ({
       typeof window !== "undefined" && window.localStorage
         ? localStorage.getItem("firstName")
         : "";
-    const lastName =
-      typeof window !== "undefined" && window.localStorage
-        ? localStorage.getItem("lastName")
-        : "";
     const email =
       typeof window !== "undefined" && window.localStorage
         ? localStorage.getItem("email")
@@ -486,12 +468,6 @@ const MenuCheckOutForm = ({
 
     {
       !!cart && setEmailFName(firstName);
-    }
-    {
-      !!cart && setEmailLName(lastName);
-    }
-    {
-      !!cart && setEmailContact(contact);
     }
   }, []);
 
@@ -514,7 +490,6 @@ const MenuCheckOutForm = ({
             <Separator className="w-[40%] my-auto bg-stone-500" />
           </div>
           <div className="flex flex-row gap-4">
-            {/* left side content */}
             <div className="w-[50%] h-[100%]">
               <div className="flex flex-col gap-3">
                 <div className="mx-auto w-fit">
@@ -573,10 +548,7 @@ const MenuCheckOutForm = ({
               </div>
             </div>
 
-            {/* right side content */}
             <div className="w-[50%] h-[100%] flex flex-col">
-              {/* list of orders */}
-
               <div className="flex flex-row justify-between w-full h-fit ">
                 <h2
                   className="w-[55%] border-solid border-muted border-2 border-b-black px-2 py-2 text-sm font-extrabold"
@@ -710,8 +682,6 @@ const MenuCheckOutForm = ({
               ) : (
                 " Place Order"
               )}
-              {/* <AiOutlineLoading3Quarters className="mx-auto my-5 h-5/6 animate-spin" /> */}
-              {/* Place Order */}
             </Button>
           </DialogFooter>
         </DialogContent>

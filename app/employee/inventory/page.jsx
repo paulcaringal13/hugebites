@@ -2,6 +2,8 @@ import EmployeeMiniAdminSidebar from "../components/EmployeeMiniAdminSidebar";
 import EmployeeInventoryTableTabs from "../components/pages/Inventory/EmployeeInventoryTableTabs";
 import * as React from "react";
 
+// COMPLETED
+
 const EmployeeInventory = async () => {
   return (
     <div className="flex flex-row">

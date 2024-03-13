@@ -1,10 +1,9 @@
 "use client";
-
 import EmployeeNavbar from "./components/Navbar";
 import { useEffect, useState } from "react";
 
+// COMPLETED
 export default function EmployeeLayout({ children }) {
-  const [loggedInUserName, setLoggedInUserName] = useState("");
   const [loggedInUserId, setLoggedInUserId] = useState("");
 
   useEffect(() => {
@@ -19,10 +18,6 @@ export default function EmployeeLayout({ children }) {
 
     {
       userId && setLoggedInUserId(userId);
-    }
-
-    {
-      userName && setLoggedInUserName(userName);
     }
   }, []);
 

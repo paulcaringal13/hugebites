@@ -16,7 +16,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { X } from "lucide-react";
 
-// NOT COMPLETED
 const AddIngredientForm = ({
   addIngredientOpen,
   closeAddIngredient,
@@ -149,7 +148,6 @@ const AddIngredientForm = ({
               <Label htmlFor="unitErr" className="errorMessage mb-2">
                 {errors.unit?.message}
               </Label>
-              {/* for validation */}
               {!valIngredient ? null : (
                 <Label htmlFor="unitErr" className="errorMessage mb-2">
                   {valIngredient}

@@ -4,7 +4,6 @@ import { Chart as ChartJS } from "chart.js/auto";
 import { Line } from "react-chartjs-2";
 import "react-day-picker/dist/style.css";
 
-// NOT COMPLETED
 const YearlyForecastDashboard = ({ userData }) => {
   const [loggedInUser, setLoggedInUser] = useState({});
   const [yearlySales, setYearlySales] = useState([]);

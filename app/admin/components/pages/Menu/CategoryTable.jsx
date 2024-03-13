@@ -58,7 +58,6 @@ import {
   IoWarningOutline,
 } from "react-icons/io5";
 
-// NOT COMPLETED
 const CategoryTable = ({
   data,
   openEditCategory,
@@ -71,7 +70,6 @@ const CategoryTable = ({
   const [search, setSearch] = useState("");
   const [filterVal, setFilterVal] = useState("");
 
-  // alert state
   const [alertMessageOpen, setAlertMessageOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState(false);
   const [alertType, setAlertType] = useState(false);
@@ -142,7 +140,6 @@ const CategoryTable = ({
           <Button
             variant="ghost"
             className="h-8 w-8 p-0 hover:bg-green-500 hover:text-white"
-            // PASS ROW DATA TO GET SELECTED ROW ID
             onClick={() => openEditCategory(rowData)}
           >
             <MdOutlineModeEditOutline className="text-lg font-light" />
@@ -234,7 +231,6 @@ const CategoryTable = ({
                   <AlertDialogAction
                     className="bg-blue-500 hover:bg-blue-700"
                     onClick={async () => {
-                      // UPDATE IN THE UI
                       const updatedTable = categoryTable.map((ctg) => {
                         ctg.categoryId == rowData.categoryId
                           ? (ctg.isRemoved = 0)
@@ -245,7 +241,6 @@ const CategoryTable = ({
 
                       setCategoryTable(updatedTable);
 
-                      // DELETE SA DATABASE
                       const removePut = {
                         method: "PUT",
                         headers: {
@@ -306,7 +301,6 @@ const CategoryTable = ({
           placeholder="Search"
           className="w-2/6"
         />
-        {/* hide columns */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -422,7 +416,6 @@ const CategoryTable = ({
             </TableBody>
           )}
         </Table>
-        {/* pagination */}
         <div className="flex items-center justify-end space-x-2 py-4 me-5 ">
           <Button
             variant="outline"
@@ -445,7 +438,6 @@ const CategoryTable = ({
         </div>
       </div>
 
-      {/* ALERT */}
       {alertMessageOpen ? (
         <ToastProvider swipeDirection="up" duration={3000}>
           <Toast className="w-fit h-fit mr-5" variant={alertType}>

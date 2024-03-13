@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import verifyImg from "../../../../public/images/Verified-pana.png";
 import LandingPageNavbar from "../../components/LandingPageNavbar";

@@ -1,7 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
 import EmployeeMiniAdminSidebar from "../components/EmployeeMiniAdminSidebar";
 import Dashboard from "../components/pages/Dashboard/Dashboard";
+
+// COMPLETED
 
 const AdminDashboard = () => {
   return (

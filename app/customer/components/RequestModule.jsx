@@ -1,21 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
-import RequestTable from "../components/RequestTable";
 import { useParams } from "next/navigation";
 import dayjs from "dayjs";
+import RequestTable from "../components/RequestTable";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { FaChevronCircleLeft, FaChevronCircleRight } from "react-icons/fa";
-import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image";
 import {
   Toast,
   ToastClose,
@@ -29,7 +24,6 @@ import {
   IoCheckmarkCircleOutline,
   IoWarningOutline,
 } from "react-icons/io5";
-import { Textarea } from "@/components/ui/textarea";
 
 const RequestModule = ({ userData }) => {
   const formatter = new Intl.NumberFormat("en-US", {
@@ -38,17 +32,11 @@ const RequestModule = ({ userData }) => {
   });
   const params = useParams();
   const { userId } = params;
-
   const [loggedInUser, setLoggedInUser] = useState();
-
-  // requests table
   const [requestTable, setRequestTable] = useState([]);
-  const [requestData, setRequestData] = useState([]);
-
   const [selectedRequest, setSelectedRequest] = useState([]);
-
-  // view function states
   const [viewRequestOpen, setViewRequestOpen] = useState(false);
+  const [cancelRequestOpen, setCancelRequestOpen] = useState(false);
 
   const openViewRequest = (request) => {
     setViewRequestOpen(true);
@@ -58,9 +46,6 @@ const RequestModule = ({ userData }) => {
   const closeViewRequest = () => {
     setViewRequestOpen(false);
   };
-
-  // cancel function states
-  const [cancelRequestOpen, setCancelRequestOpen] = useState(false);
 
   const openCancelRequest = (request) => {
     setCancelRequestOpen(true);
@@ -103,16 +88,6 @@ const RequestModule = ({ userData }) => {
       orderPut
     );
 
-    // const newTable = requestTable.map((i) => {
-    //   i.orderId == selectedRequest.orderId ? (i.isCancelled = 1) : null;
-    //   i.orderId == selectedRequest.orderId
-    //     ? (i.requestStatus = "Cancelled")
-    //     : null;
-
-    //   return { ...i };
-    // });
-
-    // setRequestTable(newTable);
     window.location.reload(true);
     setSelectedRequest();
     setAlertMessage("Request for refund cancelled.");
@@ -122,7 +97,6 @@ const RequestModule = ({ userData }) => {
     closeCancelRequest();
   };
 
-  // alert state
   const [alertMessageOpen, setAlertMessageOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState(false);
   const [alertType, setAlertType] = useState(false);
@@ -133,10 +107,6 @@ const RequestModule = ({ userData }) => {
     setTimeout(() => {
       setAlertMessageOpen(false);
     }, 3000);
-  };
-
-  const closeRequestAlert = () => {
-    setAlertMessageOpen(false);
   };
 
   const getCustomerRequests = async () => {
@@ -162,7 +132,6 @@ const RequestModule = ({ userData }) => {
     });
 
     setRequestTable(requests);
-    setRequestData(results);
   };
 
   useEffect(() => {
@@ -173,8 +142,6 @@ const RequestModule = ({ userData }) => {
     setLoggedInUser(userData);
   }, []);
 
-  console.log(requestTable);
-
   return (
     <div className="h-full w-full">
       <RequestTable
@@ -183,14 +150,13 @@ const RequestModule = ({ userData }) => {
         openCancelRequest={openCancelRequest}
       />
 
-      {/* VIEW ORDER MODAL */}
       {!viewRequestOpen ? null : (
         <Dialog
           open={viewRequestOpen}
           onOpenChange={setViewRequestOpen}
           onClose
         >
-          <DialogContent className="max-w-full max-h-full md:w-[65%] md:h-[80%] flex flex-col p-0">
+          <DialogContent className="max-w-full max-h-full md:w-[70%] md:h-[90%] flex flex-col p-0">
             <div className="h-fit w-full px-4 py-6 bg-primary rounded-t-[9px]">
               <Label className="my-auto w-fit h-full text-center text-2xl font-extrabold text-white">
                 Order No : <span>{selectedRequest.orderId}</span>
@@ -280,7 +246,6 @@ const RequestModule = ({ userData }) => {
         </Dialog>
       )}
 
-      {/* CANCEL ORDER MODAL */}
       {!cancelRequestOpen ? null : (
         <Dialog
           open={cancelRequestOpen}
@@ -315,7 +280,6 @@ const RequestModule = ({ userData }) => {
         </Dialog>
       )}
 
-      {/* ALERT */}
       {alertMessageOpen ? (
         <ToastProvider swipeDirection="up" duration={3000}>
           <Toast className="w-fit h-fit mr-5" variant={alertType}>

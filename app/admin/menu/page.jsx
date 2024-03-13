@@ -2,9 +2,6 @@
 import { useState, useEffect } from "react";
 import MiniAdminSidebar from "../components/MiniAdminSidebar";
 import MenuTableTabs from "../components/pages/Menu/MenuTableTabs";
-
-// ALL GOODS
-// NOT COMPLETED
 const AdminMenu = () => {
   const [productList, setProductList] = useState([]);
   const [products, setProducts] = useState([]);
@@ -16,7 +13,6 @@ const AdminMenu = () => {
   const [flavorsData, setFlavorsData] = useState([]);
   const [shapesData, setShapesData] = useState([]);
 
-  // GET ALL PRODUCTS DETAILS
   const getAllProducts = async () => {
     const res = await fetch(`http://localhost:3000/api/admin/menu/product`);
 
@@ -32,7 +28,6 @@ const AdminMenu = () => {
     setProducts(results[0]);
   };
 
-  // GET ALL CAKE TYPES FOR SELECTION
   const getCakeTypes = async () => {
     const res = await fetch(`http://localhost:3000/api/admin/menu/cakeType`);
 
@@ -41,7 +36,6 @@ const AdminMenu = () => {
     setCakeTypes(data[0]);
   };
 
-  // GET ALL DEFAULT/OFFERED/FIXED PRODUCTS
   const getDefaultProducts = async () => {
     const res = await fetch(`http://localhost:3000/api/default-products`);
 
@@ -49,7 +43,6 @@ const AdminMenu = () => {
     setDefaultProducts(data);
   };
 
-  // GET ALL CATEGORIES
   const getAllCategories = async () => {
     const res = await fetch(`http://localhost:3000/api/admin/menu/categories`);
 
@@ -62,7 +55,6 @@ const AdminMenu = () => {
     setCategoryList(categories);
   };
 
-  // COMBINE DEFAULT PRODUCTS TO WHICH PRODUCT IT BELONGS
   const handleDefaultProducts = () => {
     const finalProdList = products.map((i) => {
       const { productId } = i;

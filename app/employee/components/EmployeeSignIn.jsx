@@ -13,6 +13,8 @@ import {
 } from "../../../components/ui/card";
 import Image from "next/image";
 
+// COMPLETED
+
 const EmployeeSignIn = () => {
   const employeeButtonRef = useRef(null);
 
@@ -22,7 +24,6 @@ const EmployeeSignIn = () => {
   const [errorMessage, setErrorMessage] = useState("Invalid Login Credentials");
 
   const onSubmit = async (event) => {
-    // RETURNS ACCOUNT ID OF THE USER. PARA MAKUHA NIYA FROM TBL_EMPLOYEE TABLE YUNG DATA NIYA USING ACCOUNT ID FROM TABLE ACCOUNTS
     const res = await fetch(
       `http://localhost:3000/api/sign-in?` +
         new URLSearchParams({
@@ -39,7 +40,6 @@ const EmployeeSignIn = () => {
     }
 
     try {
-      // RETURNS THE DATA OF THE USER
       const adminRes = await fetch(
         `http://localhost:3000/api/admin/audit/sign-in?` +
           new URLSearchParams(
@@ -54,7 +54,6 @@ const EmployeeSignIn = () => {
 
       const loggedInUser = response[0];
 
-      // SET LOCAL STORAGE SA MGA DATA NI USER
       {
         loggedInUser.username &&
         loggedInUser.password &&
@@ -109,7 +108,6 @@ const EmployeeSignIn = () => {
           : null;
       }
 
-      // IREDIRECT SA NEXT PAGE IF SUCCESS ANG LOG IN
       {
         loggedInUser.username &&
         loggedInUser.password &&
@@ -118,7 +116,6 @@ const EmployeeSignIn = () => {
           : null;
       }
 
-      // IF DI EXISTING OR DEACTIVATED ANG ACCOUNT ISHOW ANG MESSAGE
       {
         loggedInUser.username &&
         loggedInUser.password &&
@@ -131,17 +128,15 @@ const EmployeeSignIn = () => {
     }
   };
 
-  // REDIRECT THEM TO SPECIFIC PATH
   const redirect = (account) => {
     {
       account.userRole == "Employee" && employeeButtonRef.current.click();
     }
   };
 
-  // PASS A POST REQUEST TO RECORD THE LOG IN DETAILS OF THE EMPLOYEE OR SUB ADMIN TO THE AUDIT TABLE
   const recordAudit = async (user) => {
     const postData = {
-      method: "POST", // or 'PUT'
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },

@@ -24,7 +24,6 @@ import {
 } from "@/components/ui/select";
 import { X } from "lucide-react";
 
-// NOT COMPLETED
 const CustomizationAddSizeForm = ({
   addSizeOpen,
   setAddSizeOpen,
@@ -42,6 +41,7 @@ const CustomizationAddSizeForm = ({
     },
     mode: "onTouched",
   });
+
   const { register, handleSubmit, formState, reset, getValues } = form;
   const { errors, isDirty, isValid } = formState;
 

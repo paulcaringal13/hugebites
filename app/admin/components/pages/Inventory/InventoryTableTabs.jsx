@@ -28,7 +28,6 @@ import {
 import dayjs from "dayjs";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
-// NOT COMPLETED
 const InventoryTableTabs = () => {
   function formatString(str) {
     let words = str.split(" ");
@@ -41,17 +40,12 @@ const InventoryTableTabs = () => {
 
     return modifiedString;
   }
-
-  // ARRAY FOR TABLE
   const [ingredientStocks, setIngredientStocks] = useState([]);
   const [ingredientList, setIngredientList] = useState([]);
   const [wasteList, setWasteList] = useState([]);
-
   const [packagingStocks, setPackagingStocks] = useState([]);
   const [packagingList, setPackagingList] = useState([]);
   const [packagingWasteList, setPackagingWasteList] = useState([]);
-
-  // alert state
   const [alertMessageOpen, setAlertMessageOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState(false);
   const [alertType, setAlertType] = useState(false);
@@ -64,23 +58,17 @@ const InventoryTableTabs = () => {
     }, 3000);
   };
 
-  // STATE HANDLER
-
   const [ingredientListOpen, setIngredientListOpen] = useState(false);
   const [wasteLogOpen, setWasteLogOpen] = useState(false);
   const [editStockOpen, setEditStockOpen] = useState(false);
   const [addStockOpen, setAddStockOpen] = useState(false);
-
   const [packagingListOpen, setPackagingListOpen] = useState(false);
   const [wastePackagingOpen, setWastePackagingOpen] = useState(false);
   const [editPackagingStockOpen, setEditPackagingStockOpen] = useState(false);
   const [addPackagingStockOpen, setAddPackagingStockOpen] = useState(false);
 
-  // FOR EDIT FEATURE STATE FOR SELECTED STOCK ID
   const [rowSelected, setRowSelected] = useState({});
 
-  // INGREDIENTS FUNCTIONS
-  // // FOR OPENING AND CLOSING DIALOGS AND TOASTER.
   const openAddStock = () => {
     setAddStockOpen(true);
   };
@@ -170,7 +158,6 @@ const InventoryTableTabs = () => {
       setIngredientStocks([...ingredientStocks, newStock]);
 
       closeAddStock();
-      // closeIngredientList();
       setAlertMessage(
         `${quantity} ${selectedIngredient.ingredientName} added successfully!`
       );
@@ -189,15 +176,13 @@ const InventoryTableTabs = () => {
     const x = ingredientList.map((i) => {
       const { ingredientId, unit } = i;
 
-      // get stocks of ingredient
       const stocks = ingredientStocks.filter(
         (j) => ingredientId === j.ingredientId && unit === j.unit
       );
 
-      // get total quantity
       const totalQuantity = stocks.reduce(
         (acc, curr) => acc + Number(curr.quantity),
-        0 // inital value
+        0
       );
 
       return { ...i, totalQuantity };
@@ -272,15 +257,13 @@ const InventoryTableTabs = () => {
       ? (x = newList.map((i) => {
           const { ingredientId, unit } = i;
 
-          // get stocks of ingredient
           const stocks = ingredientStocks.filter(
             (j) => ingredientId === j.ingredientId && unit === j.unit
           );
 
-          // get total quantity
           const totalQuantity = stocks.reduce(
             (acc, curr) => acc + Number(curr.quantity),
-            0 // inital value
+            0
           );
 
           return { ...i, totalQuantity };
@@ -288,15 +271,13 @@ const InventoryTableTabs = () => {
       : (x = newList.map((i) => {
           const { ingredientId, unit } = i;
 
-          // get stocks of ingredient
           const stocks = ingredientStocks.filter(
             (j) => ingredientId === j.ingredientId && unit === j.unit
           );
 
-          // get total quantity
           const totalQuantity = stocks.reduce(
             (acc, curr) => acc + Number(curr.quantity),
-            0 // inital value
+            0
           );
 
           return { ...i, totalQuantity };
@@ -334,12 +315,10 @@ const InventoryTableTabs = () => {
   ) => {
     let res;
 
-    // SPLIT SELECTED INGREDIENT NAME AND UNIT TO UPDATE 2 DIFFERENT COLUMNS
     const splitString = ingredient
       .split(/\s*\(\s*|\)/)
       .filter((word) => word !== "");
 
-    // FOR ADDING INTO THE TABLE THE REMAINING QUANTITY IF THERE IS A REMAINING QUANTITY AFTER EDITING
     const remainingStockPost = {
       method: "POST",
       headers: {
@@ -354,7 +333,6 @@ const InventoryTableTabs = () => {
       }),
     };
 
-    // FOR UPDATING SELECTED STOCK DATA
     const stockPost = {
       method: "PUT",
       headers: {
@@ -375,7 +353,6 @@ const InventoryTableTabs = () => {
     );
     const result = await updateSelectedStockRes.json();
 
-    // IF MAGKAIBA ANG SELECTED NAME AND UNIT SA NOON PERO WALANG NATIRA SA DATING STOCK
     {
       splitString[0] != rowSelected.ingredientName &&
       splitString[1] != rowSelected.unit &&
@@ -387,7 +364,6 @@ const InventoryTableTabs = () => {
         : null;
     }
 
-    // IF THE SELECTED NAME AND UNIT IS NOT MATCHED WITH THE PAST INGREDIENT NAME AND UNIT AND THE OLD INGREDIENT STILL HAVE A REMAINING QUANTITY (ADD NEW STOCK AND OLD STOCK WITH ITS REMAINING QTY REMAINS)
     {
       oldQuantity - newStockQuantity != 0 &&
       oldQuantity - newStockQuantity > 0 &&
@@ -417,7 +393,6 @@ const InventoryTableTabs = () => {
     setUpdateStocksStock(stock);
   };
 
-  // DEDUCT OR ADD QUANITTY TO STOCK AND UPDATES VALUE OF THE INGREDIENT TOTAL QUANITTY
   const updateStocks = async (quantity, stock) => {
     const qty = new Number(quantity);
     const stockQty = new Number(stock.quantity);
@@ -453,7 +428,6 @@ const InventoryTableTabs = () => {
     }
   };
 
-  // DELETE TO STOCKS TABLE AND ADD TO WASTE TABLE IF STOCK IS EXPIRED OR QUANTITY IS 0
   const checkForWaste = async (wasteData, stockId) => {
     const deleteData = {
       method: "DELETE",
@@ -485,7 +459,6 @@ const InventoryTableTabs = () => {
     getWaste();
   };
 
-  // GET ALL INGREDIENTS
   const getAllIngredient = async () => {
     const res = await fetch(`http://localhost:3000/api/admin/ingredient`);
     const data = await res.json();
@@ -495,7 +468,6 @@ const InventoryTableTabs = () => {
     return data;
   };
 
-  // GET ALL STOCKS DATA
   const getAllIngredientStocks = async () => {
     const dateToday = dayjs().format("MMMM DD, YYYY");
 
@@ -549,7 +521,6 @@ const InventoryTableTabs = () => {
     return unexpiredResults;
   };
 
-  // GET ALL WASTE DATA
   const getWaste = async () => {
     const res = await fetch(
       `http://localhost:3000/api/admin/inventory/ingredients/waste`
@@ -676,7 +647,6 @@ const InventoryTableTabs = () => {
     setUpdatePackagingStocksStock(stock);
   };
 
-  // ADD AND DEDUCT FROM THE TABLE STOCKS
   const updatePackagingStock = async (quantity, stock) => {
     const qty = new Number(quantity);
     const stockQty = new Number(stock.quantity);
@@ -771,8 +741,6 @@ const InventoryTableTabs = () => {
 
   const closeAddPackaging = (newList, type) => {
     setAddPackagingOpen(false);
-    console.log(newList);
-    console.log(type);
 
     let x;
 
@@ -780,31 +748,26 @@ const InventoryTableTabs = () => {
       ? (x = newList.map((i) => {
           const { packagingId, size } = i;
 
-          // get stocks of ingredient
           const stocks = packagingStocks.filter(
             (j) => packagingId === j.packagingId && size === j.size
           );
 
-          // get total quantity
           const totalQuantity = stocks.reduce(
             (acc, curr) => acc + Number(curr.quantity),
-            0 // inital value
+            0
           );
 
           return { ...i, totalQuantity };
         }))
       : (x = newList.map((i) => {
           const { packagingId, size } = i;
-
-          // get stocks of ingredient
           const stocks = packagingStocks.filter(
             (j) => packagingId === j.packagingId && size === j.size
           );
 
-          // get total quantity
           const totalQuantity = stocks.reduce(
             (acc, curr) => acc + Number(curr.quantity),
-            0 // inital value
+            0
           );
 
           return { ...i, totalQuantity };
@@ -819,15 +782,13 @@ const InventoryTableTabs = () => {
     const x = packagingList.map((i) => {
       const { packagingId, size } = i;
 
-      // get stocks of ingredient
       const stocks = packagingStocks.filter(
         (j) => packagingId === j.packagingId && size === j.size
       );
 
-      // get total quantity
       const totalQuantity = stocks.reduce(
         (acc, curr) => acc + Number(curr.quantity),
-        0 // inital value
+        0
       );
 
       return { ...i, totalQuantity };
@@ -867,12 +828,10 @@ const InventoryTableTabs = () => {
   ) => {
     let res;
 
-    // SPLIT SELECTED INGREDIENT NAME AND UNIT TO UPDATE 2 DIFFERENT COLUMNS
     const splitString = packaging
       .split(/\s*\(\s*|\)/)
       .filter((word) => word !== "");
 
-    // FOR ADDING INTO THE TABLE THE REMAINING QUANTITY IF THERE IS A REMAINING QUANTITY AFTER EDITING
     const remainingStockPost = {
       method: "POST",
       headers: {
@@ -884,7 +843,6 @@ const InventoryTableTabs = () => {
       }),
     };
 
-    // FOR UPDATING SELECTED STOCK DATA
     const stockPost = {
       method: "PUT",
       headers: {
@@ -903,7 +861,6 @@ const InventoryTableTabs = () => {
     );
     const result = await updateSelectedStockRes.json();
 
-    // IF MAGKAIBA ANG SELECTED NAME AND UNIT SA NOON PERO WALANG NATIRA SA DATING STOCK
     {
       splitString[0] != rowSelected.packagingName &&
       splitString[1] != rowSelected.size &&
@@ -915,7 +872,6 @@ const InventoryTableTabs = () => {
         : null;
     }
 
-    // IF THE SELECTED NAME AND UNIT IS NOT MATCHED WITH THE PAST INGREDIENT NAME AND UNIT AND THE OLD INGREDIENT STILL HAVE A REMAINING QUANTITY (ADD NEW STOCK AND OLD STOCK WITH ITS REMAINING QTY REMAINS)
     {
       oldQuantity - newStockQuantity != 0 &&
       oldQuantity - newStockQuantity > 0 &&
@@ -1050,7 +1006,6 @@ const InventoryTableTabs = () => {
         </TabsContent>
       </Tabs>
 
-      {/* INGREDIENT LIST  */}
       {ingredientListOpen ? (
         <IngredientsList
           closeIngredientList={closeIngredientList}
@@ -1068,7 +1023,6 @@ const InventoryTableTabs = () => {
         />
       ) : null}
 
-      {/* ADD STOCK FORM  */}
       {addStockOpen ? (
         <AddStockForm
           closeAddStock={closeAddStock}
@@ -1084,7 +1038,6 @@ const InventoryTableTabs = () => {
         />
       ) : null}
 
-      {/* WASTE LOG LIST  */}
       {wasteLogOpen ? (
         <IngredientWasteTable
           data={wasteList}
@@ -1196,7 +1149,6 @@ const InventoryTableTabs = () => {
         </Dialog>
       )}
 
-      {/* ALERT */}
       {alertMessageOpen ? (
         <ToastProvider swipeDirection="up" duration={3000}>
           <Toast className="w-fit h-fit mr-5" variant={alertType}>

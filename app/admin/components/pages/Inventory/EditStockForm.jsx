@@ -32,7 +32,6 @@ import {
 } from "@/components/ui/popover";
 import dayjs from "dayjs";
 
-// NOT COMPLETED
 const EditStockForm = ({
   editStockOpen,
   setEditStockOpen,
@@ -72,7 +71,6 @@ const EditStockForm = ({
   const onSubmit = (data) => {
     const { quantity } = data;
 
-    // FOR FINDING NEW INGREDIENT ID
     const selectedIngredient = ingredientArray.find(
       (item) => item.value === ingredient
     );
@@ -81,7 +79,6 @@ const EditStockForm = ({
     const formattedExpirationDate =
       dayjs(expirationDate).format("MMMM DD, YYYY");
 
-    // VARIABLE PARA MAVALIDATE SA FUNCTION NARIN NA TO MISMO KUNG MAY ERRORS BA.
     let isDateError = false;
 
     {
@@ -96,7 +93,6 @@ const EditStockForm = ({
         : setErrorExpirationDate(false);
     }
 
-    // VALIDATE IF THERE IS AN ERROR DO NOTHING
     {
       !isDateError
         ? editStock(
@@ -114,7 +110,6 @@ const EditStockForm = ({
   };
 
   const setEditForm = () => {
-    // SET THE FORMATTED NAME AND UNIT SELECTION
     const ingredientSelection = ingredientList.map((value) => {
       return {
         id: value.ingredientId,

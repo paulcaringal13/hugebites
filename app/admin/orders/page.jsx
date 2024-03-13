@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import MiniAdminSidebar from "../components/MiniAdminSidebar";
 import OrderModuleAdmin from "../components/pages/Order/OrderModuleAdmin";
-// NOT COMPLETED
 export default function AdminRequest() {
   const [loggedInUserId, setLoggedInUserId] = useState("");
 

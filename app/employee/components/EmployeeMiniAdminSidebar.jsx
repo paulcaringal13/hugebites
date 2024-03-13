@@ -28,87 +28,14 @@ import { BsGraphUp } from "react-icons/bs";
 import { MdOutlineDashboard } from "react-icons/md";
 import { IoAccessibilitySharp } from "react-icons/io5";
 
+// COMPLETED
+
 const EmployeeMiniAdminSidebar = ({ props }) => {
   const router = useRouter();
 
   const [roleId, setRoleId] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [routesArray, setRoutesArray] = useState([]);
-
-  const routes = [
-    {
-      id: 1,
-      name: "Dashboard",
-      icon: <MdOutlineDashboard className="text-xl mx-auto" />,
-      route: "dashboard",
-    },
-    {
-      id: 2,
-      name: "Menu",
-      icon: <RiCakeLine className="text-xl mx-auto" />,
-      route: "menu",
-    },
-    {
-      id: 3,
-      name: "Orders",
-      icon: <LuShoppingBasket className="text-xl mx-auto" />,
-      route: "orders",
-    },
-    {
-      id: 4,
-      name: "Customization",
-      icon: <BiBookAdd className="text-xl mx-auto" />,
-      route: "customization",
-    },
-    {
-      id: 5,
-      name: "Audit",
-      icon: <AiOutlineAudit className="text-xl mx-auto" />,
-      route: "audit",
-    },
-    {
-      id: 6,
-      name: "Inventory",
-      icon: <MdOutlineInventory className="text-xl mx-auto" />,
-      route: "inventory ",
-    },
-    {
-      id: 7,
-      name: "Reports",
-      icon: <GrNotes className="text-lg mx-auto" />,
-      route: "reports",
-    },
-    {
-      id: 8,
-      name: "Forecast Sales",
-      icon: <BsGraphUp className="text-lg mx-auto" />,
-      route: "forecast",
-    },
-    {
-      id: 9,
-      name: "Refund Requests",
-      icon: <AiOutlineUserSwitch className="text-xl flex mx-auto mt-3" />,
-      route: "request",
-    },
-    {
-      id: 10,
-      name: "Vouchers",
-      icon: <LuTicket className="text-lg font-extrabold mx-auto" />,
-      route: "vouchers",
-    },
-    {
-      id: 11,
-      name: "Account",
-      icon: <FiUsers className="text-lg font-extrabold mx-auto" />,
-      route: "accounts",
-    },
-    {
-      id: 12,
-      name: "User Access",
-      icon: <IoAccessibilitySharp className="text-lg font-extrabold mx-auto" />,
-      route: "userAccess",
-    },
-  ];
 
   const reportRoutes = [
     {
@@ -323,8 +250,6 @@ const EmployeeMiniAdminSidebar = ({ props }) => {
   useEffect(() => {
     getRoles();
   }, [roleId]);
-
-  console.log(routesArray);
 
   return (
     <ScrollArea

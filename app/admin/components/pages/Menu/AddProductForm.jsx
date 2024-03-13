@@ -24,7 +24,6 @@ import {
 import { X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 
-// NOT COMPLETED
 const AddProductForm = ({
   addProductOpen,
   setAddProductOpen,
@@ -37,10 +36,8 @@ const AddProductForm = ({
   const [validationMessage, setValidationMessage] = useState();
   const [cakeType, setCakeType] = useState();
   const [errorCakeTypeSelection, setErrorCakeTypeSelection] = useState(false);
-
   const [file, setFile] = useState();
   const [image, setImage] = useState("");
-
   const [category, setCategory] = useState("");
   const [errorCategorySelection, setErrorCategorySelection] = useState(false);
 
@@ -56,25 +53,21 @@ const AddProductForm = ({
   const { errors, isDirty, isValid } = formState;
 
   const onSubmit = async (data) => {
-    // SHOW ERROR MESSAGE IF SELECT IS EMPTY
     {
       !cakeType
         ? setErrorCakeTypeSelection(true)
         : setErrorCakeTypeSelection(false);
     }
-    // SHOW ERROR MESSAGE IF SELECT IS EMPTY
     {
       !category
         ? setErrorCategorySelection(true)
         : setErrorCategorySelection(false);
     }
-    // IF CTG IS EMPTY DONT ADD THE PRODUCT
     {
       !category || !cakeType ? null : validateProductName(data);
     }
   };
 
-  // VALIDATE IF PRODUCT IS EXISTING
   const validateProductName = (data) => {
     const { productName } = data;
 
@@ -107,7 +100,6 @@ const AddProductForm = ({
       setImage(`/images/products/${results}`);
       if (!res.ok) throw new Error(await res.text());
 
-      // FIND THE SELECTED MENU ID (SELECT COMPONENT FROM SHAD CANT DISPLAY THE NAME OF THE SELECTION IF THE VALUE IT PASSES IS THE ID)
       const categorySelected = categoryTable.find(
         (i) => i.categoryName == category
       );
@@ -115,7 +107,6 @@ const AddProductForm = ({
       const cakeTypeSelected = cakeTypes.find(
         (i) => i.cakeTypeName == cakeType
       );
-      // FOR THE CAKE TYPE SELECTION
       let isSpecial;
       {
         cakeType != "Common Cake" ? (isSpecial = 1) : (isSpecial = 0);
